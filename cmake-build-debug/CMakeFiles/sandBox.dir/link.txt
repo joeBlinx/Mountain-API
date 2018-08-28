@@ -1,0 +1,1 @@
+/usr/bin/g++  -g   CMakeFiles/sandBox.dir/main.cpp.o CMakeFiles/sandBox.dir/initVulkan.cpp.o CMakeFiles/sandBox.dir/log.cpp.o  -o sandBox -lvulkan -lglfw3 -lXcursor -lX11 -lXxf86vm -lXrandr -lpthread -lXi -ldl -lXi -lXinerama -lutils -ldl -lXinerama -lutils 
