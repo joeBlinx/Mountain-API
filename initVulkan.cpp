@@ -9,8 +9,54 @@
 #include <vector>
 #include <iostream>
 #include <cstring>
-#include <utils/log.hpp>
 #include <set>
+//
+// Created by joe on 22/07/18.
+//
+
+#ifndef INC_2DENGINE_LOG_HPP
+#define INC_2DENGINE_LOG_HPP
+
+#include <iostream>
+
+namespace utils {
+#ifdef NDEBUG
+	constexpr bool debug = false;
+#else
+	constexpr bool debug = true;
+#endif
+
+	template <class ...Ts>
+	void printWarning(Ts && ... args) {
+		if constexpr (debug) {
+			std::cout << "\033[0;33m";
+			((std::cout << args << " "), ...) << std::endl;
+			std::cout << "\033[0;30m";
+		}
+	}
+	template <class ...Ts>
+	void printError(Ts && ... args) {
+		if constexpr (debug) {
+			((std::cerr << args << " "), ...) << std::endl;
+		}
+	}
+
+	template <class ...Ts>
+	void printFatalError(Ts && ...args) {
+		if constexpr (debug) {
+			((std::cerr << args << " "), ...) << std::endl;
+			exit(1);
+		}
+	}
+
+	template <class ...Ts>
+	void print(Ts && ...args) {
+		if constexpr (debug) {
+			((std::cout << args << " "), ...) << std::endl;
+		}
+	}
+}
+#endif //INC_2DENGINE_LOG_HPP
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 		VkDebugReportFlagsEXT flags,
@@ -217,9 +263,9 @@ QueueFamilyIndices InitVulkan::findQueueFamilies(VkPhysicalDevice device) {
 		if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
 			indices.graphicsFamily = i;
 		}
-
+		 
 		VkBool32 presentSupport  = VK_FALSE;
-		vkGetPhysicalDeviceSurfaceSupportKHR(_physicalDevice, i, _surface, &presentSupport);
+		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, _surface, &presentSupport);
 		if(queueFamily.queueCount >= 0 && presentSupport){
 			indices.presentFamily = i;
 		}
@@ -257,7 +303,7 @@ void InitVulkan::createLogicalDevice() {
 	info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 	info.pQueueCreateInfos = queueInfos.data();
 	info.queueCreateInfoCount = queueInfos.size();
-	info.pEnabledFeatures = &features;
+	info .pEnabledFeatures = &features;
 	info.enabledExtensionCount = 0;
 	if(_enableValidationLayer){
 		info.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());

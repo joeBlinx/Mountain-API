@@ -3,10 +3,36 @@ project(sandBox)
 
 set(CMAKE_CXX_STANDARD 17)
 find_package(Vulkan)
+find_package(GLFW)
 
 add_definitions(-DGLFW_INCLUDE_VULKAN)
-add_executable(sandBox main.cpp initVulkan.cpp initVulkan.hpp log.cpp log.hpp)
+
+if(UNIX)
+
 target_link_libraries(sandBox vulkan
 		glfw3 Xcursor -lX11 -lXxf86vm -lXrandr
 		-lpthread -lXi dl -lXi -lXinerama
 		utils)
+else()
+	include_directories(BEFORE_SYSTEM "../lib/include")
+	link_directories("../lib/bin")
+	link_directories($ENV{VULKAN_SDK}\\Lib)
+	message($ENV{VULKAN_SDK}\\Lib)
+
+
+
+endif(WIN32)
+
+
+add_executable(sandBox main.cpp initVulkan.cpp initVulkan.hpp log.cpp log.hpp)
+
+
+if(UNIX)
+
+target_link_libraries(sandBox vulkan
+		glfw3 Xcursor -lX11 -lXxf86vm -lXrandr
+		-lpthread -lXi dl -lXi -lXinerama
+		utils)
+else()
+	target_link_libraries(sandBox glfw3 vulkan-1)
+endif(WIN32)

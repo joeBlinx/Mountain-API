@@ -1,3 +1,0 @@
-/media/joe/data/development/c++/sandBox/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/media/joe/data/development/c++/sandBox/cmake-build-debug/CMakeFiles/edit_cache.dir
-/media/joe/data/development/c++/sandBox/cmake-build-debug/CMakeFiles/sandBox.dir
