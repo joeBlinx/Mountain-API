@@ -14,6 +14,7 @@ target_link_libraries(sandBox vulkan
 		-lpthread -lXi dl -lXi -lXinerama
 		utils)
 else()
+	include_directories("./")
 	include_directories(BEFORE_SYSTEM "../lib/include")
 	include_directories(BEFORE_SYSTEM ${Vulkan_INCLUDE_DIRS} )
 
@@ -24,8 +25,14 @@ else()
 endif()
 
 
-add_executable(sandBox main.cpp initVulkan.cpp initVulkan.hpp log.cpp log.hpp)
+add_executable(sandBox main.cpp 
+						initVulkan.cpp initVulkan.hpp 
+						log.cpp log.hpp
+						utils.hpp
+						sandbox_useful/basicInit.hpp
+						sandbox_useful/basicInit.cpp)
 
+						
 
 if(UNIX)
 

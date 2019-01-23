@@ -10,53 +10,7 @@
 #include <iostream>
 #include <cstring>
 #include <set>
-//
-// Created by joe on 22/07/18.
-//
-
-#ifndef INC_2DENGINE_LOG_HPP
-#define INC_2DENGINE_LOG_HPP
-
-#include <iostream>
-
-namespace utils {
-#ifdef NDEBUG
-	constexpr bool debug = false;
-#else
-	constexpr bool debug = true;
-#endif
-
-	template <class ...Ts>
-	void printWarning(Ts && ... args) {
-		if constexpr (debug) {
-			std::cout << "\033[0;33m";
-			((std::cout << std::forward<Ts>(args) << " "), ...) << std::endl;
-			std::cout << "\033[0;30m";
-		}
-	}
-	template <class ...Ts>
-	void printError(Ts && ... args) {
-		if constexpr (debug) {
-			((std::cerr << std::forward<Ts>(args) << " "), ...) << std::endl;
-		}
-	}
-
-	template <class ...Ts>
-	void printFatalError(Ts && ...args) {
-		if constexpr (debug) {
-			((std::cerr << std::forward<Ts>(args) << " "), ...) << std::endl;
-			exit(1);
-		}
-	}
-
-	template <class ...Ts>
-	void print(Ts && ...args) {
-		if constexpr (debug) {
-			((std::cout << std::forward<Ts>(args) << " "), ...) << std::endl;
-		}
-	}
-}
-#endif //INC_2DENGINE_LOG_HPP
+#include "utils.hpp"
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 		VkDebugReportFlagsEXT flags,
@@ -143,6 +97,7 @@ void InitVulkan::initWindow() {
 }
 
 void InitVulkan::createInstance() {
+
 	if (!checkValidationLayerSupport() && _enableValidationLayer) {
 		utils::printFatalError("validation layer requested but not available");
 	}
@@ -281,7 +236,6 @@ QueueFamilyIndices InitVulkan::findQueueFamilies(VkPhysicalDevice device) {
 }
 
 void InitVulkan::createLogicalDevice() {
-
 
 
 	//specify the queue
