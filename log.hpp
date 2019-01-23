@@ -5,7 +5,6 @@
 #ifndef SANDBOX_LOG_HPP
 #define SANDBOX_LOG_HPP
 
-
 #include <vulkan/vulkan.h>
 #include <iosfwd>
 #include <string>

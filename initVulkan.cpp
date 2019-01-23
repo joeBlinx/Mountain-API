@@ -30,21 +30,21 @@ namespace utils {
 	void printWarning(Ts && ... args) {
 		if constexpr (debug) {
 			std::cout << "\033[0;33m";
-			((std::cout << args << " "), ...) << std::endl;
+			((std::cout << std::forward<Ts>(args) << " "), ...) << std::endl;
 			std::cout << "\033[0;30m";
 		}
 	}
 	template <class ...Ts>
 	void printError(Ts && ... args) {
 		if constexpr (debug) {
-			((std::cerr << args << " "), ...) << std::endl;
+			((std::cerr << std::forward<Ts>(args) << " "), ...) << std::endl;
 		}
 	}
 
 	template <class ...Ts>
 	void printFatalError(Ts && ...args) {
 		if constexpr (debug) {
-			((std::cerr << args << " "), ...) << std::endl;
+			((std::cerr << std::forward<Ts>(args) << " "), ...) << std::endl;
 			exit(1);
 		}
 	}
@@ -52,7 +52,7 @@ namespace utils {
 	template <class ...Ts>
 	void print(Ts && ...args) {
 		if constexpr (debug) {
-			((std::cout << args << " "), ...) << std::endl;
+			((std::cout << std::forward<Ts>(args) << " "), ...) << std::endl;
 		}
 	}
 }
