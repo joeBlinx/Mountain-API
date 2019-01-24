@@ -47,6 +47,11 @@ private:
 	GLFWwindow *_window;
 	VkInstance _instance;
 	VkSurfaceKHR _surface;
+	VkSwapchainKHR _swapchain;
+	std::vector<VkImage> _swapChainImages;
+	std::vector<VkImageView> _swapChainImageViews;
+	VkFormat _swapChainImageFormat;
+	VkExtent2D _swapChainExtent;
 	VkDebugReportCallbackEXT _callback;
 	VkPhysicalDevice _physicalDevice = 	VK_NULL_HANDLE;
 	VkDevice _device;
@@ -59,16 +64,19 @@ private:
 	bool checkValidationLayerSupport();
 	void createInstance();
 	void createSurface();
+	void createSwapChain(); // there are some parameter
+	void createImageViews();
 
-	std::vector<char const * > getRequiredExtension();
-	void setUpDebugCallBack();
+	std::vector<char const * > getRequiredExtension(); //always same
+	void setUpDebugCallBack(); // always same
 	bool isDeviceSuitable(VkPhysicalDevice device);
 	bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 	void pickUpPhysicalDevice();
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
-	VkSurfaceFormatKHR chooseSwapSurfaceFormat(std::vector<VkSurfaceFormatKHR> const & availableFormat);
-	VkPresentModeKHR chooseSwapPresentMode(std::vector<VkPresentModeKHR> const & availablePresentModes);
+	VkSurfaceFormatKHR chooseSwapSurfaceFormat(std::vector<VkSurfaceFormatKHR> const & availableFormat); //always same
+	VkPresentModeKHR chooseSwapPresentMode(std::vector<VkPresentModeKHR> const & availablePresentModes);//always same
+	VkExtent2D chooseSwapExtent(VkSurfaceCapabilitiesKHR const& capabilities); // always same
 	void createLogicalDevice();
 };
 
