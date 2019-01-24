@@ -10,8 +10,6 @@
 #include <iostream>
 #include <cstring>
 #include <set>
-#include "utils.hpp"
-
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 		VkDebugReportFlagsEXT flags,
 		VkDebugReportObjectTypeEXT objType,
@@ -197,11 +195,33 @@ void InitVulkan::pickUpPhysicalDevice() {
 
 }
 
+bool InitVulkan::checkDeviceExtensionSupport(VkPhysicalDevice device)
+{
+	uint32_t extensionCount;
+	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+	std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+	std::set<std::string_view> requiredExtensions(_devicesExtension.begin(), _devicesExtension.end());
+
+	for (auto const & extension : availableExtensions)
+	{
+		requiredExtensions.erase(extension.extensionName);
+	}
+	return requiredExtensions.empty();
+
+}
 bool InitVulkan::isDeviceSuitable(VkPhysicalDevice device) {
 	QueueFamilyIndices indices = findQueueFamilies(device);
 
-
-	return indices.isComplete();
+	bool extensionSupported = checkDeviceExtensionSupport(device);
+	bool swapChainAdequate = false;
+	if (extensionSupported) {
+		SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
+		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+	}
+	return indices.isComplete() && extensionSupported && swapChainAdequate;
 }
 
 QueueFamilyIndices InitVulkan::findQueueFamilies(VkPhysicalDevice device) {
@@ -258,7 +278,8 @@ void InitVulkan::createLogicalDevice() {
 	info.pQueueCreateInfos = queueInfos.data();
 	info.queueCreateInfoCount = queueInfos.size();
 	info .pEnabledFeatures = &features;
-	info.enabledExtensionCount = 0;
+	info.enabledExtensionCount = static_cast<uint32_t>(_devicesExtension.size());
+	info.ppEnabledExtensionNames = _devicesExtension.data();
 	if(_enableValidationLayer){
 		info.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 		info.ppEnabledLayerNames = validationLayers.data();
@@ -278,29 +299,57 @@ void InitVulkan::createSurface() {
 					"unable to create surface");
 }
 
+SwapChainSupportDetails InitVulkan::querySwapChainSupport(VkPhysicalDevice device)
+{
+	SwapChainSupportDetails details;
+	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, _surface, &details.capabilities);
+	
+	uint32_t formatCount;
+	vkGetPhysicalDeviceSurfaceFormatsKHR(device, _surface, &formatCount, nullptr);
+
+	if (formatCount != 0) {
+		details.formats.resize(formatCount);
+		vkGetPhysicalDeviceSurfaceFormatsKHR(device, _surface, &formatCount, details.formats.data());
+	}
+
+	uint32_t presentModeCount;
+	vkGetPhysicalDeviceSurfacePresentModesKHR(device, _surface, &presentModeCount, nullptr);
+
+	if (presentModeCount != 0) {
+		details.presentModes.resize(presentModeCount);
+		vkGetPhysicalDeviceSurfacePresentModesKHR(device, _surface, &presentModeCount, details.presentModes.data());
+	}
 
 
+	return details;
+}
+VkSurfaceFormatKHR InitVulkan::chooseSwapSurfaceFormat(std::vector<VkSurfaceFormatKHR> const & availableFormats)
+{
+	if (availableFormats.size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED) {
+		return { VK_FORMAT_B8G8R8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
+	}
 
+	for (const auto& availableFormat : availableFormats) {
+		if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+			return availableFormat;
+		}
+	}
 
+	return availableFormats[0];
+}
 
+VkPresentModeKHR InitVulkan::chooseSwapPresentMode(std::vector<VkPresentModeKHR> const & availablePresentModes)
+{
+	VkPresentModeKHR bestMode = VK_PRESENT_MODE_FIFO_KHR;
 
+	for (const auto& availablePresentMode : availablePresentModes) {
+		if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+			return availablePresentMode;
+		}
+		else if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
+			bestMode = availablePresentMode;
+		}
+	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	return bestMode;
+}

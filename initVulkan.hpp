@@ -18,6 +18,13 @@ struct QueueFamilyIndices{
 		return graphicsFamily >=0  && presentFamily >= 0;
 	}
 };
+
+struct SwapChainSupportDetails
+{
+	VkSurfaceCapabilitiesKHR capabilities;
+	std::vector<VkSurfaceFormatKHR> formats;
+	std::vector <VkPresentModeKHR> presentModes;
+};
 struct InitVulkan {
 
 	InitVulkan(int width, int height);
@@ -25,10 +32,10 @@ struct InitVulkan {
 	~InitVulkan();
 
 private:
-	const std::vector<const char*> validationLayers = {
+	const std::vector<const char*> validationLayers {
 			"VK_LAYER_LUNARG_standard_validation"
 	};
-	const std::vector<const char*> deviceExtensions = {
+	std::vector<const char*> const _devicesExtension{
 		VK_KHR_SWAPCHAIN_EXTENSION_NAME
 	};
 #ifdef NDEBUG
@@ -56,8 +63,12 @@ private:
 	std::vector<char const * > getRequiredExtension();
 	void setUpDebugCallBack();
 	bool isDeviceSuitable(VkPhysicalDevice device);
+	bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 	void pickUpPhysicalDevice();
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
+	VkSurfaceFormatKHR chooseSwapSurfaceFormat(std::vector<VkSurfaceFormatKHR> const & availableFormat);
+	VkPresentModeKHR chooseSwapPresentMode(std::vector<VkPresentModeKHR> const & availablePresentModes);
 	void createLogicalDevice();
 };
 
