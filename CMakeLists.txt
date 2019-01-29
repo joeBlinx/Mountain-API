@@ -29,6 +29,7 @@ add_executable(sandBox main.cpp
 						initVulkan.cpp initVulkan.hpp 
 						log.cpp log.hpp
 						utils.hpp
+						utils.cpp
 						sandbox_useful/basicInit.hpp
 						sandbox_useful/basicInit.cpp)
 

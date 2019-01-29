@@ -1,6 +1,6 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
-
+#include <string>
 namespace utils {
 #ifdef NDEBUG
 	constexpr bool debug = false;

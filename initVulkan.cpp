@@ -56,6 +56,10 @@ InitVulkan::InitVulkan(int width, int height) : _width(width),
 	setUpDebugCallBack();
 	pickUpPhysicalDevice();
 	createLogicalDevice();
+	createSwapChain();
+	createImageViews();
+	createRenderPass();
+	createGraphicsPipeline();
 }
 
 void InitVulkan::loop() {
@@ -73,6 +77,7 @@ void DestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT
 InitVulkan::~InitVulkan() {
 
 	vkDestroyPipelineLayout(_device, _pipelineLayout, nullptr);
+	vkDestroyRenderPass(_device, _renderpass, nullptr);
 	for (auto& imageView : _swapChainImageViews) {
 		vkDestroyImageView(_device, imageView, nullptr);
 	}
@@ -285,7 +290,7 @@ void InitVulkan::createLogicalDevice() {
 	VkDeviceCreateInfo info{};
 	info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 	info.pQueueCreateInfos = queueInfos.data();
-	info.queueCreateInfoCount = queueInfos.size();
+	info.queueCreateInfoCount = (uint32_t)queueInfos.size();
 	info .pEnabledFeatures = &features;
 	info.enabledExtensionCount = static_cast<uint32_t>(_devicesExtension.size());
 	info.ppEnabledExtensionNames = _devicesExtension.data();
@@ -368,7 +373,7 @@ VkExtent2D InitVulkan::chooseSwapExtent(VkSurfaceCapabilitiesKHR const& capabili
 		return capabilities.currentExtent;
 	}
 	else {
-		VkExtent2D actualExtent{ _width, _height };
+		VkExtent2D actualExtent{ (uint32_t)_width, (uint32_t)_height };
 
 		actualExtent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actualExtent.width));
 		actualExtent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, actualExtent.height));
@@ -432,7 +437,7 @@ void InitVulkan::createSwapChain()
 void InitVulkan::createImageViews()
 {
 	_swapChainImageViews.resize(_swapChainImages.size());
-	for (size_t i = 0; _swapChainImageViews.size(); i++)
+	for (size_t i = 0; i < _swapChainImageViews.size(); i++)
 	{
 		VkImageViewCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -463,7 +468,7 @@ VkShaderModule InitVulkan::createShaderModule(std::string const & code)
 	createInfo.codeSize = code.size();
 	createInfo.pCode = (uint32_t*)code.data();
 	VkShaderModule module;
-	checkError(vkCreateShaderModule(device, &createInfo, nulltpr, &module),
+	checkError(vkCreateShaderModule(_device, &createInfo, nullptr, &module),
 		"failed to create Shader");
 
 	return module;
@@ -476,6 +481,7 @@ VkPipelineShaderStageCreateInfo createShaderInfo(VkShaderModule & module, VkShad
 	info.stage = type;
 	info.module = module;
 	info.pName = "main";
+	return info;
 }
 VkPipelineInputAssemblyStateCreateInfo createAssembly(VkPrimitiveTopology topology)
 {	//function needed
@@ -580,7 +586,7 @@ void InitVulkan::createPipelineLayout() // lot of parameter
 	pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
 	pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
 
-	checkError (vkCreatePipelineLayout(_device, &pipelineLayoutInfo, nullptr, &_pipelineLayout) != VK_SUCCESS) 
+	checkError (vkCreatePipelineLayout(_device, &pipelineLayoutInfo, nullptr, &_pipelineLayout)
 		,"failed to create pipeline layout!");
 	
 }
@@ -626,7 +632,42 @@ void InitVulkan::createGraphicsPipeline()
 
 
 
-	VkDestroyShaderModule(_device, fragmentModule, nullptr);
-	VkDestroyShaderModule(_device, vertexModule, nullptr);
+	vkDestroyShaderModule(_device, fragmentModule, nullptr);
+	vkDestroyShaderModule(_device, vertexModule, nullptr);
 
+}
+// some parameter
+void InitVulkan::createRenderPass()
+{
+	VkAttachmentDescription colorAttachment = {};
+	colorAttachment.format = _swapChainImageFormat;
+	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+	VkAttachmentReference colorAttachmentRef = {};
+	colorAttachmentRef.attachment = 0;
+	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+	VkSubpassDescription subpass = {};
+	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+
+	subpass.colorAttachmentCount = 1;
+	subpass.pColorAttachments = &colorAttachmentRef;
+
+	VkRenderPassCreateInfo renderPassInfo = {};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+	renderPassInfo.attachmentCount = 1;
+	renderPassInfo.pAttachments = &colorAttachment;
+	renderPassInfo.subpassCount = 1;
+	renderPassInfo.pSubpasses = &subpass;
+
+
+	checkError(vkCreateRenderPass(_device, &renderPassInfo, nullptr, &_renderpass), 
+		"failed to create render pass!");
+	
 }

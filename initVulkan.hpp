@@ -57,6 +57,7 @@ private:
 	VkDevice _device;
 	QueueFamilyIndices _indices;
 	VkPipelineLayout _pipelineLayout;
+	VkRenderPass _renderpass;
 
 	VkQueue  _graphicsQueue;
 	VkQueue  _presentQueue;
@@ -70,6 +71,7 @@ private:
 	VkShaderModule createShaderModule(std::string const & code); 
 	void createGraphicsPipeline(); // multiple parameters but can surely be divide in some fucntions
 	void createPipelineLayout(); // lot of parameter
+	void createRenderPass();
 
 	std::vector<char const * > getRequiredExtension(); //always same
 	void setUpDebugCallBack(); // always same

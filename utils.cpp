@@ -12,8 +12,8 @@ namespace utils
 		size_t size = stream.tellg();
 		std::string file;
 		file.resize(size);
-		file.seekg(0);
-		file.read(file.data(), size);
+		stream.seekg(0);
+		stream.read(file.data(), size);
 		return file;
 	}
 }
