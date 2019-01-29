@@ -56,6 +56,7 @@ private:
 	VkPhysicalDevice _physicalDevice = 	VK_NULL_HANDLE;
 	VkDevice _device;
 	QueueFamilyIndices _indices;
+	VkPipelineLayout _pipelineLayout;
 
 	VkQueue  _graphicsQueue;
 	VkQueue  _presentQueue;
@@ -66,6 +67,9 @@ private:
 	void createSurface();
 	void createSwapChain(); // there are some parameter
 	void createImageViews();
+	VkShaderModule createShaderModule(std::string const & code); 
+	void createGraphicsPipeline(); // multiple parameters but can surely be divide in some fucntions
+	void createPipelineLayout(); // lot of parameter
 
 	std::vector<char const * > getRequiredExtension(); //always same
 	void setUpDebugCallBack(); // always same

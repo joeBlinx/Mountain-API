@@ -37,6 +37,7 @@ namespace utils {
 			((std::cout << std::forward<Ts>(args) << " "), ...) << std::endl;
 		}
 	}
+	std::string readFile(std::string const & file_path);
 }
 
 #endif
