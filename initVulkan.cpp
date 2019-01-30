@@ -60,6 +60,8 @@ InitVulkan::InitVulkan(int width, int height) : _width(width),
 	createImageViews();
 	createRenderPass();
 	createGraphicsPipeline();
+	createFrameBuffers();
+	createCommandPool();
 }
 
 void InitVulkan::loop() {
@@ -76,6 +78,10 @@ void DestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT
 }
 InitVulkan::~InitVulkan() {
 
+	vkDestroyCommandPool(_device, _commandPool, nullptr);
+	for (auto &framebuffer : _swapChainFramebuffers) {
+		vkDestroyFramebuffer(_device, framebuffer, nullptr);
+	}
 	vkDestroyPipeline(_device, _graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(_device, _pipelineLayout, nullptr);
 	vkDestroyRenderPass(_device, _renderpass, nullptr);
@@ -695,8 +701,76 @@ void InitVulkan::createRenderPass()
 		"failed to create render pass!");
 	
 }
+
+//need parameter
 void InitVulkan::createFrameBuffers()
 {
+	_swapchainFrameBuffer.resize(_swapChainImageViews.size());
+	for (size_t i = 0; i < _swapChainImageViews.size(); i++)
+	{
+		VkImageView attachments[] = {
+			_swapChainImageViews[i]
+		};
 
+		VkFramebufferCreateInfo framebufferInfo = {};
+		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferInfo.renderPass = _renderpass;
+		framebufferInfo.attachmentCount = 1;
+		framebufferInfo.pAttachments = attachments;
+		framebufferInfo.width = _swapChainExtent.width;
+		framebufferInfo.height = _swapChainExtent.height;
+		framebufferInfo.layers = 1;
+
+		checkError (vkCreateFramebuffer(_device, &framebufferInfo, nullptr, &_swapchainFrameBuffer[i]),
+			"failed to create framebuffer!");
+		
+	}
+
+}
+void InitVulkan::createCommandPool()
+{
+	VkCommandPoolCreateInfo poolInfo = {};
+	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+	poolInfo.queueFamilyIndex = _indices.graphicsFamily;
+	poolInfo.flags = 0; // Optional need parameter
+
+	checkError (vkCreateCommandPool(_device, &poolInfo, nullptr, &_commandPool),
+		"failed to create command pool!");
+	
+}
+//unique by software
+void InitVulkan::createCommandBuffers()
+{
+	_commandBuffers.resize(_swapchainFrameBuffer.size());
+	for (size_t i = 0; i < _commandBuffers.size(); i++) {
+		VkCommandBufferBeginInfo beginInfo = {};
+		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+		beginInfo.pInheritanceInfo = nullptr; // Optional
+
+		checkError(vkBeginCommandBuffer(_commandBuffers[i], &beginInfo),
+			"failed to begin recording command buffer!");
+		/* may be can be put into a function */
+		VkRenderPassBeginInfo renderPassInfo {};
+		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+		renderPassInfo.renderPass = _renderpass;
+		renderPassInfo.framebuffer = _swapchainFrameBuffer[i];
+		
+		renderPassInfo.renderArea.offset = { 0, 0 };
+		renderPassInfo.renderArea.extent = _swapChainExtent;
+
+		VkClearValue clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
+		renderPassInfo.clearValueCount = 1;
+		renderPassInfo.pClearValues = &clearColor;
+
+		vkCmdBeginRenderPass(_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+		vkCmdBindPipeline(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline); // bind the pipeline
+		vkCmdDraw(_commandBuffers[i], 3, 1, 0, 0); // draw buffer
+
+		vkCmdEndRenderPass(_commandBuffers[i]);
+		checkError(vkEndCommandBuffer(_commandBuffers[i]),
+			"failed to record command buffer!");
+		
+	}
 
 }

@@ -60,6 +60,8 @@ private:
 	VkRenderPass _renderpass;
 	VkPipeline _graphicsPipeline;
 	std::vector<VkFramebuffer> _swapchainFrameBuffer;
+	VkCommandPool _commandPool;
+	std::vector<VkCommandBuffer> _commandBuffers;
 
 	VkQueue  _graphicsQueue;
 	VkQueue  _presentQueue;
@@ -74,6 +76,8 @@ private:
 	void createGraphicsPipeline(); // multiple parameters but can surely be divide in some fucntions
 	void createPipelineLayout(); // lot of parameter
 	void createRenderPass();
+	void createCommandPool();
+	void createCommandBuffers();
 
 	std::vector<char const * > getRequiredExtension(); //always same
 	void setUpDebugCallBack(); // always same
