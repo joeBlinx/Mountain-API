@@ -12,7 +12,7 @@
 #include <set>
 #include <algorithm>
 #include "utils.hpp"
-
+#include <array>
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 		VkDebugReportFlagsEXT flags,
 		VkDebugReportObjectTypeEXT objType,
@@ -76,6 +76,7 @@ void DestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT
 }
 InitVulkan::~InitVulkan() {
 
+	vkDestroyPipeline(_device, _graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(_device, _pipelineLayout, nullptr);
 	vkDestroyRenderPass(_device, _renderpass, nullptr);
 	for (auto& imageView : _swapChainImageViews) {
@@ -629,8 +630,31 @@ void InitVulkan::createGraphicsPipeline()
 	VkPipelineColorBlendAttachmentState colorBlendAttachement = createColorBlendAttachement();
 	VkPipelineColorBlendStateCreateInfo colorBlending = createColorBlendState(colorBlendAttachement);
 
+	std::array shaderStages{ pipelineVertex, pipelineFrag };
 
+	/**can be factorised in function
+	*/
+	VkGraphicsPipelineCreateInfo pipelineInfo = {};
+	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+	pipelineInfo.stageCount = shaderStages.size();
+	pipelineInfo.pStages = shaderStages.data();
 
+	pipelineInfo.pVertexInputState = &vertexInput;
+	pipelineInfo.pInputAssemblyState = &inputAssembly;
+	pipelineInfo.pViewportState = &viewportState;
+	pipelineInfo.pRasterizationState = &rasterizer;
+	pipelineInfo.pMultisampleState = &multisampling;
+	pipelineInfo.pDepthStencilState = nullptr; // Optional nostencil for now
+	pipelineInfo.pColorBlendState = &colorBlending;
+	pipelineInfo.pDynamicState = nullptr; // Optional
+	pipelineInfo.layout = _pipelineLayout;
+	pipelineInfo.renderPass = _renderpass;
+	pipelineInfo.subpass = 0;
+	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
+	pipelineInfo.basePipelineIndex = -1; // Optional
+	checkError(vkCreateGraphicsPipelines(_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_graphicsPipeline)
+		, "failed to create graphics pipeline!"
+	);
 
 	vkDestroyShaderModule(_device, fragmentModule, nullptr);
 	vkDestroyShaderModule(_device, vertexModule, nullptr);
@@ -670,4 +694,9 @@ void InitVulkan::createRenderPass()
 	checkError(vkCreateRenderPass(_device, &renderPassInfo, nullptr, &_renderpass), 
 		"failed to create render pass!");
 	
+}
+void InitVulkan::createFrameBuffers()
+{
+
+
 }

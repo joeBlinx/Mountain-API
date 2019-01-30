@@ -58,6 +58,8 @@ private:
 	QueueFamilyIndices _indices;
 	VkPipelineLayout _pipelineLayout;
 	VkRenderPass _renderpass;
+	VkPipeline _graphicsPipeline;
+	std::vector<VkFramebuffer> _swapchainFrameBuffer;
 
 	VkQueue  _graphicsQueue;
 	VkQueue  _presentQueue;
@@ -84,6 +86,7 @@ private:
 	VkPresentModeKHR chooseSwapPresentMode(std::vector<VkPresentModeKHR> const & availablePresentModes);//always same
 	VkExtent2D chooseSwapExtent(VkSurfaceCapabilitiesKHR const& capabilities); // always same
 	void createLogicalDevice();
+	void createFrameBuffers();
 };
 
 
