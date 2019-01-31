@@ -1,6 +1,7 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 #include <string>
+#include <vector>
 namespace utils {
 #ifdef NDEBUG
 	constexpr bool debug = false;
@@ -37,7 +38,7 @@ namespace utils {
 			((std::cout << std::forward<Ts>(args) << " "), ...) << std::endl;
 		}
 	}
-	std::string readFile(std::string const & file_path);
+	std::vector<char> readFile(std::string const & file_path);
 }
 
 #endif

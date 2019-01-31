@@ -59,16 +59,58 @@ InitVulkan::InitVulkan(int width, int height) : _width(width),
 	createSwapChain();
 	createImageViews();
 	createRenderPass();
+	createPipelineLayout();
 	createGraphicsPipeline();
 	createFrameBuffers();
 	createCommandPool();
+	createCommandBuffers();
+	createSemaphores();
 }
 
 void InitVulkan::loop() {
 
-	//while(1){
+	while (!glfwWindowShouldClose(_window)) {
+		glfwPollEvents();
+		drawFrame();
+	}
+}
+void InitVulkan::drawFrame()
+{
+	uint32_t imageIndex;
+	vkAcquireNextImageKHR(_device, _swapchain, std::numeric_limits<uint64_t>::max(), _imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
-	//}
+	VkSubmitInfo submitInfo = {};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+	VkSemaphore waitSemaphores[] = { _imageAvailableSemaphore };
+
+	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+	submitInfo.waitSemaphoreCount = 1;
+	submitInfo.pWaitSemaphores = waitSemaphores;
+	submitInfo.pWaitDstStageMask = waitStages;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &_commandBuffers[imageIndex];
+
+	VkSemaphore signalSemaphores[] = { _renderFinishedSemaphore };
+	submitInfo.signalSemaphoreCount = 1;
+	submitInfo.pSignalSemaphores = signalSemaphores;
+
+	checkError(vkQueueSubmit(_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE),
+		"failed to submit draw command buffer!");
+
+	VkPresentInfoKHR presentInfo = {};
+	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+	presentInfo.waitSemaphoreCount = 1;
+	presentInfo.pWaitSemaphores = signalSemaphores;
+
+	VkSwapchainKHR swapChains[] = { _swapchain };
+	presentInfo.swapchainCount = 1;
+	presentInfo.pSwapchains = swapChains;
+	presentInfo.pImageIndices = &imageIndex;
+	presentInfo.pResults = nullptr; // Optional
+	vkQueuePresentKHR(_presentQueue, &presentInfo);
+
 }
 void DestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks* pAllocator) {
 	auto func = (PFN_vkDestroyDebugReportCallbackEXT) vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
@@ -78,8 +120,10 @@ void DestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT
 }
 InitVulkan::~InitVulkan() {
 
+	vkDestroySemaphore(_device, _renderFinishedSemaphore, nullptr);
+	vkDestroySemaphore(_device, _imageAvailableSemaphore, nullptr);
 	vkDestroyCommandPool(_device, _commandPool, nullptr);
-	for (auto &framebuffer : _swapChainFramebuffers) {
+	for (auto &framebuffer : _swapchainFrameBuffer) {
 		vkDestroyFramebuffer(_device, framebuffer, nullptr);
 	}
 	vkDestroyPipeline(_device, _graphicsPipeline, nullptr);
@@ -468,7 +512,7 @@ void InitVulkan::createImageViews()
 }
 
 
-VkShaderModule InitVulkan::createShaderModule(std::string const & code)
+VkShaderModule InitVulkan::createShaderModule(std::vector<char> const & code)
 { // RAII possible
 	VkShaderModuleCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -503,7 +547,7 @@ VkPipelineViewportStateCreateInfo createViewportPipeline(VkExtent2D const & swap
 {
 
 	//*********VIEW PORT*************
-	VkViewport viewport = {};
+	static VkViewport viewport = {};
 	viewport.x = 0.0f;
 	viewport.y = 0.0f;
 	viewport.width = (float)swapchainExtent.width;
@@ -511,7 +555,7 @@ VkPipelineViewportStateCreateInfo createViewportPipeline(VkExtent2D const & swap
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
 
-	VkRect2D scissor = {};
+	static VkRect2D scissor = {};
 	scissor.offset = { 0, 0 };
 	scissor.extent = swapchainExtent;
 
@@ -599,8 +643,8 @@ void InitVulkan::createPipelineLayout() // lot of parameter
 }
 void InitVulkan::createGraphicsPipeline()
 {
-	std::string vertex = utils::readFile("triangle.vert");
-	std::string fragment = utils::readFile("triangle.frag");
+	std::vector<char> vertex = utils::readFile("vert.spv");
+	std::vector<char> fragment = utils::readFile("frag.spv");
 
 	VkShaderModule vertexModule = createShaderModule(vertex);
 	VkShaderModule fragmentModule = createShaderModule(fragment);
@@ -640,7 +684,7 @@ void InitVulkan::createGraphicsPipeline()
 
 	/**can be factorised in function
 	*/
-	VkGraphicsPipelineCreateInfo pipelineInfo = {};
+	VkGraphicsPipelineCreateInfo pipelineInfo  {};
 	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 	pipelineInfo.stageCount = shaderStages.size();
 	pipelineInfo.pStages = shaderStages.data();
@@ -689,12 +733,22 @@ void InitVulkan::createRenderPass()
 	subpass.colorAttachmentCount = 1;
 	subpass.pColorAttachments = &colorAttachmentRef;
 
+	VkSubpassDependency dependency = {};
+	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+	dependency.dstSubpass = 0;
+	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.srcAccessMask = 0;
+	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
 	VkRenderPassCreateInfo renderPassInfo = {};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 	renderPassInfo.attachmentCount = 1;
 	renderPassInfo.pAttachments = &colorAttachment;
 	renderPassInfo.subpassCount = 1;
 	renderPassInfo.pSubpasses = &subpass;
+	renderPassInfo.dependencyCount = 1;
+	renderPassInfo.pDependencies = &dependency;
 
 
 	checkError(vkCreateRenderPass(_device, &renderPassInfo, nullptr, &_renderpass), 
@@ -742,6 +796,14 @@ void InitVulkan::createCommandPool()
 void InitVulkan::createCommandBuffers()
 {
 	_commandBuffers.resize(_swapchainFrameBuffer.size());
+	VkCommandBufferAllocateInfo allocInfo = {};
+	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	allocInfo.commandPool = _commandPool;
+	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	allocInfo.commandBufferCount = (uint32_t)_commandBuffers.size();
+
+	checkError (vkAllocateCommandBuffers(_device, &allocInfo, _commandBuffers.data()),
+		"failed to allocate command buffers!");
 	for (size_t i = 0; i < _commandBuffers.size(); i++) {
 		VkCommandBufferBeginInfo beginInfo = {};
 		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -773,4 +835,16 @@ void InitVulkan::createCommandBuffers()
 		
 	}
 
+}
+void InitVulkan::createSemaphores()
+{
+	VkSemaphoreCreateInfo semaphoreInfo {};
+	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+	checkError(vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_imageAvailableSemaphore),
+			"failed to create semaphores!");
+
+	checkError(vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_renderFinishedSemaphore),
+		"failed to create semaphores!");
+		
+	
 }

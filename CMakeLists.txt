@@ -6,14 +6,14 @@ find_package(Vulkan)
 #find_package(GLFW)
 
 add_definitions(-DGLFW_INCLUDE_VULKAN)
-
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
 if(UNIX)
 
 target_link_libraries(sandBox vulkan
 		glfw3 Xcursor -lX11 -lXxf86vm -lXrandr
 		-lpthread -lXi dl -lXi -lXinerama
 		utils)
-else()
+else() 
 	include_directories("./")
 	include_directories(BEFORE_SYSTEM "../lib/include")
 	include_directories(BEFORE_SYSTEM ${Vulkan_INCLUDE_DIRS} )

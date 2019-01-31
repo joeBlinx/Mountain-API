@@ -66,18 +66,23 @@ private:
 	VkQueue  _graphicsQueue;
 	VkQueue  _presentQueue;
 
+	VkSemaphore _imageAvailableSemaphore;
+	VkSemaphore _renderFinishedSemaphore;
+
 	void initWindow();
 	bool checkValidationLayerSupport();
 	void createInstance();
 	void createSurface();
 	void createSwapChain(); // there are some parameter
 	void createImageViews();
-	VkShaderModule createShaderModule(std::string const & code); 
+	VkShaderModule createShaderModule(std::vector<char> const & code);
 	void createGraphicsPipeline(); // multiple parameters but can surely be divide in some fucntions
 	void createPipelineLayout(); // lot of parameter
 	void createRenderPass();
 	void createCommandPool();
 	void createCommandBuffers();
+	void drawFrame();
+	void createSemaphores();
 
 	std::vector<char const * > getRequiredExtension(); //always same
 	void setUpDebugCallBack(); // always same
