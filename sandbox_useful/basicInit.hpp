@@ -22,13 +22,15 @@ private:
 	unsigned _width, _height;
 	VkInstance _instance;
 	VkSurfaceKHR _surface;
-
+	
+	VkDebugReportCallbackEXT _callback;
 
 	void initWindow(std::string_view title);
 	bool checkValidationLayerSupport();
 	std::vector<char const * > getRequiredExtension();
 	void createInstance(std::string_view title);
 	void createSurface();
+	void setUpDebugCallBack();
 
 };
 #endif

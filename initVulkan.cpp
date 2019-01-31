@@ -73,6 +73,7 @@ void InitVulkan::loop() {
 		glfwPollEvents();
 		drawFrame();
 	}
+	vkDeviceWaitIdle(_device);
 }
 void InitVulkan::drawFrame()
 {
@@ -110,6 +111,8 @@ void InitVulkan::drawFrame()
 	presentInfo.pImageIndices = &imageIndex;
 	presentInfo.pResults = nullptr; // Optional
 	vkQueuePresentKHR(_presentQueue, &presentInfo);
+
+	vkQueueWaitIdle(_presentQueue);
 
 }
 void DestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks* pAllocator) {
@@ -804,6 +807,7 @@ void InitVulkan::createCommandBuffers()
 
 	checkError (vkAllocateCommandBuffers(_device, &allocInfo, _commandBuffers.data()),
 		"failed to allocate command buffers!");
+
 	for (size_t i = 0; i < _commandBuffers.size(); i++) {
 		VkCommandBufferBeginInfo beginInfo = {};
 		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -840,6 +844,7 @@ void InitVulkan::createSemaphores()
 {
 	VkSemaphoreCreateInfo semaphoreInfo {};
 	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
 	checkError(vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_imageAvailableSemaphore),
 			"failed to create semaphores!");
 

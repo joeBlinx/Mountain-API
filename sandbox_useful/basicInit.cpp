@@ -11,6 +11,8 @@ _height(height)
 {
 	initWindow(title);
 	createInstance(title);
+	createSurface();
+	setUpDebugCallBack();
 }
 namespace {
 	void errorGLFW(int error, const char * msg) {
@@ -62,7 +64,26 @@ bool BasicInit::checkValidationLayerSupport() {
 	return layerFound;
 
 }
+VkResult CreateDebugReportCallbackEXT(VkInstance instance, const VkDebugReportCallbackCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugReportCallbackEXT* pCallback) {
+	auto func = (PFN_vkCreateDebugReportCallbackEXT) vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT");
+	if (func != nullptr) {
+		return func(instance, pCreateInfo, pAllocator, pCallback);
+	} else {
+		return VK_ERROR_EXTENSION_NOT_PRESENT;
+	}
+}
+void BasicInit::setUpDebugCallBack() {
 
+	if(!_enableValidationLayer) return;
+
+	VkDebugReportCallbackCreateInfoEXT info{};
+	info.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
+	info.pfnCallback = debugCallback;
+	info.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
+
+	checkError(CreateDebugReportCallbackEXT(_instance, &info, nullptr, &_callback),
+	"Failed to set up debug _callback");
+}
 void BasicInit::createInstance(std::string_view title)
 {
 	if (!checkValidationLayerSupport() && _enableValidationLayer) {
