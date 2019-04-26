@@ -4,7 +4,7 @@
 #include <string_view>
 #include "log.hpp"
 #include <iostream>
-
+#include <cstring>
 BasicInit::BasicInit(unsigned width, unsigned height, std::string_view title)
 :_width(width),
 _height(height)
@@ -15,9 +15,23 @@ _height(height)
 	setUpDebugCallBack();
 }
 namespace {
-	void errorGLFW(int error, const char * msg) {
+	void errorGLFW([[maybe_unused]] int error, const char * msg) {
 		utils::printError(msg);
 	}
+}
+static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+		[[maybe_unused]] VkDebugReportFlagsEXT flags,
+		[[maybe_unused]] VkDebugReportObjectTypeEXT objType,
+		[[maybe_unused]] uint64_t obj,
+		[[maybe_unused]] size_t location,
+		[[maybe_unused]] int32_t code,
+		[[maybe_unused]] const char* layerPrefix,
+		const char* msg,
+		[[maybe_unused]] void* userData) {
+
+	std::cerr << "validation layer: " << msg << std::endl;
+
+	return VK_FALSE;
 }
 std::vector<char const *> BasicInit::getRequiredExtension() {
 
@@ -31,6 +45,23 @@ std::vector<char const *> BasicInit::getRequiredExtension() {
 	}
 
 	return extensions;
+}
+void DestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks* pAllocator) {
+	auto func = (PFN_vkDestroyDebugReportCallbackEXT) vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
+	if (func != nullptr) {
+		func(instance, callback, pAllocator);
+	}
+}
+BasicInit::~BasicInit()
+{
+
+	if (_enableValidationLayer) {
+		DestroyDebugReportCallbackEXT(_instance, _callback, nullptr);
+	}
+	vkDestroySurfaceKHR(_instance, _surface, nullptr);
+	vkDestroyInstance(_instance, nullptr);
+	glfwDestroyWindow(_window);
+	glfwTerminate();
 }
 
 void BasicInit::initWindow(std::string_view title) {
@@ -74,7 +105,7 @@ VkResult CreateDebugReportCallbackEXT(VkInstance instance, const VkDebugReportCa
 }
 void BasicInit::setUpDebugCallBack() {
 
-	if(!_enableValidationLayer) return;
+	if constexpr (!_enableValidationLayer) return;
 
 	VkDebugReportCallbackCreateInfoEXT info{};
 	info.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;

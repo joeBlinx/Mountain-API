@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <vulkan/vulkan.h>
+#include <string_view>
 struct GLFWwindow;
 struct BasicInit
 {
@@ -18,6 +19,7 @@ private:
 #else
 	 static bool constexpr _enableValidationLayer = true;
 #endif
+
 	GLFWwindow * _window;
 	unsigned _width, _height;
 	VkInstance _instance;

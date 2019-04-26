@@ -1,46 +1,38 @@
-cmake_minimum_required(VERSION 3.12)
-project(sandBox)
-
-set(CMAKE_CXX_STANDARD 17)
-find_package(Vulkan)
-#find_package(GLFW)
-
-add_definitions(-DGLFW_INCLUDE_VULKAN)
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
-if(UNIX)
-
-target_link_libraries(sandBox vulkan
-		glfw3 Xcursor -lX11 -lXxf86vm -lXrandr
-		-lpthread -lXi dl -lXi -lXinerama
-		utils)
-else() 
-	include_directories("./")
-	include_directories(BEFORE_SYSTEM "../lib/include")
-	include_directories(BEFORE_SYSTEM ${Vulkan_INCLUDE_DIRS} )
-
-	link_directories("../lib/bin")
-	link_directories(${Vulkan_LIBRARY} )
-	message(${Vulkan_LIBRARY}  )
-
-endif()
+cmake_minimum_required(VERSION 3.10)
+project(sandBox
+		LANGUAGES CXX)
 
 
-add_executable(sandBox main.cpp 
-						initVulkan.cpp initVulkan.hpp 
-						log.cpp log.hpp
-						utils.hpp
-						utils.cpp
-						sandbox_useful/basicInit.hpp
-						sandbox_useful/basicInit.cpp)
+find_package(Vulkan REQUIRED)
+find_package(glfw3 REQUIRED)
 
-						
+set(OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/executable)
 
-if(UNIX)
+add_executable(sandBox 	src/main.cpp
+		src/initVulkan.cpp include/initVulkan.hpp
+		src/log.cpp include/log.hpp
+		include/utils.hpp src/utils.cpp
+		sandbox_useful/basicInit.hpp
+		sandbox_useful/basicInit.cpp
+		)
 
-target_link_libraries(sandBox vulkan
-		glfw3 Xcursor -lX11 -lXxf86vm -lXrandr
-		-lpthread -lXi dl -lXi -lXinerama
-		utils)
-else()
-	target_link_libraries(sandBox glfw3 ${Vulkan_LIBRARY})
-endif()
+set_target_properties(${PROJECT_NAME}
+		PROPERTIES
+		CXX_STANDARD 17
+		CXX_EXTENSIONS OFF
+		RUNTIME_OUTPUT_DIRECTORY  ${OUTPUT_DIRECTORY})
+
+add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD COMMAND ${CMAKE_COMMAND}
+		-E make_directory ${OUTPUT_DIRECTORY})
+
+add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD COMMAND ${PROJECT_SOURCE_DIR}/compile.sh
+		${PROJECT_SOURCE_DIR}/shader ${PROJECT_SOURCE_DIR}/executable ${OUTPUT_DIRECTORY})
+
+target_compile_definitions(${PROJECT_NAME} PUBLIC -DGLFW_INCLUDE_VULKAN)
+
+target_include_directories(${PROJECT_NAME} PRIVATE include)
+
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -pedantic -Wextra)
+
+target_link_libraries(${PROJECT_NAME} Vulkan::Vulkan glfw)
+

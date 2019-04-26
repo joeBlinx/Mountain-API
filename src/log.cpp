@@ -2,7 +2,7 @@
 // Created by joe on 05/08/18.
 //
 
-#include "log.hpp"
+#include "../include/log.hpp"
 #include <stdexcept>
 #include <string>
 #include <map>
@@ -40,7 +40,7 @@ std::map<int, std::string> VkResultStr{
    {enumToStr(VK_RESULT_RANGE_SIZE ) },
    {enumToStr(VK_RESULT_MAX_ENUM ) }
 };
-void checkError(VkResult result, std::string log){
+void checkError(VkResult result, const std::string& log){
 	if(result != VK_SUCCESS){
 		throw std::runtime_error(log + " error is:" + VkResultStr[result]);
 	}

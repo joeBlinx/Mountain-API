@@ -8,7 +8,7 @@
 #include <vulkan/vulkan.h>
 #include <iosfwd>
 #include <string>
-void checkError(VkResult result, std::string log);
+void checkError(VkResult result,  std::string const& log);
 
 
 
