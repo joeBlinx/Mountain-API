@@ -1,14 +1,24 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14)
 project(sandBox
 		LANGUAGES CXX)
-
+include(FetchContent)
+FetchContent_Declare(
+		glfw_content
+		GIT_REPOSITORY https://github.com/glfw/glfw.git
+		GIT_TAG        3.3
+)
 
 find_package(Vulkan REQUIRED)
-find_package(glfw3 REQUIRED)
+find_package(glfw3)
+
+if ( NOT TARGET glfw)
+	message(glfw is not on your system so it will be download in the build folder)
+	FetchContent_MakeAvailable(glfw_content)
+endif()
 
 set(OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/executable)
 
-add_executable(sandBox 	src/main.cpp
+add_executable(${PROJECT_NAME} 	src/main.cpp
 		src/initVulkan.cpp include/initVulkan.hpp
 		src/log.cpp include/log.hpp
 		include/utils.hpp src/utils.cpp

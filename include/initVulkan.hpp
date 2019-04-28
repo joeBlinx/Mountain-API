@@ -28,7 +28,8 @@ struct SwapChainSupportDetails
 struct InitVulkan {
 
 	InitVulkan(int width, int height);
-	void loop();
+	InitVulkan(VkInstance instance, VkSurfaceKHR surface);
+	void loop(GLFWwindow *window);
 	~InitVulkan();
 
 private:
@@ -69,10 +70,7 @@ private:
 	VkSemaphore _imageAvailableSemaphore;
 	VkSemaphore _renderFinishedSemaphore;
 
-	void initWindow();
-	bool checkValidationLayerSupport();
-	void createInstance();
-	void createSurface();
+
 	void createSwapChain(); // there are some parameter
 	void createImageViews();
 	VkShaderModule createShaderModule(std::vector<char> const & code);
@@ -84,8 +82,6 @@ private:
 	void drawFrame();
 	void createSemaphores();
 
-	std::vector<char const * > getRequiredExtension(); //always same
-	void setUpDebugCallBack(); // always same
 	bool isDeviceSuitable(VkPhysicalDevice device);
 	bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 	void pickUpPhysicalDevice();

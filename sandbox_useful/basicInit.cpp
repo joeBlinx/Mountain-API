@@ -14,11 +14,11 @@ _height(height)
 	createSurface();
 	setUpDebugCallBack();
 }
-namespace {
-	void errorGLFW([[maybe_unused]] int error, const char * msg) {
-		utils::printError(msg);
-	}
+
+void errorGLFW([[maybe_unused]] int error, const char * msg) {
+	utils::printError(msg);
 }
+
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 		[[maybe_unused]] VkDebugReportFlagsEXT flags,
 		[[maybe_unused]] VkDebugReportObjectTypeEXT objType,
@@ -52,6 +52,7 @@ void DestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT
 		func(instance, callback, pAllocator);
 	}
 }
+
 BasicInit::~BasicInit()
 {
 

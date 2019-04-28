@@ -10,6 +10,10 @@ struct BasicInit
 
 	BasicInit(unsigned width, unsigned height, std::string_view title);
 	~BasicInit();
+	VkInstance get_vk_instance(){return _instance;}
+	VkSurfaceKHR get_vk_surface(){return _surface;}
+	GLFWwindow * get_window() {return _window;}
+
 private:
 	 std::vector<const char*> const _validationLayers = {
 			"VK_LAYER_LUNARG_standard_validation"
