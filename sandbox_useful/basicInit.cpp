@@ -5,7 +5,7 @@
 #include "log.hpp"
 #include <iostream>
 #include <cstring>
-BasicInit::BasicInit(unsigned width, unsigned height, std::string_view title)
+BasicInit::BasicInit(int width, int height, std::string_view title)
 :_width(width),
 _height(height)
 {

@@ -8,7 +8,7 @@ struct GLFWwindow;
 struct BasicInit
 {
 
-	BasicInit(unsigned width, unsigned height, std::string_view title);
+	BasicInit(int width, int height, std::string_view title);
 	~BasicInit();
 	VkInstance get_vk_instance(){return _instance;}
 	VkSurfaceKHR get_vk_surface(){return _surface;}

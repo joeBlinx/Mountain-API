@@ -24,7 +24,7 @@ add_executable(${PROJECT_NAME} 	src/main.cpp
 		include/utils.hpp src/utils.cpp
 		sandbox_useful/basicInit.hpp
 		sandbox_useful/basicInit.cpp
-		)
+		sandbox_useful/device.cpp sandbox_useful/device.hpp sandbox_useful/swapChain.cpp sandbox_useful/swapChain.hpp)
 
 set_target_properties(${PROJECT_NAME}
 		PROPERTIES

@@ -8,6 +8,7 @@
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
 #include <vector>
+#include "../sandbox_useful/device.hpp"
 
 struct QueueFamilyIndices{
 	static int constexpr numberQueue = 1;
@@ -26,9 +27,10 @@ struct SwapChainSupportDetails
 	std::vector <VkPresentModeKHR> presentModes;
 };
 struct InitVulkan {
-
 	InitVulkan(int width, int height);
-	InitVulkan(VkInstance instance, VkSurfaceKHR surface);
+	InitVulkan(VkInstance instance, VkSurfaceKHR surface, VkDevice device, VkQueue graphics, VkQueue present,
+			   VkPhysicalDevice physics, VkSwapchainKHR swap_chain, std::vector<VkImageView> const &image_views,
+			   VkExtent2D extent, VkFormat format, Device::QueueFamilyIndices const &indices);
 	void loop(GLFWwindow *window);
 	~InitVulkan();
 
@@ -45,7 +47,6 @@ private:
 	static bool constexpr _enableValidationLayer = true;
 #endif
 	int _width, _height;
-	GLFWwindow *_window;
 	VkInstance _instance;
 	VkSurfaceKHR _surface;
 	VkSwapchainKHR _swapchain;
@@ -53,10 +54,9 @@ private:
 	std::vector<VkImageView> _swapChainImageViews;
 	VkFormat _swapChainImageFormat;
 	VkExtent2D _swapChainExtent;
-	VkDebugReportCallbackEXT _callback;
 	VkPhysicalDevice _physicalDevice = 	VK_NULL_HANDLE;
 	VkDevice _device;
-	QueueFamilyIndices _indices;
+	Device::QueueFamilyIndices _indices;
 	VkPipelineLayout _pipelineLayout;
 	VkRenderPass _renderpass;
 	VkPipeline _graphicsPipeline;
@@ -82,15 +82,12 @@ private:
 	void drawFrame();
 	void createSemaphores();
 
-	bool isDeviceSuitable(VkPhysicalDevice device);
-	bool checkDeviceExtensionSupport(VkPhysicalDevice device);
-	void pickUpPhysicalDevice();
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 	VkSurfaceFormatKHR chooseSwapSurfaceFormat(std::vector<VkSurfaceFormatKHR> const & availableFormat); //always same
 	VkPresentModeKHR chooseSwapPresentMode(std::vector<VkPresentModeKHR> const & availablePresentModes);//always same
 	VkExtent2D chooseSwapExtent(VkSurfaceCapabilitiesKHR const& capabilities); // always same
-	void createLogicalDevice();
+
 	void createFrameBuffers();
 };
 
