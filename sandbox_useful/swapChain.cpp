@@ -6,7 +6,7 @@
 #include <log.hpp>
 #include "swapChain.hpp"
 #include "device.hpp"
-
+#include  <algorithm>
 VkSurfaceFormatKHR chooseSwapSurfaceFormat(std::vector<VkSurfaceFormatKHR> const & available_formats)
 {
 	if (available_formats.size() == 1 && available_formats[0].format == VK_FORMAT_UNDEFINED) {

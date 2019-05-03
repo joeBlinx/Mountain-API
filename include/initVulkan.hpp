@@ -71,8 +71,6 @@ private:
 	VkSemaphore _renderFinishedSemaphore;
 
 
-	void createSwapChain(); // there are some parameter
-	void createImageViews();
 	VkShaderModule createShaderModule(std::vector<char> const & code);
 	void createGraphicsPipeline(); // multiple parameters but can surely be divide in some fucntions
 	void createPipelineLayout(); // lot of parameter
@@ -82,11 +80,6 @@ private:
 	void drawFrame();
 	void createSemaphores();
 
-	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
-	VkSurfaceFormatKHR chooseSwapSurfaceFormat(std::vector<VkSurfaceFormatKHR> const & availableFormat); //always same
-	VkPresentModeKHR chooseSwapPresentMode(std::vector<VkPresentModeKHR> const & availablePresentModes);//always same
-	VkExtent2D chooseSwapExtent(VkSurfaceCapabilitiesKHR const& capabilities); // always same
 
 	void createFrameBuffers();
 };

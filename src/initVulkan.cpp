@@ -18,8 +18,7 @@
 InitVulkan::InitVulkan(int width, int height) : _width(width),
 												_height(height) {
 
-//	createSwapChain();
-//	createImageViews();
+
 	createRenderPass();
 	createPipelineLayout();
 	createGraphicsPipeline();
