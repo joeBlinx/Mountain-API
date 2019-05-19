@@ -3,6 +3,7 @@
 #include "../sandbox_useful/basicInit.hpp"
 #include "../sandbox_useful/device.hpp"
 #include "../sandbox_useful/swapChain.hpp"
+#include "../sandbox_useful/renderpass/renderPass.hpp"
 
 int main() {
 	const std::vector<const char*> validationLayers {
@@ -14,6 +15,7 @@ int main() {
 
 	int constexpr width = 1366;
 	int constexpr height = 768;
+
 	BasicInit basic_init{width, height, "test"};
 
 
@@ -34,6 +36,9 @@ int main() {
 			height
 	};
 
+	RenderPass render_pass = RenderPass::create<SubPass{subpass_attachment::COLOR}>(
+			device.get_device(), swap_chain.get_swap_chain_image_format());
+
 	InitVulkan init(
 			basic_init.get_vk_instance(),
 			basic_init.get_vk_surface(),
@@ -45,7 +50,8 @@ int main() {
 			swap_chain.get_swap_chain_image_views(),
 			swap_chain.get_swap_chain_extent(),
 			swap_chain.get_swap_chain_image_format(),
-			device.get_queue_family_indice());
+			device.get_queue_family_indice(),
+			render_pass.get_renderpass());
 
 
 	init.loop(basic_init.get_window());

@@ -10,27 +10,12 @@
 #include <vector>
 #include "../sandbox_useful/device.hpp"
 
-struct QueueFamilyIndices{
-	static int constexpr numberQueue = 1;
-	int graphicsFamily = -1;
-	int presentFamily = -1;
-
-	bool isComplete(){
-		return graphicsFamily >=0  && presentFamily >= 0;
-	}
-};
-
-struct SwapChainSupportDetails
-{
-	VkSurfaceCapabilitiesKHR capabilities;
-	std::vector<VkSurfaceFormatKHR> formats;
-	std::vector <VkPresentModeKHR> presentModes;
-};
 struct InitVulkan {
 	InitVulkan(int width, int height);
-	InitVulkan(VkInstance instance, VkSurfaceKHR surface, VkDevice device, VkQueue graphics, VkQueue present,
-			   VkPhysicalDevice physics, VkSwapchainKHR swap_chain, std::vector<VkImageView> const &image_views,
-			   VkExtent2D extent, VkFormat format, Device::QueueFamilyIndices const &indices);
+	InitVulkan(VkInstance instance, VkSurfaceKHR surface, VkDevice device, VkQueue graphics,
+			   VkQueue present, VkPhysicalDevice physics, VkSwapchainKHR swap_chain,
+			   std::vector<VkImageView> const &image_views, VkExtent2D extent, VkFormat format,
+			   Device::QueueFamilyIndices const &indices, VkRenderPass renderpass);
 	void loop(GLFWwindow *window);
 	~InitVulkan();
 
@@ -50,7 +35,7 @@ private:
 	VkInstance _instance;
 	VkSurfaceKHR _surface;
 	VkSwapchainKHR _swapchain;
-	std::vector<VkImage> _swapChainImages;
+
 	std::vector<VkImageView> _swapChainImageViews;
 	VkFormat _swapChainImageFormat;
 	VkExtent2D _swapChainExtent;
@@ -58,21 +43,19 @@ private:
 	VkDevice _device;
 	Device::QueueFamilyIndices _indices;
 	VkPipelineLayout _pipelineLayout;
-	VkRenderPass _renderpass;
 	VkPipeline _graphicsPipeline;
 	std::vector<VkFramebuffer> _swapchainFrameBuffer;
 	VkCommandPool _commandPool;
 	std::vector<VkCommandBuffer> _commandBuffers;
-
 	VkQueue  _graphicsQueue;
+
 	VkQueue  _presentQueue;
+	VkRenderPass _renderpass;
 
 	VkSemaphore _imageAvailableSemaphore;
 	VkSemaphore _renderFinishedSemaphore;
 
 
-	void createSwapChain(); // there are some parameter
-	void createImageViews();
 	VkShaderModule createShaderModule(std::vector<char> const & code);
 	void createGraphicsPipeline(); // multiple parameters but can surely be divide in some fucntions
 	void createPipelineLayout(); // lot of parameter
@@ -81,12 +64,6 @@ private:
 	void createCommandBuffers();
 	void drawFrame();
 	void createSemaphores();
-
-	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
-	VkSurfaceFormatKHR chooseSwapSurfaceFormat(std::vector<VkSurfaceFormatKHR> const & availableFormat); //always same
-	VkPresentModeKHR chooseSwapPresentMode(std::vector<VkPresentModeKHR> const & availablePresentModes);//always same
-	VkExtent2D chooseSwapExtent(VkSurfaceCapabilitiesKHR const& capabilities); // always same
 
 	void createFrameBuffers();
 };

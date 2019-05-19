@@ -88,7 +88,7 @@ InitVulkan::~InitVulkan() {
 	}
 	vkDestroyPipeline(_device, _graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(_device, _pipelineLayout, nullptr);
-	vkDestroyRenderPass(_device, _renderpass, nullptr);
+//	vkDestroyRenderPass(_device, _renderpass, nullptr);
 
 }
 
@@ -258,7 +258,7 @@ void InitVulkan::createGraphicsPipeline()
 
 	// DEPTH AND STENCIL
 
-	// COLOR
+	// COLOR_RENDERING
 	VkPipelineColorBlendAttachmentState colorBlendAttachement = createColorBlendAttachement();
 	VkPipelineColorBlendStateCreateInfo colorBlending = createColorBlendState(colorBlendAttachement);
 
@@ -433,9 +433,10 @@ void InitVulkan::createSemaphores()
 
 }
 
-InitVulkan::InitVulkan(VkInstance instance, VkSurfaceKHR surface, VkDevice device, VkQueue graphics, VkQueue present,
-					   VkPhysicalDevice physics, VkSwapchainKHR swap_chain, std::vector<VkImageView> const &image_views,
-					   VkExtent2D extent, VkFormat format, Device::QueueFamilyIndices const &indices)
+InitVulkan::InitVulkan(VkInstance instance, VkSurfaceKHR surface, VkDevice device, VkQueue graphics,
+					   VkQueue present, VkPhysicalDevice physics, VkSwapchainKHR swap_chain,
+					   std::vector<VkImageView> const &image_views, VkExtent2D extent, VkFormat format,
+					   Device::QueueFamilyIndices const &indices, VkRenderPass renderpass)
 		: _instance(instance), _surface(surface),
 		  _swapchain(swap_chain),
 		  _swapChainImageViews(image_views),
@@ -445,12 +446,13 @@ InitVulkan::InitVulkan(VkInstance instance, VkSurfaceKHR surface, VkDevice devic
 		  _device(device),
 		  _indices(indices),
 		  _graphicsQueue(graphics),
-		  _presentQueue(present){
+		  _presentQueue(present),
+		  _renderpass(renderpass){
 	_width = 1366;
 	_height = 768;
 
 
-	createRenderPass();
+//	createRenderPass();
 	createPipelineLayout();
 	createGraphicsPipeline();
 	createFrameBuffers();
