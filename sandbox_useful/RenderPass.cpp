@@ -12,7 +12,7 @@ RenderPass::RenderPass(const VkFormat &_swap_chain_image_format) {
     colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR; //-> no option because we clear and draw
     colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;// ->need to read info to no option
     colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;// -> can change
-    colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;// -> can change 
+    colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;// -> can change
     colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 

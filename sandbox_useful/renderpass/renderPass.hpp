@@ -54,30 +54,40 @@ constexpr VkImageLayout get_corresponding_attachment<(unsigned)subpass_attachmen
 	return get_corresponding_attachment<(unsigned)subpass_attachment::DEPTH>();
 }
 template<unsigned attach>
-constexpr VkAttachmentDescription fill_attachment(VkAttachmentDescription &attachement)
+constexpr VkAttachmentDescription
+fill_attachment(VkAttachmentDescription &attachement, VkFormat &color, VkFormat &depth)
 {
 	return attachement;
 }
 
 template<>
-constexpr VkAttachmentDescription fill_attachment<(unsigned)subpass_attachment::COLOR>(VkAttachmentDescription &attachement)
+constexpr VkAttachmentDescription
+fill_attachment<(unsigned)subpass_attachment::COLOR>(VkAttachmentDescription &attachement, VkFormat &color,
+                                                     VkFormat &)
 {
 	attachement.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	attachement.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 	attachement.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    attachement.format = color;
 	return attachement;
 }
 
 template<>
-constexpr VkAttachmentDescription fill_attachment<(unsigned)subpass_attachment::DEPTH>(VkAttachmentDescription &attachement)
+constexpr VkAttachmentDescription
+fill_attachment<(unsigned)subpass_attachment::DEPTH>(VkAttachmentDescription &attachement, VkFormat& color,
+                                                     VkFormat &depth)
 {
-	fill_attachment<(unsigned)subpass_attachment::COLOR>(attachement);
+    fill_attachment<(unsigned) subpass_attachment::COLOR>(attachement, color, depth);
 	attachement.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+    attachement.format = depth;
 	return attachement;
 }
 template<>
-constexpr VkAttachmentDescription fill_attachment<(unsigned)subpass_attachment::STENCIL>(VkAttachmentDescription &attachement)
+constexpr VkAttachmentDescription
+fill_attachment<(unsigned)subpass_attachment::STENCIL>(VkAttachmentDescription &attachement, VkFormat&,
+                                                       VkFormat& depth)
 {
+    attachement.format = depth;
 	attachement.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	attachement.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	attachement.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
@@ -121,13 +131,14 @@ constexpr decltype(auto) apply_for_all_case( Args &...args)
 template<unsigned N>
 struct wrapper
 {
-	constexpr VkAttachmentDescription operator()(VkAttachmentDescription & attachmentDescription)
+	constexpr VkAttachmentDescription
+    operator()(VkAttachmentDescription &attachmentDescription, VkFormat &color, VkFormat &depth)
 	{
-		return fill_attachment<N>(attachmentDescription);
+		return fill_attachment<N>(attachmentDescription, color, depth);
 	}
 };
 template<SubPass... attachment>
-constexpr std::array<VkAttachmentDescription, sizeof...(attachment)> fill_attachments()
+constexpr std::array<VkAttachmentDescription, sizeof...(attachment)> fill_attachments, VkFormat &color, VkFormat &depth)
 {
 	VkAttachmentDescription attachment_desc{
 			.flags = 0,
@@ -143,14 +154,14 @@ constexpr std::array<VkAttachmentDescription, sizeof...(attachment)> fill_attach
 
 
 
-	return {apply_for_all_case<attachment, wrapper>(attachment_desc)...};
+	return {apply_for_all_case<attachment, wrapper>(attachment_desc, color, depth)...};
 }
 template<SubPass... attachment>
 RenderPass RenderPass::create(VkDevice device, VkFormat const &swap_chain_image_format) {
 
 	constexpr auto all_attachment_ref = pack<attachment.attachment...>();
-	auto attachments_desc = fill_attachments<attachment...>();
-	attachments_desc[0].format = swap_chain_image_format;
+	constexpr auto attachments_desc = fill_attachments<attachment...>(swap_chain_image_format, swap_chain_image_format);
+
 //	VkAttachmentDescription colorAttachment = {};
 //	colorAttachment.format = swap_chain_image_format;
 //	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
