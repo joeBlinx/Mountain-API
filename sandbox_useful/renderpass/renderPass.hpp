@@ -9,6 +9,7 @@
 #include <vulkan/vulkan.h>
 #include <array>
 #include <log.hpp>
+#include <utility>
 enum subpass_attachment: unsigned {
 	COLOR = 1u,
 	DEPTH = 1u << 2u,
@@ -17,7 +18,8 @@ enum subpass_attachment: unsigned {
 
 struct SubPass
 {
-	unsigned attachment; // must be filled with subpass_attachment
+	bool attachment_color; // must be filled with subpass_attachment
+    unsigned attachment_depth_stencil = 0; // must be filled with subpass_attachment
 };
 struct RenderPass {
 	~RenderPass();
@@ -55,15 +57,15 @@ constexpr VkImageLayout get_corresponding_attachment<(unsigned)subpass_attachmen
 }
 template<unsigned attach>
 constexpr VkAttachmentDescription
-fill_attachment(VkAttachmentDescription &attachement, VkFormat &color, VkFormat &depth)
+fill_attachment(VkAttachmentDescription &attachement, VkFormat const&, VkFormat const&)
 {
 	return attachement;
 }
 
 template<>
 constexpr VkAttachmentDescription
-fill_attachment<(unsigned)subpass_attachment::COLOR>(VkAttachmentDescription &attachement, VkFormat &color,
-                                                     VkFormat &)
+fill_attachment<(unsigned)subpass_attachment::COLOR>(VkAttachmentDescription &attachement, VkFormat const&color,
+                                                     VkFormat const&)
 {
 	attachement.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	attachement.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -74,18 +76,19 @@ fill_attachment<(unsigned)subpass_attachment::COLOR>(VkAttachmentDescription &at
 
 template<>
 constexpr VkAttachmentDescription
-fill_attachment<(unsigned)subpass_attachment::DEPTH>(VkAttachmentDescription &attachement, VkFormat& color,
-                                                     VkFormat &depth)
+fill_attachment<(unsigned)subpass_attachment::DEPTH>(VkAttachmentDescription &attachement, VkFormat const&,
+                                                     VkFormat const&depth)
 {
-    fill_attachment<(unsigned) subpass_attachment::COLOR>(attachement, color, depth);
+    attachement.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    attachement.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	attachement.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
     attachement.format = depth;
 	return attachement;
 }
 template<>
 constexpr VkAttachmentDescription
-fill_attachment<(unsigned)subpass_attachment::STENCIL>(VkAttachmentDescription &attachement, VkFormat&,
-                                                       VkFormat& depth)
+fill_attachment<(unsigned)subpass_attachment::STENCIL>(VkAttachmentDescription &attachement, VkFormat const&,
+                                                       VkFormat const& depth)
 {
     attachement.format = depth;
 	attachement.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -123,22 +126,24 @@ constexpr std::array<VkAttachmentReference, sizeof...(references)> pack()
 template<SubPass subpass, template <unsigned> class Function, class ... Args>
 constexpr decltype(auto) apply_for_all_case( Args &...args)
 {
-	Function<subpass.attachment & subpass_attachment::COLOR>()(args...);
-	Function<subpass.attachment & subpass_attachment::DEPTH>()(args...);
-	return 	Function<subpass.attachment & subpass_attachment::STENCIL>()(args...);
+	auto color = Function<subpass.attachment_color & subpass_attachment::COLOR>()(args...);
+	Function<subpass.attachment_depth_stencil & subpass_attachment::DEPTH>()(args...);
+	return std::pair{color, Function<subpass.attachment_depth_stencil & subpass_attachment::STENCIL>()(args...)};
 
 }
 template<unsigned N>
 struct wrapper
 {
 	constexpr VkAttachmentDescription
-    operator()(VkAttachmentDescription &attachmentDescription, VkFormat &color, VkFormat &depth)
+    operator()(VkAttachmentDescription &attachmentDescription, VkFormat const& color, VkFormat const& depth)
 	{
 		return fill_attachment<N>(attachmentDescription, color, depth);
 	}
 };
 template<SubPass... attachment>
-constexpr std::array<VkAttachmentDescription, sizeof...(attachment)> fill_attachments, VkFormat &color, VkFormat &depth)
+constexpr
+std::array<std::pair<VkAttachmentDescription, VkAttachmentDescription> , sizeof...(attachment)>
+        fill_attachments (VkFormat const &color, VkFormat const &depth)
 {
 	VkAttachmentDescription attachment_desc{
 			.flags = 0,
@@ -159,8 +164,8 @@ constexpr std::array<VkAttachmentDescription, sizeof...(attachment)> fill_attach
 template<SubPass... attachment>
 RenderPass RenderPass::create(VkDevice device, VkFormat const &swap_chain_image_format) {
 
-	constexpr auto all_attachment_ref = pack<attachment.attachment...>();
-	constexpr auto attachments_desc = fill_attachments<attachment...>(swap_chain_image_format, swap_chain_image_format);
+	//constexpr auto all_attachment_ref = pack<attachment.attachment...>();
+    auto attachments_desc = fill_attachments<attachment...>(swap_chain_image_format, swap_chain_image_format);
 
 //	VkAttachmentDescription colorAttachment = {};
 //	colorAttachment.format = swap_chain_image_format;
@@ -193,7 +198,7 @@ RenderPass RenderPass::create(VkDevice device, VkFormat const &swap_chain_image_
 	VkRenderPassCreateInfo renderPassInfo = {};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 	renderPassInfo.attachmentCount = attachments_desc.size();
-	renderPassInfo.pAttachments = attachments_desc.data();
+	renderPassInfo.pAttachments = reinterpret_cast<VkAttachmentDescription*>(attachments_desc.data());
 	renderPassInfo.subpassCount = 1;
 	renderPassInfo.pSubpasses = &subpass;
 	renderPassInfo.dependencyCount = 1;
