@@ -95,10 +95,9 @@ bool is_device_suitable(VkPhysicalDevice device, VkQueueFlagBits queue_flag,
 }
 
 Device::~Device() {
-	vkDestroyDevice(_device, nullptr);
 }
 
-void Device::pick_up_physical_device(VkInstance instance, VkQueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension,
+void Device::pick_up_physical_device(vk::Instance instance, VkQueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension,
 									 VkSurfaceKHR surface) {
 	uint32_t count ;
 	vkEnumeratePhysicalDevices(instance, &count, nullptr);
@@ -157,7 +156,7 @@ void Device::create_logical_device(std::vector<char const *> const &devicesExten
 	vkGetDeviceQueue(_device, _indices.present_family, 0, &_present_queue);
 }
 
-Device::Device(VkInstance instance, VkQueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension,
+Device::Device(vk::Instance instance, VkQueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension,
 			   VkSurfaceKHR surface, std::vector<const char *> const &validationLayers){
 	pick_up_physical_device(instance, queue_flag, devicesExtension, surface);
 

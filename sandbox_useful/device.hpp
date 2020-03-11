@@ -5,12 +5,12 @@
 #ifndef SANDBOX_DEVICE_HPP
 #define SANDBOX_DEVICE_HPP
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan.hpp>
 #include <vector>
 
 struct Device {
 
-	Device(VkInstance instance, VkQueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension,
+	Device(vk::Instance instance, VkQueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension,
 		   VkSurfaceKHR surface, std::vector<const char *> const &validationLayers);
 	~Device();
 	struct QueueFamilyIndices{
@@ -47,7 +47,7 @@ private:
 
 	SwapChainSupportDetails _swap_chain_details;
 
-	void pick_up_physical_device(VkInstance instance, VkQueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension,
+	void pick_up_physical_device(vk::Instance instance, VkQueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension,
 								 VkSurfaceKHR surface);
 	void create_logical_device(std::vector<char const *> const &devicesExtension,
 							   std::vector<const char *> const &validationLayers);

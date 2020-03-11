@@ -122,16 +122,14 @@ void BasicInit::createInstance(std::string_view title)
 		utils::printFatalError("validation layer requested but not available");
 	}
 
-	VkApplicationInfo info{};
-	info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+	vk::ApplicationInfo info{};
 	info.pApplicationName = title.data();
 	info.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 	info.pEngineName = "No Engine";
 	info.engineVersion = VK_MAKE_VERSION(1, 0, 0);
 	info.apiVersion = VK_API_VERSION_1_0;
 
-	VkInstanceCreateInfo instanceinfo{};
-	instanceinfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+	vk::InstanceCreateInfo instanceinfo{};
 	instanceinfo.pApplicationInfo = &info;
 
 	std::vector<const char *> extensions(getRequiredExtension());
@@ -144,10 +142,7 @@ void BasicInit::createInstance(std::string_view title)
 		instanceinfo.enabledLayerCount = static_cast<uint32_t>(_validationLayers.size());
 		instanceinfo.ppEnabledLayerNames = _validationLayers.data();
 	}
-
-	checkError(vkCreateInstance(&instanceinfo, nullptr, &_instance),
-		"failed to create Instance");
-
+	_instance = vk::createInstance(instanceinfo); 
 	uint32_t extensionCount = 0;
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
 	std::vector<VkExtensionProperties> extensionsProperties(extensionCount);

@@ -2,7 +2,7 @@
 #define BASIC_INIT_HPP
 
 #include <vector>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan.hpp>
 #include <string_view>
 struct GLFWwindow;
 struct BasicInit
@@ -10,7 +10,7 @@ struct BasicInit
 
 	BasicInit(int width, int height, std::string_view title);
 	~BasicInit();
-	VkInstance get_vk_instance(){return _instance;}
+	vk::Instance get_vk_instance(){return _instance;}
 	VkSurfaceKHR get_vk_surface(){return _surface;}
 	GLFWwindow * get_window() {return _window;}
 
@@ -26,7 +26,7 @@ private:
 
 	GLFWwindow * _window;
 	unsigned _width, _height;
-	VkInstance _instance;
+	vk::Instance _instance;
 	VkSurfaceKHR _surface;
 	
 	VkDebugReportCallbackEXT _callback;
