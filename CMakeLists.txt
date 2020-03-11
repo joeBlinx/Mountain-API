@@ -12,11 +12,9 @@ find_package(Vulkan REQUIRED)
 find_package(glfw3)
 
 if ( NOT TARGET glfw)
-	message(glfw is not on your system so it will be download in the build folder)
+	message("glfw is not on your system so it will be download in the build folder")
 	FetchContent_MakeAvailable(glfw_content)
 endif()
-
-set(OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/executable)
 
 add_executable(${PROJECT_NAME} 	src/main.cpp
 		src/initVulkan.cpp include/initVulkan.hpp
@@ -30,13 +28,10 @@ set_target_properties(${PROJECT_NAME}
 		PROPERTIES
 		CXX_STANDARD 20
 		CXX_EXTENSIONS OFF
-		RUNTIME_OUTPUT_DIRECTORY  ${OUTPUT_DIRECTORY})
-
-add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD COMMAND ${CMAKE_COMMAND}
-		-E make_directory ${OUTPUT_DIRECTORY})
+		)
 
 add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD COMMAND ${PROJECT_SOURCE_DIR}/compile.sh
-		${PROJECT_SOURCE_DIR}/shader ${PROJECT_SOURCE_DIR}/executable ${OUTPUT_DIRECTORY})
+	${PROJECT_SOURCE_DIR}/shader ${${PROJECT_NAME}_BINARY_DIR} ${${PROJECT_NAME}_BINARY_DIR})
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC -DGLFW_INCLUDE_VULKAN)
 
