@@ -5,7 +5,7 @@
 #ifndef SANDBOX_INITVULKAN_HPP
 #define SANDBOX_INITVULKAN_HPP
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan.hpp>
 #include <GLFW/glfw3.h>
 #include <vector>
 #include "../sandbox_useful/device.hpp"
@@ -14,7 +14,7 @@ struct InitVulkan {
 	InitVulkan(int width, int height);
 	InitVulkan(VkInstance instance, VkSurfaceKHR surface, VkDevice device, VkQueue graphics,
 			   VkQueue present, VkPhysicalDevice physics, VkSwapchainKHR swap_chain,
-			   std::vector<VkImageView> const &image_views, VkExtent2D extent, VkFormat format,
+			   std::vector<VkImageView> const &image_views, VkExtent2D extent, vk::Format format,
 			   Device::QueueFamilyIndices const &indices, VkRenderPass renderpass);
 	void loop(GLFWwindow *window);
 	~InitVulkan();
@@ -37,7 +37,7 @@ private:
 	VkSwapchainKHR _swapchain;
 
 	std::vector<VkImageView> _swapChainImageViews;
-	VkFormat _swapChainImageFormat;
+	vk::Format _swapChainImageFormat;
 	VkExtent2D _swapChainExtent;
 	VkPhysicalDevice _physicalDevice = 	VK_NULL_HANDLE;
 	VkDevice _device;

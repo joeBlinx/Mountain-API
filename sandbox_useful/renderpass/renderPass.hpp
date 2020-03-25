@@ -6,7 +6,7 @@
 #define SANDBOX_RENDERPASS_HPP
 
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan.hpp>
 #include <array>
 #include <log.hpp>
 #include <utility>
@@ -25,12 +25,12 @@ struct RenderPass {
 	~RenderPass();
 
 	template<SubPass ...attachment>
-	static RenderPass create(VkDevice device, VkFormat const &swap_chain_image_format);
+	static RenderPass create(vk::Device device, vk::Format const &swap_chain_image_format);
 	VkRenderPass get_renderpass() {return _renderpass ;}
 private:
 
-	VkDevice _device = nullptr;
-	RenderPass(VkDevice device, VkRenderPassCreateInfo renderpass_info);
+	vk::Device _device = nullptr;
+	RenderPass(vk::Device device, VkRenderPassCreateInfo renderpass_info);
 	VkRenderPass _renderpass = nullptr;
 };
 
@@ -56,44 +56,44 @@ constexpr VkImageLayout get_corresponding_attachment<(unsigned)subpass_attachmen
 	return get_corresponding_attachment<(unsigned)subpass_attachment::DEPTH>();
 }
 template<unsigned attach>
-constexpr VkAttachmentDescription
-fill_attachment(VkAttachmentDescription &attachement, VkFormat const&, VkFormat const&)
+vk::AttachmentDescription
+fill_attachment(vk::AttachmentDescription &attachement, vk::Format const&, vk::Format const&)
 {
 	return attachement;
 }
 
 template<>
-constexpr VkAttachmentDescription
-fill_attachment<(unsigned)subpass_attachment::COLOR>(VkAttachmentDescription &attachement, VkFormat const&color,
-                                                     VkFormat const&)
+vk::AttachmentDescription
+fill_attachment<(unsigned)subpass_attachment::COLOR>(vk::AttachmentDescription &attachement, vk::Format const&color,
+                                                     vk::Format const&)
 {
-	attachement.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	attachement.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	attachement.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+	attachement.loadOp = vk::AttachmentLoadOp::eClear;
+	attachement.storeOp = vk::AttachmentStoreOp::eStore;
+	attachement.finalLayout = vk::ImageLayout::ePresentSrcKHR;
     attachement.format = color;
 	return attachement;
 }
 
 template<>
-constexpr VkAttachmentDescription
-fill_attachment<(unsigned)subpass_attachment::DEPTH>(VkAttachmentDescription &attachement, VkFormat const&,
-                                                     VkFormat const&depth)
+vk::AttachmentDescription
+fill_attachment<(unsigned)subpass_attachment::DEPTH>(vk::AttachmentDescription &attachement, vk::Format const&,
+                                                     vk::Format const&depth)
 {
-    attachement.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    attachement.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	attachement.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+    attachement.loadOp = vk::AttachmentLoadOp::eClear;
+    attachement.storeOp = vk::AttachmentStoreOp::eDontCare;
+	attachement.finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
     attachement.format = depth;
 	return attachement;
 }
 template<>
-constexpr VkAttachmentDescription
-fill_attachment<(unsigned)subpass_attachment::STENCIL>(VkAttachmentDescription &attachement, VkFormat const&,
-                                                       VkFormat const& depth)
+vk::AttachmentDescription
+fill_attachment<(unsigned)subpass_attachment::STENCIL>(vk::AttachmentDescription &attachement, vk::Format const&,
+                                                       vk::Format const& depth)
 {
     attachement.format = depth;
-	attachement.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	attachement.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	attachement.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	attachement.stencilLoadOp = vk::AttachmentLoadOp::eClear;
+	attachement.stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
+	attachement.finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
 	return attachement;
 }
 template<int n, unsigned reference>
@@ -134,27 +134,27 @@ constexpr decltype(auto) apply_for_all_case( Args &...args)
 template<unsigned N>
 struct wrapper
 {
-	constexpr VkAttachmentDescription
-    operator()(VkAttachmentDescription &attachmentDescription, VkFormat const& color, VkFormat const& depth)
+	constexpr vk::AttachmentDescription
+    operator()(vk::AttachmentDescription &attachmentDescription, vk::Format const& color, vk::Format const& depth)
 	{
 		return fill_attachment<N>(attachmentDescription, color, depth);
 	}
 };
 template<SubPass... attachment>
 constexpr
-std::array<std::pair<VkAttachmentDescription, VkAttachmentDescription> , sizeof...(attachment)>
-        fill_attachments (VkFormat const &color, VkFormat const &depth)
+std::array<std::pair<vk::AttachmentDescription, vk::AttachmentDescription> , sizeof...(attachment)>
+        fill_attachments (vk::Format const &color, vk::Format const &depth)
 {
-	VkAttachmentDescription attachment_desc{
-			.flags = 0,
-			.format = VkFormat{},
-			.samples = VK_SAMPLE_COUNT_1_BIT,
-			.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-			.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-			.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-			.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-			.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-			.finalLayout = VK_IMAGE_LAYOUT_UNDEFINED
+	vk::AttachmentDescription attachment_desc{
+			vk::AttachmentDescriptionFlags(),
+			vk::Format{},
+			vk::SampleCountFlagBits::e1,
+			vk::AttachmentLoadOp::eDontCare,
+			vk::AttachmentStoreOp::eDontCare,
+			vk::AttachmentLoadOp::eDontCare,
+			vk::AttachmentStoreOp::eDontCare,
+			vk::ImageLayout::eUndefined,
+			vk::ImageLayout::eUndefined
 	};
 
 
@@ -162,12 +162,12 @@ std::array<std::pair<VkAttachmentDescription, VkAttachmentDescription> , sizeof.
 	return {apply_for_all_case<attachment, wrapper>(attachment_desc, color, depth)...};
 }
 template<SubPass... attachment>
-RenderPass RenderPass::create(VkDevice device, VkFormat const &swap_chain_image_format) {
+RenderPass RenderPass::create(vk::Device device, vk::Format const &swap_chain_image_format) {
 
 	//constexpr auto all_attachment_ref = pack<attachment.attachment...>();
     auto attachments_desc = fill_attachments<attachment...>(swap_chain_image_format, swap_chain_image_format);
 
-//	VkAttachmentDescription colorAttachment = {};
+//	vk::AttachmentDescription colorAttachment = {};
 //	colorAttachment.format = swap_chain_image_format;
 //	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 //	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;

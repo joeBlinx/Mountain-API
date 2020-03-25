@@ -294,36 +294,35 @@ void InitVulkan::createGraphicsPipeline()
 // some parameter
 void InitVulkan::createRenderPass()
 {
-	VkAttachmentDescription colorAttachment = {};
+	vk::AttachmentDescription colorAttachment;
 	colorAttachment.format = _swapChainImageFormat;
-	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+	colorAttachment.samples = vk::SampleCountFlagBits::e1;
+	colorAttachment.loadOp = vk::AttachmentLoadOp::eClear;
+	colorAttachment.storeOp = vk::AttachmentStoreOp::eStore;
+	colorAttachment.stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
+	colorAttachment.stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
+	colorAttachment.initialLayout = vk::ImageLayout::eUndefined;
+	colorAttachment.finalLayout = vk::ImageLayout::ePresentSrcKHR;
 
 	VkAttachmentReference colorAttachmentRef = {};
 	colorAttachmentRef.attachment = 0;
 	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-	VkSubpassDescription subpass = {};
+	vk::SubpassDescription subpass = {};
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 
 	subpass.colorAttachmentCount = 1;
 	subpass.pColorAttachments = &colorAttachmentRef;
 
-	VkSubpassDependency dependency = {};
-	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+	vk::SubpassDependency dependency = {};
+	dependency.srcSubpass = vk::Subass;VK_SUBPASS_EXTERNAL;
 	dependency.dstSubpass = 0;
 	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 	dependency.srcAccessMask = 0;
 	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
-	VkRenderPassCreateInfo renderPassInfo = {};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+	vk::RenderPassCreateInfo renderPassInfo;
 	renderPassInfo.attachmentCount = 1;
 	renderPassInfo.pAttachments = &colorAttachment;
 	renderPassInfo.subpassCount = 1;
@@ -331,9 +330,9 @@ void InitVulkan::createRenderPass()
 	renderPassInfo.dependencyCount = 1;
 	renderPassInfo.pDependencies = &dependency;
 
-
-	checkError(vkCreateRenderPass(_device, &renderPassInfo, nullptr, &_renderpass), 
-		"failed to create render pass!");
+	_renderpass = _device.createRenderPass(renderPassInfo);
+	// checkError(vkCreateRenderPass(_device, &renderPassInfo, nullptr, &_renderpass), 
+	// 	"failed to create render pass!");
 	
 }
 
@@ -434,7 +433,7 @@ void InitVulkan::createSemaphores()
 
 InitVulkan::InitVulkan(VkInstance instance, VkSurfaceKHR surface, VkDevice device, VkQueue graphics,
 					   VkQueue present, VkPhysicalDevice physics, VkSwapchainKHR swap_chain,
-					   std::vector<VkImageView> const &image_views, VkExtent2D extent, VkFormat format,
+					   std::vector<VkImageView> const &image_views, VkExtent2D extent, vk::Format format,
 					   Device::QueueFamilyIndices const &indices, VkRenderPass renderpass)
 		: _instance(instance), _surface(surface),
 		  _swapchain(swap_chain),

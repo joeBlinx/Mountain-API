@@ -6,7 +6,7 @@
 #include "renderPass.hpp"
 
 
-RenderPass::RenderPass(VkDevice device, VkRenderPassCreateInfo renderpass_info) :
+RenderPass::RenderPass(vk::Device device, VkRenderPassCreateInfo renderpass_info) :
 		_device(device) {
 
 

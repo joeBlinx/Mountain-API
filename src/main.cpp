@@ -31,7 +31,7 @@ int main() {
 			basic_init.get_vk_surface(),
 			device.get_queue_family_indice(),
 			device.get_swap_chain_details(),
-			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+			vk::ImageUsageFlagBits::eColorAttachment,
 			width,
 			height
 	};
