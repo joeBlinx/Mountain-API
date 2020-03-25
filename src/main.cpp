@@ -20,7 +20,7 @@ int main() {
 
 
 	Device device{ basic_init.get_vk_instance(),
-				VK_QUEUE_GRAPHICS_BIT,
+				vk::QueueFlagBits::eGraphics,
 				devicesExtension,
 				basic_init.get_vk_surface(),
 				validationLayers};

@@ -10,7 +10,7 @@
 
 struct Device {
 
-	Device(vk::Instance instance, VkQueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension,
+	Device(vk::Instance instance, vk::QueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension,
 		   VkSurfaceKHR surface, std::vector<const char *> const &validationLayers);
 	~Device();
 	struct QueueFamilyIndices{
@@ -24,12 +24,12 @@ struct Device {
 	};
 	struct SwapChainSupportDetails
 	{
-		VkSurfaceCapabilitiesKHR capabilities;
-		std::vector<VkSurfaceFormatKHR> formats;
-		std::vector <VkPresentModeKHR> presentModes;
+		vk::SurfaceCapabilitiesKHR capabilities;
+		std::vector<vk::SurfaceFormatKHR> formats;
+		std::vector <vk::PresentModeKHR> presentModes;
 	};
 
-	VkDevice get_device() { return _device; }
+	vk::Device get_device() { return _device; }
 	VkQueue get_graphics_queue() {return _graphics_queue;}
 	VkQueue get_present_queue() {return _present_queue;}
 	VkPhysicalDevice get_physical_device() { return _physical_device;}
@@ -37,8 +37,8 @@ struct Device {
 	SwapChainSupportDetails const& get_swap_chain_details() { return _swap_chain_details; }
 private:
 
-	VkPhysicalDevice _physical_device = nullptr;
-	VkDevice _device = nullptr;
+	vk::PhysicalDevice _physical_device;
+	vk::Device _device;
 
 	VkQueue  _graphics_queue = nullptr;
 	VkQueue  _present_queue = nullptr;
@@ -47,7 +47,7 @@ private:
 
 	SwapChainSupportDetails _swap_chain_details;
 
-	void pick_up_physical_device(vk::Instance instance, VkQueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension,
+	void pick_up_physical_device(vk::Instance instance, vk::QueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension,
 								 VkSurfaceKHR surface);
 	void create_logical_device(std::vector<char const *> const &devicesExtension,
 							   std::vector<const char *> const &validationLayers);

@@ -45,4 +45,5 @@ void checkError(VkResult result, const std::string& log){
 		throw std::runtime_error(log + " error is:" + VkResultStr[result]);
 	}
 }
+
 #undef enumToStr
