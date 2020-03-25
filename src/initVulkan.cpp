@@ -304,23 +304,23 @@ void InitVulkan::createRenderPass()
 	colorAttachment.initialLayout = vk::ImageLayout::eUndefined;
 	colorAttachment.finalLayout = vk::ImageLayout::ePresentSrcKHR;
 
-	VkAttachmentReference colorAttachmentRef = {};
+	vk::AttachmentReference colorAttachmentRef = {};
 	colorAttachmentRef.attachment = 0;
-	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	colorAttachmentRef.layout = vk::ImageLayout::eColorAttachmentOptimal;
 
 	vk::SubpassDescription subpass = {};
-	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	subpass.pipelineBindPoint = vk::PipelineBindPoint::eGraphics;
 
 	subpass.colorAttachmentCount = 1;
 	subpass.pColorAttachments = &colorAttachmentRef;
 
 	vk::SubpassDependency dependency = {};
-	dependency.srcSubpass = vk::Subass;VK_SUBPASS_EXTERNAL;
+	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
 	dependency.dstSubpass = 0;
-	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	dependency.srcAccessMask = 0;
-	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	dependency.srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+	dependency.srcAccessMask = vk::AccessFlagBits::eColorAttachmentWrite;
+	dependency.dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+	dependency.dstAccessMask = vk::AccessFlagBits::eColorAttachmentRead| vk::AccessFlagBits::eColorAttachmentWrite;
 
 	vk::RenderPassCreateInfo renderPassInfo;
 	renderPassInfo.attachmentCount = 1;
@@ -431,10 +431,10 @@ void InitVulkan::createSemaphores()
 
 }
 
-InitVulkan::InitVulkan(VkInstance instance, VkSurfaceKHR surface, VkDevice device, VkQueue graphics,
-					   VkQueue present, VkPhysicalDevice physics, VkSwapchainKHR swap_chain,
-					   std::vector<VkImageView> const &image_views, VkExtent2D extent, vk::Format format,
-					   Device::QueueFamilyIndices const &indices, VkRenderPass renderpass)
+InitVulkan::InitVulkan(VkInstance instance, VkSurfaceKHR surface, vk::Device device, VkQueue graphics,
+                       VkQueue present, VkPhysicalDevice physics, VkSwapchainKHR swap_chain,
+                       std::vector<VkImageView> const &image_views, VkExtent2D extent, vk::Format format,
+                       Device::QueueFamilyIndices const &indices, VkRenderPass renderpass)
 		: _instance(instance), _surface(surface),
 		  _swapchain(swap_chain),
 		  _swapChainImageViews(image_views),

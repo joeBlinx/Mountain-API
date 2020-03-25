@@ -12,10 +12,10 @@
 
 struct InitVulkan {
 	InitVulkan(int width, int height);
-	InitVulkan(VkInstance instance, VkSurfaceKHR surface, VkDevice device, VkQueue graphics,
-			   VkQueue present, VkPhysicalDevice physics, VkSwapchainKHR swap_chain,
-			   std::vector<VkImageView> const &image_views, VkExtent2D extent, vk::Format format,
-			   Device::QueueFamilyIndices const &indices, VkRenderPass renderpass);
+	InitVulkan(VkInstance instance, VkSurfaceKHR surface, vk::Device device, VkQueue graphics,
+               VkQueue present, VkPhysicalDevice physics, VkSwapchainKHR swap_chain,
+               std::vector<VkImageView> const &image_views, VkExtent2D extent, vk::Format format,
+               Device::QueueFamilyIndices const &indices, VkRenderPass renderpass);
 	void loop(GLFWwindow *window);
 	~InitVulkan();
 
@@ -40,7 +40,7 @@ private:
 	vk::Format _swapChainImageFormat;
 	VkExtent2D _swapChainExtent;
 	VkPhysicalDevice _physicalDevice = 	VK_NULL_HANDLE;
-	VkDevice _device;
+	vk::Device _device;
 	Device::QueueFamilyIndices _indices;
 	VkPipelineLayout _pipelineLayout;
 	VkPipeline _graphicsPipeline;
