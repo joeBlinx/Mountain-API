@@ -11,28 +11,28 @@
 
 struct SwapChain {
 
-	SwapChain(VkDevice device, VkSurfaceKHR surface, Device::QueueFamilyIndices const &indices,
+	SwapChain(vk::Device device, VkSurfaceKHR surface, Device::QueueFamilyIndices const &indices,
               Device::SwapChainSupportDetails const &swap_chain_support, vk::ImageUsageFlags image_usage,
               int width, int height);
 	~SwapChain();
 
-	VkSwapchainKHR get_swap_chain() const;
+	vk::SwapchainKHR get_swap_chain() const;
 
-	const std::vector<VkImageView> &get_swap_chain_image_views() const;
+	const std::vector<vk::ImageView> &get_swap_chain_image_views() const;
 
 	vk::Format get_swap_chain_image_format() const;
 
-	const VkExtent2D &get_swap_chain_extent() const;
+	const vk::Extent2D &get_swap_chain_extent() const;
 
 private:
 	vk::Device _device;
-	VkSwapchainKHR _swap_chain = nullptr;
-	std::vector<VkImage> _swap_chain_images;
-	std::vector<VkImageView> _swap_chain_image_views;
+	vk::SwapchainKHR _swap_chain;
+	std::vector<vk::Image> _swap_chain_images;
+	std::vector<vk::ImageView> _swap_chain_image_views;
 	vk::Format _swap_chain_image_format{};
 
 
-	VkExtent2D _swap_chain_extent{};
+	vk::Extent2D _swap_chain_extent{};
 
 	void create_swap_chain(VkSurfaceKHR surface, Device::QueueFamilyIndices const &indices,
                            Device::SwapChainSupportDetails const &swap_chain_support,

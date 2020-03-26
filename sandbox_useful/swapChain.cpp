@@ -37,13 +37,13 @@ vk::PresentModeKHR chooseSwapPresentMode(std::vector<vk::PresentModeKHR> const &
 
 	return bestMode;
 }
-VkExtent2D chooseSwapExtent(VkSurfaceCapabilitiesKHR const &capabilities, int width, int height)
+vk::Extent2D chooseSwapExtent(VkSurfaceCapabilitiesKHR const &capabilities, int width, int height)
 {
 	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
 		return capabilities.currentExtent;
 	}
 	else {
-		VkExtent2D actualExtent{ (uint32_t)width, (uint32_t)height };
+		vk::Extent2D actualExtent{ (uint32_t)width, (uint32_t)height };
 
 		actualExtent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actualExtent.width));
 		actualExtent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, actualExtent.height));
@@ -96,10 +96,7 @@ void SwapChain::create_swap_chain(VkSurfaceKHR surface, Device::QueueFamilyIndic
 	//createInfo.oldSwapchain ; // no old swap chain..for now
     _swap_chain = _device.createSwapchainKHR(createInfo);
 
-	vkGetSwapchainImagesKHR(_device, _swap_chain, &imageCount, nullptr); //get the number of image the swapchain can handle
-	_swap_chain_images.resize(imageCount);
-	vkGetSwapchainImagesKHR(_device, _swap_chain, &imageCount, _swap_chain_images.data());
-
+	_swap_chain_images = _device.getSwapchainImagesKHR(_swap_chain);
 	_swap_chain_image_format = surfaceFormat.format;
 
 }
@@ -134,7 +131,7 @@ SwapChain::~SwapChain() {
 	vkDestroySwapchainKHR(_device, _swap_chain, nullptr);
 }
 
-SwapChain::SwapChain(VkDevice device, VkSurfaceKHR surface, Device::QueueFamilyIndices const &indices,
+SwapChain::SwapChain(vk::Device device, VkSurfaceKHR surface, Device::QueueFamilyIndices const &indices,
                      Device::SwapChainSupportDetails const &swap_chain_support, vk::ImageUsageFlags image_usage,
                      int width, int height) : _device(device) {
 	create_swap_chain(surface, indices, swap_chain_support, image_usage, width, height);
@@ -142,11 +139,11 @@ SwapChain::SwapChain(VkDevice device, VkSurfaceKHR surface, Device::QueueFamilyI
 
 }
 
-VkSwapchainKHR SwapChain::get_swap_chain() const {
+vk::SwapchainKHR SwapChain::get_swap_chain() const {
 	return _swap_chain;
 }
 
-const std::vector<VkImageView> &SwapChain::get_swap_chain_image_views() const {
+const std::vector<vk::ImageView> &SwapChain::get_swap_chain_image_views() const {
 	return _swap_chain_image_views;
 }
 
@@ -154,6 +151,6 @@ vk::Format SwapChain::get_swap_chain_image_format() const {
 	return _swap_chain_image_format;
 }
 
-const VkExtent2D &SwapChain::get_swap_chain_extent() const {
+const vk::Extent2D &SwapChain::get_swap_chain_extent() const {
 	return _swap_chain_extent;
 }

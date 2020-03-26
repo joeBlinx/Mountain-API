@@ -46,7 +46,7 @@ std::vector<char const *> BasicInit::getRequiredExtension() {
 
 	return extensions;
 }
-void DestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks* pAllocator) {
+void DestroyDebugReportCallbackEXT(vk::Instance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks* pAllocator) {
 	auto func = (PFN_vkDestroyDebugReportCallbackEXT) vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
 	if (func != nullptr) {
 		func(instance, callback, pAllocator);
@@ -83,7 +83,6 @@ bool BasicInit::checkValidationLayerSupport() {
 	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 	std::vector<VkLayerProperties> availableLayer(layerCount);
 	vkEnumerateInstanceLayerProperties(&layerCount, availableLayer.data());
-
 	bool layerFound = false;
 	for (auto layer : _validationLayers) {
 		for (auto available : availableLayer) {

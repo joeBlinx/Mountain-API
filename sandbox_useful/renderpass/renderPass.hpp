@@ -26,7 +26,7 @@ struct RenderPass {
 
 	template<SubPass ...attachment>
 	static RenderPass create(vk::Device device, vk::Format const &swap_chain_image_format);
-	VkRenderPass get_renderpass() {return _renderpass ;}
+	vk::RenderPass get_renderpass() {return _renderpass ;}
 private:
 
 	vk::Device _device = nullptr;

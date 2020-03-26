@@ -30,9 +30,9 @@ struct Device {
 	};
 
 	vk::Device get_device() { return _device; }
-	VkQueue get_graphics_queue() {return _graphics_queue;}
-	VkQueue get_present_queue() {return _present_queue;}
-	VkPhysicalDevice get_physical_device() { return _physical_device;}
+	vk::Queue get_graphics_queue() {return _graphics_queue;}
+	vk::Queue get_present_queue() {return _present_queue;}
+	vk::PhysicalDevice get_physical_device() { return _physical_device;}
 	QueueFamilyIndices const& get_queue_family_indice() { return _indices; }
 	SwapChainSupportDetails const& get_swap_chain_details() { return _swap_chain_details; }
 private:
@@ -40,8 +40,8 @@ private:
 	vk::PhysicalDevice _physical_device;
 	vk::Device _device;
 
-	VkQueue  _graphics_queue = nullptr;
-	VkQueue  _present_queue = nullptr;
+	vk::Queue  _graphics_queue ;
+	vk::Queue  _present_queue ;
 
 	QueueFamilyIndices _indices;
 

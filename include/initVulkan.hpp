@@ -12,10 +12,10 @@
 
 struct InitVulkan {
 	InitVulkan(int width, int height);
-	InitVulkan(VkInstance instance, VkSurfaceKHR surface, vk::Device device, VkQueue graphics,
-               VkQueue present, VkPhysicalDevice physics, VkSwapchainKHR swap_chain,
-               std::vector<VkImageView> const &image_views, VkExtent2D extent, vk::Format format,
-               Device::QueueFamilyIndices const &indices, VkRenderPass renderpass);
+	InitVulkan(vk::Instance instance, VkSurfaceKHR surface, vk::Device device, vk::Queue graphics,
+               vk::Queue present, vk::PhysicalDevice physics, vk::SwapchainKHR swap_chain,
+               std::vector<vk::ImageView> const &image_views, vk::Extent2D extent, vk::Format format,
+               Device::QueueFamilyIndices const &indices, vk::RenderPass renderpass);
 	void loop(GLFWwindow *window);
 	~InitVulkan();
 
@@ -32,31 +32,31 @@ private:
 	static bool constexpr _enableValidationLayer = true;
 #endif
 	int _width, _height;
-	VkInstance _instance;
-	VkSurfaceKHR _surface;
-	VkSwapchainKHR _swapchain;
+	vk::Instance _instance;
+	vk::SurfaceKHR _surface;
+	vk::SwapchainKHR _swapchain;
 
-	std::vector<VkImageView> _swapChainImageViews;
+	std::vector<vk::ImageView> _swapChainImageViews;
 	vk::Format _swapChainImageFormat;
-	VkExtent2D _swapChainExtent;
-	VkPhysicalDevice _physicalDevice = 	VK_NULL_HANDLE;
+	vk::Extent2D _swapChainExtent;
+	vk::PhysicalDevice _physicalDevice;
 	vk::Device _device;
 	Device::QueueFamilyIndices _indices;
-	VkPipelineLayout _pipelineLayout;
-	VkPipeline _graphicsPipeline;
-	std::vector<VkFramebuffer> _swapchainFrameBuffer;
-	VkCommandPool _commandPool;
-	std::vector<VkCommandBuffer> _commandBuffers;
-	VkQueue  _graphicsQueue;
+	vk::PipelineLayout _pipelineLayout;
+	vk::Pipeline _graphicsPipeline;
+	std::vector<vk::Framebuffer> _swapchainFrameBuffer;
+	vk::CommandPool _commandPool;
+	std::vector<vk::CommandBuffer> _commandBuffers;
+	vk::Queue  _graphicsQueue;
 
-	VkQueue  _presentQueue;
-	VkRenderPass _renderpass;
+	vk::Queue  _presentQueue;
+	vk::RenderPass _renderpass;
 
-	VkSemaphore _imageAvailableSemaphore;
-	VkSemaphore _renderFinishedSemaphore;
+	vk::Semaphore _imageAvailableSemaphore;
+	vk::Semaphore _renderFinishedSemaphore;
 
 
-	VkShaderModule createShaderModule(std::vector<char> const & code);
+	vk::ShaderModule createShaderModule(std::vector<char> const & code);
 	void createGraphicsPipeline(); // multiple parameters but can surely be divide in some fucntions
 	void createPipelineLayout(); // lot of parameter
 	void createRenderPass();
