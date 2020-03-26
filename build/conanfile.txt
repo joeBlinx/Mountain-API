@@ -1,0 +1,9 @@
+[generators]
+cmake
+
+[requires]
+glfw/3.3.2@bincrafters/stable
+
+[options]
+
+[imports]

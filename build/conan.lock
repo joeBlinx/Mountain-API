@@ -1,0 +1,215 @@
+{
+ "profile_host": "[settings]\narch=x86_64\narch_build=x86_64\nbuild_type=Debug\ncompiler=gcc\ncompiler.libcxx=libstdc++11\ncompiler.version=9\nos=Linux\nos_build=Linux\n[options]\n[build_requires]\n[env]\n",
+ "graph_lock": {
+  "nodes": {
+   "0": {
+    "pref": null,
+    "options": "expat:fPIC=True\nexpat:shared=False\nglfw:fPIC=True\nglfw:shared=False\nlibdrm:amdgpu=True\nlibdrm:etnaviv=False\nlibdrm:exynos=False\nlibdrm:fPIC=True\nlibdrm:freedreno=True\nlibdrm:freedreno-kgsl=False\nlibdrm:intel=True\nlibdrm:libkms=True\nlibdrm:nouveau=True\nlibdrm:omap=False\nlibdrm:radeon=True\nlibdrm:shared=True\nlibdrm:tegra=False\nlibdrm:udev=False\nlibdrm:valgrind=False\nlibdrm:vc4=True\nlibdrm:vmwgfx=True\nlibelf:fPIC=True\nlibelf:shared=False\nlibpciaccess:fPIC=True\nlibpciaccess:shared=False\nlibunwind:coredump=True\nlibunwind:fPIC=True\nlibunwind:ptrace=True\nlibunwind:setjmp=True\nlibunwind:shared=False\nlibx11:fPIC=True\nlibx11:shared=True\nlibxau:fPIC=True\nlibxau:shared=False\nlibxcb:fPIC=True\nlibxcb:shared=True\nlibxcursor:fPIC=True\nlibxcursor:shared=False\nlibxdamage:fPIC=True\nlibxdamage:shared=False\nlibxdmcp:fPIC=True\nlibxdmcp:shared=False\nlibxext:fPIC=True\nlibxext:shared=False\nlibxfixes:fPIC=True\nlibxfixes:shared=False\nlibxi:fPIC=True\nlibxi:shared=False\nlibxinerama:fPIC=True\nlibxinerama:shared=False\nlibxrandr:fPIC=True\nlibxrandr:shared=False\nlibxrender:fPIC=True\nlibxrender:shared=False\nlibxshmfence:fPIC=True\nlibxshmfence:shared=False\nlibxxf86vm:fPIC=True\nlibxxf86vm:shared=False\nmesa:dri_i915=True\nmesa:dri_i965=True\nmesa:dri_nouveau=True\nmesa:dri_r100=True\nmesa:dri_r200=True\nmesa:egl=True\nmesa:fPIC=True\nmesa:gallium_etnaviv=False\nmesa:gallium_extra_hud=False\nmesa:gallium_freedreno=False\nmesa:gallium_i915=False\nmesa:gallium_iris=False\nmesa:gallium_kmsro=False\nmesa:gallium_lima=False\nmesa:gallium_nine=False\nmesa:gallium_nouveau=False\nmesa:gallium_omx=disabled\nmesa:gallium_opencl=disabled\nmesa:gallium_panfrost=False\nmesa:gallium_r300=False\nmesa:gallium_r600=False\nmesa:gallium_radeonsi=False\nmesa:gallium_svga=False\nmesa:gallium_swr=False\nmesa:gallium_swrast=True\nmesa:gallium_tegra=False\nmesa:gallium_v3d=False\nmesa:gallium_va=False\nmesa:gallium_vc4=False\nmesa:gallium_vdpau=False\nmesa:gallium_virgl=False\nmesa:gallium_xa=False\nmesa:gallium_xvmc=False\nmesa:gallium_zink=False\nmesa:gbm=True\nmesa:gles1=False\nmesa:gles2=False\nmesa:glvnd=False\nmesa:glx_direct=True\nmesa:glx_read_only_text=False\nmesa:libunwind=True\nmesa:opencl_spirv=False\nmesa:opengl=True\nmesa:osmesa=none\nmesa:osmesa_bits=8\nmesa:power8=False\nmesa:selinux=False\nmesa:shader_cache=True\nmesa:swr_avx=True\nmesa:swr_avx2=True\nmesa:swr_knl=False\nmesa:swr_skx=False\nmesa:tool_drm-shim=False\nmesa:tool_etnaviv=False\nmesa:tool_freedreno=False\nmesa:tool_glsl=False\nmesa:tool_intel=False\nmesa:tool_intel-ui=False\nmesa:tool_lima=False\nmesa:tool_nir=False\nmesa:tool_nouveau=False\nmesa:tool_xvmc=False\nmesa:valgrind=False\nmesa:vk_amd=False\nmesa:vk_freedreno=False\nmesa:vk_intel=True\nmesa:vulkan_overlay_layer=False\nxz_utils:fPIC=True\nxz_utils:shared=False\nzlib:fPIC=True\nzlib:minizip=False\nzlib:shared=False",
+    "requires": [
+     "1"
+    ],
+    "path": "/home/user/SandBox/build/conanfile.txt"
+   },
+   "1": {
+    "pref": "glfw/3.3.2@bincrafters/stable#0:6a0b195b06ef5fbc1ca4422976fe500aeb5bab2c#0",
+    "options": "fPIC=True\nshared=False\nexpat:fPIC=True\nexpat:shared=False\nlibdrm:amdgpu=True\nlibdrm:etnaviv=False\nlibdrm:exynos=False\nlibdrm:fPIC=True\nlibdrm:freedreno=True\nlibdrm:freedreno-kgsl=False\nlibdrm:intel=True\nlibdrm:libkms=True\nlibdrm:nouveau=True\nlibdrm:omap=False\nlibdrm:radeon=True\nlibdrm:shared=True\nlibdrm:tegra=False\nlibdrm:udev=False\nlibdrm:valgrind=False\nlibdrm:vc4=True\nlibdrm:vmwgfx=True\nlibelf:fPIC=True\nlibelf:shared=False\nlibpciaccess:fPIC=True\nlibpciaccess:shared=False\nlibunwind:coredump=True\nlibunwind:fPIC=True\nlibunwind:ptrace=True\nlibunwind:setjmp=True\nlibunwind:shared=False\nlibx11:fPIC=True\nlibx11:shared=True\nlibxau:fPIC=True\nlibxau:shared=False\nlibxcb:fPIC=True\nlibxcb:shared=True\nlibxcursor:fPIC=True\nlibxcursor:shared=False\nlibxdamage:fPIC=True\nlibxdamage:shared=False\nlibxdmcp:fPIC=True\nlibxdmcp:shared=False\nlibxext:fPIC=True\nlibxext:shared=False\nlibxfixes:fPIC=True\nlibxfixes:shared=False\nlibxi:fPIC=True\nlibxi:shared=False\nlibxinerama:fPIC=True\nlibxinerama:shared=False\nlibxrandr:fPIC=True\nlibxrandr:shared=False\nlibxrender:fPIC=True\nlibxrender:shared=False\nlibxshmfence:fPIC=True\nlibxshmfence:shared=False\nlibxxf86vm:fPIC=True\nlibxxf86vm:shared=False\nmesa:dri_i915=True\nmesa:dri_i965=True\nmesa:dri_nouveau=True\nmesa:dri_r100=True\nmesa:dri_r200=True\nmesa:egl=True\nmesa:fPIC=True\nmesa:gallium_etnaviv=False\nmesa:gallium_extra_hud=False\nmesa:gallium_freedreno=False\nmesa:gallium_i915=False\nmesa:gallium_iris=False\nmesa:gallium_kmsro=False\nmesa:gallium_lima=False\nmesa:gallium_nine=False\nmesa:gallium_nouveau=False\nmesa:gallium_omx=disabled\nmesa:gallium_opencl=disabled\nmesa:gallium_panfrost=False\nmesa:gallium_r300=False\nmesa:gallium_r600=False\nmesa:gallium_radeonsi=False\nmesa:gallium_svga=False\nmesa:gallium_swr=False\nmesa:gallium_swrast=True\nmesa:gallium_tegra=False\nmesa:gallium_v3d=False\nmesa:gallium_va=False\nmesa:gallium_vc4=False\nmesa:gallium_vdpau=False\nmesa:gallium_virgl=False\nmesa:gallium_xa=False\nmesa:gallium_xvmc=False\nmesa:gallium_zink=False\nmesa:gbm=True\nmesa:gles1=False\nmesa:gles2=False\nmesa:glvnd=False\nmesa:glx_direct=True\nmesa:glx_read_only_text=False\nmesa:libunwind=True\nmesa:opencl_spirv=False\nmesa:opengl=True\nmesa:osmesa=none\nmesa:osmesa_bits=8\nmesa:power8=False\nmesa:selinux=False\nmesa:shader_cache=True\nmesa:swr_avx=True\nmesa:swr_avx2=True\nmesa:swr_knl=False\nmesa:swr_skx=False\nmesa:tool_drm-shim=False\nmesa:tool_etnaviv=False\nmesa:tool_freedreno=False\nmesa:tool_glsl=False\nmesa:tool_intel=False\nmesa:tool_intel-ui=False\nmesa:tool_lima=False\nmesa:tool_nir=False\nmesa:tool_nouveau=False\nmesa:tool_xvmc=False\nmesa:valgrind=False\nmesa:vk_amd=False\nmesa:vk_freedreno=False\nmesa:vk_intel=True\nmesa:vulkan_overlay_layer=False\nxz_utils:fPIC=True\nxz_utils:shared=False\nzlib:fPIC=True\nzlib:minizip=False\nzlib:shared=False",
+    "requires": [
+     "2",
+     "12",
+     "15",
+     "17",
+     "18",
+     "19"
+    ]
+   },
+   "2": {
+    "pref": "libx11/1.6.8@bincrafters/stable#0:fb4de4452309896753239ba8144a4acb9d0f0783#0",
+    "options": "fPIC=True\nshared=True\nlibxau:fPIC=True\nlibxau:shared=False\nlibxcb:fPIC=True\nlibxcb:shared=True\nlibxdmcp:fPIC=True\nlibxdmcp:shared=False",
+    "requires": [
+     "3",
+     "4",
+     "5"
+    ]
+   },
+   "3": {
+    "pref": "xorgproto/2019.1@bincrafters/stable#0:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9#0",
+    "options": ""
+   },
+   "4": {
+    "pref": "xtrans/1.4.0@bincrafters/stable#0:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9#0",
+    "options": ""
+   },
+   "5": {
+    "pref": "libxcb/1.13.1@bincrafters/stable#0:b8c98b327e58b392e50971217071e1166220829f#0",
+    "options": "fPIC=True\nshared=True\nlibxau:fPIC=True\nlibxau:shared=False\nlibxdmcp:fPIC=True\nlibxdmcp:shared=False",
+    "requires": [
+     "6",
+     "7",
+     "8",
+     "9",
+     "10"
+    ]
+   },
+   "6": {
+    "pref": "xcb-proto/1.13@bincrafters/stable#0:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9#0",
+    "options": ""
+   },
+   "7": {
+    "pref": "util-macros/1.19.2@bincrafters/stable#0:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9#0",
+    "options": ""
+   },
+   "8": {
+    "pref": "libxau/1.0.9@bincrafters/stable#0:c99c7836a95e8848c6575783d12ace1982abacab#0",
+    "options": "fPIC=True\nshared=False",
+    "requires": [
+     "3"
+    ]
+   },
+   "9": {
+    "pref": "libpthread-stubs/0.1@bincrafters/stable#0:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9#0",
+    "options": ""
+   },
+   "10": {
+    "pref": "libxdmcp/1.1.3@bincrafters/stable#0:27635b69fcb5b0b49e17a4c6b12ffba465651c72#0",
+    "options": "fPIC=True\nshared=False",
+    "requires": [
+     "11"
+    ]
+   },
+   "11": {
+    "pref": "xproto/7.0.31@bincrafters/stable#0:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9#0",
+    "options": ""
+   },
+   "12": {
+    "pref": "libxrandr/1.5.2@bincrafters/stable#0:3ed31e8e448b5f476748003b2cb8087256acc7e3#0",
+    "options": "fPIC=True\nshared=False\nlibx11:fPIC=True\nlibx11:shared=True\nlibxau:fPIC=True\nlibxau:shared=False\nlibxcb:fPIC=True\nlibxcb:shared=True\nlibxdmcp:fPIC=True\nlibxdmcp:shared=False\nlibxext:fPIC=True\nlibxext:shared=False\nlibxrender:fPIC=True\nlibxrender:shared=False",
+    "requires": [
+     "13",
+     "14"
+    ]
+   },
+   "13": {
+    "pref": "libxrender/0.9.10@bincrafters/stable#0:3094f02cc92d072ef64199f75ca7e0f3a45fa967#0",
+    "options": "fPIC=True\nshared=False\nlibx11:fPIC=True\nlibx11:shared=True\nlibxau:fPIC=True\nlibxau:shared=False\nlibxcb:fPIC=True\nlibxcb:shared=True\nlibxdmcp:fPIC=True\nlibxdmcp:shared=False",
+    "requires": [
+     "2"
+    ]
+   },
+   "14": {
+    "pref": "libxext/1.3.4@bincrafters/stable#0:3094f02cc92d072ef64199f75ca7e0f3a45fa967#0",
+    "options": "fPIC=True\nshared=False\nlibx11:fPIC=True\nlibx11:shared=True\nlibxau:fPIC=True\nlibxau:shared=False\nlibxcb:fPIC=True\nlibxcb:shared=True\nlibxdmcp:fPIC=True\nlibxdmcp:shared=False",
+    "requires": [
+     "2"
+    ]
+   },
+   "15": {
+    "pref": "libxinerama/1.1.4@bincrafters/stable#0:24899c9c48c7638e3ffc80c34aaa9ea07b516d56#0",
+    "options": "fPIC=True\nshared=False\nlibx11:fPIC=True\nlibx11:shared=True\nlibxau:fPIC=True\nlibxau:shared=False\nlibxcb:fPIC=True\nlibxcb:shared=True\nlibxdmcp:fPIC=True\nlibxdmcp:shared=False\nlibxext:fPIC=True\nlibxext:shared=False\nlibxfixes:fPIC=True\nlibxfixes:shared=False",
+    "requires": [
+     "14",
+     "16"
+    ]
+   },
+   "16": {
+    "pref": "libxfixes/5.0.3@bincrafters/stable#0:3094f02cc92d072ef64199f75ca7e0f3a45fa967#0",
+    "options": "fPIC=True\nshared=False\nlibx11:fPIC=True\nlibx11:shared=True\nlibxau:fPIC=True\nlibxau:shared=False\nlibxcb:fPIC=True\nlibxcb:shared=True\nlibxdmcp:fPIC=True\nlibxdmcp:shared=False",
+    "requires": [
+     "2"
+    ]
+   },
+   "17": {
+    "pref": "libxcursor/1.2.0@bincrafters/stable#0:dac6d457f8e28d09d9c6c27a83eb2b6b5aff3fc7#0",
+    "options": "fPIC=True\nshared=False\nlibx11:fPIC=True\nlibx11:shared=True\nlibxau:fPIC=True\nlibxau:shared=False\nlibxcb:fPIC=True\nlibxcb:shared=True\nlibxdmcp:fPIC=True\nlibxdmcp:shared=False\nlibxfixes:fPIC=True\nlibxfixes:shared=False\nlibxrender:fPIC=True\nlibxrender:shared=False",
+    "requires": [
+     "16",
+     "13"
+    ]
+   },
+   "18": {
+    "pref": "libxi/1.7.10@bincrafters/stable#0:24899c9c48c7638e3ffc80c34aaa9ea07b516d56#0",
+    "options": "fPIC=True\nshared=False\nlibx11:fPIC=True\nlibx11:shared=True\nlibxau:fPIC=True\nlibxau:shared=False\nlibxcb:fPIC=True\nlibxcb:shared=True\nlibxdmcp:fPIC=True\nlibxdmcp:shared=False\nlibxext:fPIC=True\nlibxext:shared=False\nlibxfixes:fPIC=True\nlibxfixes:shared=False",
+    "requires": [
+     "14",
+     "16"
+    ]
+   },
+   "19": {
+    "pref": "mesa/19.3.1@bincrafters/stable#0:4738ebe557ba170d04ecce21fcb989f0bce5f442#0",
+    "options": "dri_i915=True\ndri_i965=True\ndri_nouveau=True\ndri_r100=True\ndri_r200=True\negl=True\nfPIC=True\ngallium_etnaviv=False\ngallium_extra_hud=False\ngallium_freedreno=False\ngallium_i915=False\ngallium_iris=False\ngallium_kmsro=False\ngallium_lima=False\ngallium_nine=False\ngallium_nouveau=False\ngallium_omx=disabled\ngallium_opencl=disabled\ngallium_panfrost=False\ngallium_r300=False\ngallium_r600=False\ngallium_radeonsi=False\ngallium_svga=False\ngallium_swr=False\ngallium_swrast=True\ngallium_tegra=False\ngallium_v3d=False\ngallium_va=False\ngallium_vc4=False\ngallium_vdpau=False\ngallium_virgl=False\ngallium_xa=False\ngallium_xvmc=False\ngallium_zink=False\ngbm=True\ngles1=False\ngles2=False\nglvnd=False\nglx_direct=True\nglx_read_only_text=False\nlibunwind=True\nopencl_spirv=False\nopengl=True\nosmesa=none\nosmesa_bits=8\npower8=False\nselinux=False\nshader_cache=True\nswr_avx=True\nswr_avx2=True\nswr_knl=False\nswr_skx=False\ntool_drm-shim=False\ntool_etnaviv=False\ntool_freedreno=False\ntool_glsl=False\ntool_intel=False\ntool_intel-ui=False\ntool_lima=False\ntool_nir=False\ntool_nouveau=False\ntool_xvmc=False\nvalgrind=False\nvk_amd=False\nvk_freedreno=False\nvk_intel=True\nvulkan_overlay_layer=False\nexpat:fPIC=True\nexpat:shared=False\nlibdrm:amdgpu=True\nlibdrm:etnaviv=False\nlibdrm:exynos=False\nlibdrm:fPIC=True\nlibdrm:freedreno=True\nlibdrm:freedreno-kgsl=False\nlibdrm:intel=True\nlibdrm:libkms=True\nlibdrm:nouveau=True\nlibdrm:omap=False\nlibdrm:radeon=True\nlibdrm:shared=True\nlibdrm:tegra=False\nlibdrm:udev=False\nlibdrm:valgrind=False\nlibdrm:vc4=True\nlibdrm:vmwgfx=True\nlibelf:fPIC=True\nlibelf:shared=False\nlibpciaccess:fPIC=True\nlibpciaccess:shared=False\nlibunwind:coredump=True\nlibunwind:fPIC=True\nlibunwind:ptrace=True\nlibunwind:setjmp=True\nlibunwind:shared=False\nlibx11:fPIC=True\nlibx11:shared=True\nlibxau:fPIC=True\nlibxau:shared=False\nlibxcb:fPIC=True\nlibxcb:shared=True\nlibxdamage:fPIC=True\nlibxdamage:shared=False\nlibxdmcp:fPIC=True\nlibxdmcp:shared=False\nlibxext:fPIC=True\nlibxext:shared=False\nlibxfixes:fPIC=True\nlibxfixes:shared=False\nlibxrandr:fPIC=True\nlibxrandr:shared=False\nlibxrender:fPIC=True\nlibxrender:shared=False\nlibxshmfence:fPIC=True\nlibxshmfence:shared=False\nlibxxf86vm:fPIC=True\nlibxxf86vm:shared=False\nxz_utils:fPIC=True\nxz_utils:shared=False\nzlib:fPIC=True\nzlib:minizip=False\nzlib:shared=False",
+    "requires": [
+     "20",
+     "21",
+     "22",
+     "24",
+     "25",
+     "2",
+     "14",
+     "27",
+     "16",
+     "5",
+     "28",
+     "29",
+     "12"
+    ]
+   },
+   "20": {
+    "pref": "zlib/1.2.11#0:23b828d52c0630e6b0b96d2945419feb7843c4f8#0",
+    "options": "fPIC=True\nminizip=False\nshared=False"
+   },
+   "21": {
+    "pref": "expat/2.2.9#0:23b828d52c0630e6b0b96d2945419feb7843c4f8#0",
+    "options": "fPIC=True\nshared=False"
+   },
+   "22": {
+    "pref": "libdrm/2.4.100@bincrafters/stable#0:2c29f667cacc7eeb03f56d878f99f7ce8b3d6168#0",
+    "options": "amdgpu=True\netnaviv=False\nexynos=False\nfPIC=True\nfreedreno=True\nfreedreno-kgsl=False\nintel=True\nlibkms=True\nnouveau=True\nomap=False\nradeon=True\nshared=True\ntegra=False\nudev=False\nvalgrind=False\nvc4=True\nvmwgfx=True\nlibpciaccess:fPIC=True\nlibpciaccess:shared=False",
+    "requires": [
+     "23"
+    ]
+   },
+   "23": {
+    "pref": "libpciaccess/0.16@bincrafters/stable#0:23b828d52c0630e6b0b96d2945419feb7843c4f8#0",
+    "options": "fPIC=True\nshared=False"
+   },
+   "24": {
+    "pref": "libelf/0.8.13#0:23b828d52c0630e6b0b96d2945419feb7843c4f8#0",
+    "options": "fPIC=True\nshared=False"
+   },
+   "25": {
+    "pref": "libunwind/1.3.1#0:eef58b252f2cfddca30f2e8758005c7d67542d8a#0",
+    "options": "coredump=True\nfPIC=True\nptrace=True\nsetjmp=True\nshared=False\nxz_utils:fPIC=True\nxz_utils:shared=False",
+    "requires": [
+     "26"
+    ]
+   },
+   "26": {
+    "pref": "xz_utils/5.2.4#0:23b828d52c0630e6b0b96d2945419feb7843c4f8#0",
+    "options": "fPIC=True\nshared=False"
+   },
+   "27": {
+    "pref": "libxdamage/1.1.5@bincrafters/stable#0:c1d5e051bbd1076350f63a36fe423230726ed6a6#0",
+    "options": "fPIC=True\nshared=False\nlibx11:fPIC=True\nlibx11:shared=True\nlibxau:fPIC=True\nlibxau:shared=False\nlibxcb:fPIC=True\nlibxcb:shared=True\nlibxdmcp:fPIC=True\nlibxdmcp:shared=False\nlibxfixes:fPIC=True\nlibxfixes:shared=False",
+    "requires": [
+     "16"
+    ]
+   },
+   "28": {
+    "pref": "libxshmfence/1.3@bincrafters/stable#0:98bc0352e079a667d0edbedb786305b0971aa660#0",
+    "options": "fPIC=True\nshared=False",
+    "requires": [
+     "3",
+     "7"
+    ]
+   },
+   "29": {
+    "pref": "libxxf86vm/1.1.4@bincrafters/stable#0:b305f54ba4e27810ceb49cac130bdec766fea836#0",
+    "options": "fPIC=True\nshared=False\nlibx11:fPIC=True\nlibx11:shared=True\nlibxau:fPIC=True\nlibxau:shared=False\nlibxcb:fPIC=True\nlibxcb:shared=True\nlibxdmcp:fPIC=True\nlibxdmcp:shared=False\nlibxext:fPIC=True\nlibxext:shared=False",
+    "requires": [
+     "2",
+     "14"
+    ]
+   }
+  }
+ },
+ "version": "0.3"
+}
