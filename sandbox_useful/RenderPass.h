@@ -5,14 +5,14 @@
 #ifndef SANDBOX_RENDERPASS_H
 #define SANDBOX_RENDERPASS_H
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan.hpp>
 struct RenderPass {
 
-    RenderPass(VkFormat const &_swap_chain_image_format);
+    RenderPass(vk::Format const & swap_chain_image_format);
     ~RenderPass();
 private:
-    VkRenderPass _render_pass = nullptr;
-    VkDevice _device = nullptr;
+    vk::RenderPass _render_pass ;
+    vk::Device _device;
 
 
 };
