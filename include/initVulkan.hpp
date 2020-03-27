@@ -8,7 +8,7 @@
 #include <vulkan/vulkan.hpp>
 #include <GLFW/glfw3.h>
 #include <vector>
-#include "../sandbox_useful/device.hpp"
+#include "sandbox_useful/device.hpp"
 
 struct InitVulkan {
 	InitVulkan(int width, int height);

@@ -5,8 +5,8 @@
 #include <string_view>
 #include "device.hpp"
 #include <set>
-#include "log.hpp"
-#include "utils.hpp"
+#include "utils/log.hpp"
+#include "utils/utils.hpp"
 
 Device::QueueFamilyIndices find_queue_families(vk::PhysicalDevice const& device, VkSurfaceKHR surface, vk::QueueFlagBits queue_flag)
 {

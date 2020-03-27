@@ -1,8 +1,8 @@
 #include "basicInit.hpp"	
 #include <GLFW/glfw3.h>
-#include "utils.hpp"
+#include "utils/utils.hpp"
 #include <string_view>
-#include "log.hpp"
+#include "utils/log.hpp"
 #include <iostream>
 #include <cstring>
 BasicInit::BasicInit(int width, int height, std::string_view title)

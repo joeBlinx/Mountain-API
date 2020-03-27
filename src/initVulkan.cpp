@@ -3,7 +3,7 @@
 //
 
 #include "../include/initVulkan.hpp"
-#include "../include/log.hpp"
+#include "utils/log.hpp"
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 #include <vector>
@@ -11,7 +11,7 @@
 #include <cstring>
 #include <set>
 #include <algorithm>
-#include "../include/utils.hpp"
+#include "utils/utils.hpp"
 #include <array>
 
 

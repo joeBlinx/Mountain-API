@@ -2,7 +2,7 @@
 // Created by joe on 05/08/18.
 //
 
-#include "../include/log.hpp"
+#include "log.hpp"
 #include <stdexcept>
 #include <string>
 #include <map>

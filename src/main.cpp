@@ -1,9 +1,9 @@
 #include <iostream>
 #include "../include/initVulkan.hpp"
-#include "../sandbox_useful/basicInit.hpp"
-#include "../sandbox_useful/device.hpp"
-#include "../sandbox_useful/swapChain.hpp"
-#include "../sandbox_useful/renderpass/renderPass.hpp"
+#include "sandbox_useful/basicInit.hpp"
+#include "sandbox_useful/device.hpp"
+#include "sandbox_useful/swapChain.hpp"
+#include "sandbox_useful/renderpass/renderPass.hpp"
 
 int main() {
 	const std::vector<const char*> validationLayers {
