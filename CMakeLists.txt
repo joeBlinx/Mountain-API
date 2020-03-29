@@ -2,13 +2,13 @@ cmake_minimum_required(VERSION 3.14)
 project(sandBox
 		LANGUAGES CXX
 		)
-
 include(cmake/conan.cmake)
-include(cmake/utils.cmake)
+include(cmake/utils/utils.cmake)
 conan_cmake_run(REQUIRES glfw/3.3.2@bincrafters/stable BASIC_SETUP CMAKE_TARGETS)
 find_package(Vulkan REQUIRED)
 
 add_executable(${PROJECT_NAME})
+add_subdirectory(cmake)
 add_subdirectory(sandbox_useful)
 add_subdirectory(utils)
 target_sources(${PROJECT_NAME} 	
@@ -27,7 +27,10 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC -DGLFW_INCLUDE_VULKAN)
 
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -pedantic -Wextra)
-
-target_link_libraries(${PROJECT_NAME} PRIVATE Vulkan::Vulkan CONAN_PKG::glfw SandBox::utils utils::utils)
+target_link_libraries(${PROJECT_NAME} PRIVATE
+											Vulkan::Vulkan
+											CONAN_PKG::glfw
+											SandBox::utils
+											utils::utils
+											common_target::common_target)
 

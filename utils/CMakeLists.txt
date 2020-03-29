@@ -16,7 +16,7 @@ set_sources(_headers
 
 set_common_properties(utils)
 target_include_directories(utils PRIVATE inc/utils PUBLIC inc/)				
-target_link_libraries(utils PUBLIC Vulkan::Vulkan)
+target_link_libraries(utils PUBLIC Vulkan::Vulkan common_target::common_target)
 target_sources(utils PRIVATE ${_srcs}
 					INTERFACE ${_headers}
 				)
