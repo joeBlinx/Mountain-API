@@ -264,7 +264,7 @@ void InitVulkan::createGraphicsPipeline()
 	pipelineInfo.subpass = 0;
 	// pipelineInfo.basePipelineHandle ; // Optional
 	pipelineInfo.basePipelineIndex = -1; // Optional
-	_graphicsPipeline = _device.createGraphicsPipeline({}, pipelineInfo);
+	_graphicsPipeline = _device.createGraphicsPipeline({}, pipelineInfo).value;
 	// checkError(vkCreateGraphicsPipelines(_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_graphicsPipeline)
 	// 	, "failed to create graphics pipeline!"
 	// );

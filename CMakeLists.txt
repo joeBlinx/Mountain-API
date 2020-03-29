@@ -4,7 +4,19 @@ project(sandBox
 		)
 include(cmake/conan.cmake)
 include(cmake/utils/utils.cmake)
-conan_cmake_run(REQUIRES glfw/3.3.2@bincrafters/stable BASIC_SETUP CMAKE_TARGETS)
+include(FetchContent)
+FetchContent_Declare(
+		glfw_content
+		GIT_REPOSITORY https://github.com/glfw/glfw.git
+		GIT_TAG        3.3
+)
+
+find_package(glfw3)
+
+if ( NOT TARGET glfw)
+	message("glfw is not on your system so it will be download in the build folder")
+	FetchContent_MakeAvailable(glfw_content)
+endif()
 find_package(Vulkan REQUIRED)
 
 add_executable(${PROJECT_NAME})
@@ -29,7 +41,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE include)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
 											Vulkan::Vulkan
-											CONAN_PKG::glfw
+											glfw
 											SandBox::utils
 											utils::utils
 											common_target::common_target)

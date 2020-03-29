@@ -70,6 +70,7 @@ bool is_device_suitable(vk::PhysicalDevice const& device, vk::QueueFlagBits queu
 }
 
 Device::~Device() {
+    _device.destroy();
 }
 
 void Device::pick_up_physical_device(vk::Instance instance, vk::QueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension,
@@ -87,7 +88,7 @@ void Device::pick_up_physical_device(vk::Instance instance, vk::QueueFlagBits qu
 		}
 	}
 
-	utils::printFatalError("not suitable GPU found");
+	utils::printFatalError("no suitable GPU found");
 }
 
 void Device::create_logical_device(std::vector<char const *> const &devicesExtension,
