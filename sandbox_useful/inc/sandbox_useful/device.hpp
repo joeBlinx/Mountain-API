@@ -12,6 +12,8 @@ struct Device {
 
 	Device(vk::Instance instance, vk::QueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension,
 		   VkSurfaceKHR surface, std::vector<const char *> const &validationLayers);
+	Device(Device const&) =delete;
+	Device& operator=(Device const&) = delete;
 	~Device();
 	struct QueueFamilyIndices{
 		static int constexpr number_queue = 1;
@@ -29,10 +31,10 @@ struct Device {
 		std::vector <vk::PresentModeKHR> presentModes;
 	};
 
-	vk::Device get_device() { return _device; }
-	vk::Queue get_graphics_queue() {return _graphics_queue;}
-	vk::Queue get_present_queue() {return _present_queue;}
-	vk::PhysicalDevice get_physical_device() { return _physical_device;}
+	vk::Device const& get_device() const{ return _device; }
+	const vk::Queue & get_graphics_queue() const {return _graphics_queue;}
+	const vk::Queue & get_present_queue() const{return _present_queue;}
+	vk::PhysicalDevice const& get_physical_device() const{ return _physical_device;}
 	QueueFamilyIndices const& get_queue_family_indice() { return _indices; }
 	SwapChainSupportDetails const& get_swap_chain_details() { return _swap_chain_details; }
 private:

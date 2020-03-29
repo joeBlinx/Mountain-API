@@ -11,9 +11,11 @@
 
 struct SwapChain {
 
-	SwapChain(vk::Device device, VkSurfaceKHR surface, Device::QueueFamilyIndices const &indices,
+	SwapChain(const vk::Device &device, VkSurfaceKHR surface, Device::QueueFamilyIndices const &indices,
               Device::SwapChainSupportDetails const &swap_chain_support, vk::ImageUsageFlags image_usage,
               int width, int height);
+	SwapChain(SwapChain const&) = delete;
+    SwapChain& operator=(SwapChain const&) = delete;
 	~SwapChain();
 
 	vk::SwapchainKHR get_swap_chain() const;
@@ -25,7 +27,7 @@ struct SwapChain {
 	const vk::Extent2D &get_swap_chain_extent() const;
 
 private:
-	vk::Device _device;
+	vk::Device const& _device;
 	vk::SwapchainKHR _swap_chain;
 	std::vector<vk::Image> _swap_chain_images;
 	std::vector<vk::ImageView> _swap_chain_image_views;

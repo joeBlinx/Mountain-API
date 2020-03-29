@@ -13,6 +13,8 @@
 #include <algorithm>
 #include "utils/utils.hpp"
 #include <array>
+#include <sandbox_useful/swapChain.hpp>
+#include <sandbox_useful/basicInit.hpp>
 
 
 InitVulkan::InitVulkan(int width, int height) : _width(width),
@@ -68,22 +70,19 @@ void InitVulkan::drawFrame()
 	presentInfo.pImageIndices = &imageIndex;
 	presentInfo.pResults = nullptr; // Optional
 	_presentQueue.presentKHR(presentInfo);
-	vkQueueWaitIdle(_presentQueue);
+	_presentQueue.waitIdle();
 
 }
 
 InitVulkan::~InitVulkan() {
-
-	vkDestroySemaphore(_device, _renderFinishedSemaphore, nullptr);
-	vkDestroySemaphore(_device, _imageAvailableSemaphore, nullptr);
-	vkDestroyCommandPool(_device, _commandPool, nullptr);
+    _device.destroy(_renderFinishedSemaphore);
+    _device.destroy(_imageAvailableSemaphore);
+	_device.destroy(_commandPool);
 	for (auto &framebuffer : _swapchainFrameBuffer) {
-		vkDestroyFramebuffer(_device, framebuffer, nullptr);
+		_device.destroy(framebuffer);
 	}
-	vkDestroyPipeline(_device, _graphicsPipeline, nullptr);
-	vkDestroyPipelineLayout(_device, _pipelineLayout, nullptr);
-//	vkDestroyRenderPass(_device, _renderpass, nullptr);
-
+	_device.destroy(_graphicsPipeline);
+	_device.destroy(_pipelineLayout);
 }
 
 
@@ -401,26 +400,23 @@ void InitVulkan::createSemaphores()
 	
 }
 
-InitVulkan::InitVulkan(vk::Instance instance, VkSurfaceKHR surface, vk::Device device, vk::Queue graphics,
-                       vk::Queue present, vk::PhysicalDevice physics, vk::SwapchainKHR swap_chain,
-                       std::vector<vk::ImageView> const &image_views, vk::Extent2D extent, vk::Format format,
+InitVulkan::InitVulkan(const BasicInit &context, const Device &device, const SwapChain &swap_chain,
                        Device::QueueFamilyIndices const &indices, vk::RenderPass renderpass)
-		: _instance(instance), _surface(surface),
-		  _swapchain(swap_chain),
-		  _swapChainImageViews(image_views),
-		  _swapChainImageFormat(format),
-		  _swapChainExtent(extent),
-		  _physicalDevice(physics),
-		  _device(device),
+		: _instance( context.get_vk_instance()), _surface(context.get_vk_surface()),
+		  _swapchain( swap_chain.get_swap_chain()),
+		  _swapChainImageViews(swap_chain.get_swap_chain_image_views()),
+		  _swapChainImageFormat(swap_chain.get_swap_chain_image_format()),
+		  _swapChainExtent(swap_chain.get_swap_chain_extent()),
+		  _physicalDevice( device.get_physical_device()),
+		  _device(device.get_device()),
 		  _indices(indices),
-		  _graphicsQueue(graphics),
-		  _presentQueue(present),
+		  _graphicsQueue(device.get_graphics_queue()),
+		  _presentQueue(device.get_present_queue()),
 		  _renderpass(renderpass){
 	_width = 1366;
 	_height = 768;
 
 
-//	createRenderPass();
 	createPipelineLayout();
 	createGraphicsPipeline();
 	createFrameBuffers();

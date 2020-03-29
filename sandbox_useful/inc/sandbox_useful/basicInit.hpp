@@ -9,9 +9,11 @@ struct BasicInit
 {
 
 	BasicInit(int width, int height, std::string_view title);
+	BasicInit(BasicInit const&) = delete;
+    BasicInit& operator=(BasicInit const&) = delete;
 	~BasicInit();
-	vk::Instance get_vk_instance(){return _instance;}
-	VkSurfaceKHR get_vk_surface(){return _surface;}
+	vk::Instance const& get_vk_instance() const{return _instance;}
+	VkSurfaceKHR get_vk_surface() const{return _surface;}
 	GLFWwindow * get_window() {return _window;}
 
 private:

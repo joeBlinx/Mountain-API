@@ -8,13 +8,13 @@
 #include <vulkan/vulkan.hpp>
 #include <GLFW/glfw3.h>
 #include <vector>
+#include <sandbox_useful/swapChain.hpp>
+#include <sandbox_useful/basicInit.hpp>
 #include "sandbox_useful/device.hpp"
 
 struct InitVulkan {
 	InitVulkan(int width, int height);
-	InitVulkan(vk::Instance instance, VkSurfaceKHR surface, vk::Device device, vk::Queue graphics,
-               vk::Queue present, vk::PhysicalDevice physics, vk::SwapchainKHR swap_chain,
-               std::vector<vk::ImageView> const &image_views, vk::Extent2D extent, vk::Format format,
+	InitVulkan(const BasicInit &context, const Device &device, const SwapChain &swap_chain,
                Device::QueueFamilyIndices const &indices, vk::RenderPass renderpass);
 	void loop(GLFWwindow *window);
 	~InitVulkan();

@@ -126,12 +126,12 @@ void SwapChain::create_image_views() {
 SwapChain::~SwapChain() {
 
 	for (auto& imageView : _swap_chain_image_views) {
-		vkDestroyImageView(_device, imageView, nullptr);
+		_device.destroy(imageView);
 	}
-	vkDestroySwapchainKHR(_device, _swap_chain, nullptr);
+	_device.destroy(_swap_chain);
 }
 
-SwapChain::SwapChain(vk::Device device, VkSurfaceKHR surface, Device::QueueFamilyIndices const &indices,
+SwapChain::SwapChain(const vk::Device &device, VkSurfaceKHR surface, Device::QueueFamilyIndices const &indices,
                      Device::SwapChainSupportDetails const &swap_chain_support, vk::ImageUsageFlags image_usage,
                      int width, int height) : _device(device) {
 	create_swap_chain(surface, indices, swap_chain_support, image_usage, width, height);

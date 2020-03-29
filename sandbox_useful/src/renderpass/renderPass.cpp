@@ -15,7 +15,7 @@ RenderPass::RenderPass(vk::Device device, VkRenderPassCreateInfo RenderPass_info
 }
 
 RenderPass::~RenderPass() {
-	vkDestroyRenderPass(_device, _renderpass, nullptr);
+	_device.destroy(_renderpass);
 }
 
 

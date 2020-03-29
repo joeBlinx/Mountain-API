@@ -23,6 +23,8 @@ struct SubPass
 };
 struct RenderPass {
 	~RenderPass();
+    RenderPass(RenderPass const&) = delete;
+    RenderPass operator=(RenderPass const&) = delete;
 
 	template<SubPass ...attachment>
 	static RenderPass create(vk::Device device, vk::Format const &swap_chain_image_format);

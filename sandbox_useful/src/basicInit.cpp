@@ -56,11 +56,11 @@ void DestroyDebugReportCallbackEXT(vk::Instance instance, VkDebugReportCallbackE
 BasicInit::~BasicInit()
 {
 
-	if (_enableValidationLayer) {
+	if constexpr (_enableValidationLayer) {
 		DestroyDebugReportCallbackEXT(_instance, _callback, nullptr);
 	}
-	vkDestroySurfaceKHR(_instance, _surface, nullptr);
-	vkDestroyInstance(_instance, nullptr);
+	_instance.destroy(_surface);
+	_instance.destroy();
 	glfwDestroyWindow(_window);
 	glfwTerminate();
 }
