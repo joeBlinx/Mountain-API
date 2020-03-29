@@ -12,7 +12,10 @@ target_include_directories(SandBox_utils
 								inc/sandbox_useful 
 								inc/sandbox_useful/renderpass
 								)
-target_link_libraries(SandBox_utils PRIVATE glfw Vulkan::Vulkan utils::utils common_target::common_target)
+target_link_libraries(SandBox_utils PRIVATE glfw
+											vulkan::headers
+											utils::utils
+											)
 set_common_properties(SandBox_utils)
 set_sources(_srcs
 				FOLDER src

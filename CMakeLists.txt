@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 project(sandBox
 		LANGUAGES CXX
 		)
@@ -40,9 +40,9 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC -DGLFW_INCLUDE_VULKAN)
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-											Vulkan::Vulkan
+											vulkan::headers
 											glfw
 											SandBox::utils
 											utils::utils
-											common_target::common_target)
+											)
 
