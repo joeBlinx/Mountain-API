@@ -1,9 +1,13 @@
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
+include(cmake/conan.cmake)
+include(cmake/utils/utils.cmake)
+
+
+check_build_type()
+
 project(sandBox
 		LANGUAGES CXX
 		)
-include(cmake/conan.cmake)
-include(cmake/utils/utils.cmake)
 include(FetchContent)
 FetchContent_Declare(
 		glfw_content
