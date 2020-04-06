@@ -15,12 +15,9 @@ FetchContent_Declare(
 		GIT_TAG        3.3
 )
 
-find_package(glfw3)
+message(STATUS "DOWNLOAD : GLFW3")
+FetchContent_MakeAvailable(glfw_content)
 
-if ( NOT TARGET glfw)
-	message("glfw is not on your system so it will be download in the build folder")
-	FetchContent_MakeAvailable(glfw_content)
-endif()
 find_package(Vulkan REQUIRED)
 
 add_executable(${PROJECT_NAME})
