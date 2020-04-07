@@ -19,18 +19,14 @@ int main() {
 
 	BasicInit context{width, height, "test"};
 
-
 	Device device{context,
                   vk::QueueFlagBits::eGraphics,
                   devicesExtension,
                   validationLayers};
 
-
 	SwapChain swap_chain{
-            device.get_device(),
-            context.get_vk_surface(),
-            device.get_queue_family_indice(),
-            device.get_swap_chain_details(),
+            device,
+            context,
             vk::ImageUsageFlagBits::eColorAttachment,
             width,
             height
@@ -43,8 +39,7 @@ int main() {
             context,
             device,
             swap_chain,
-            device.get_queue_family_indice(),
-            render_pass.get_renderpass());
+            render_pass);
 
 
 	init.loop(context.get_window());

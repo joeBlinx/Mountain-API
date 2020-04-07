@@ -34,8 +34,8 @@ struct Device {
 	const vk::Queue & get_graphics_queue() const {return _graphics_queue;}
 	const vk::Queue & get_present_queue() const{return _present_queue;}
 	vk::PhysicalDevice const& get_physical_device() const{ return _physical_device;}
-	QueueFamilyIndices const& get_queue_family_indice() { return _indices; }
-	SwapChainSupportDetails const& get_swap_chain_details() { return _swap_chain_details; }
+	QueueFamilyIndices const& get_queue_family_indice() const { return _indices; }
+	SwapChainSupportDetails const& get_swap_chain_details() const { return _swap_chain_details; }
 private:
 
 	vk::PhysicalDevice _physical_device;

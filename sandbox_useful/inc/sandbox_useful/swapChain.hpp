@@ -7,12 +7,12 @@
 
 #include <vulkan/vulkan.hpp>
 #include <vector>
-#include "device.hpp"
+#include "sandbox_useful/device.hpp"
 
+class BasicInit;
 struct SwapChain {
 
-	SwapChain(const vk::Device &device, VkSurfaceKHR surface, Device::QueueFamilyIndices const &indices,
-              Device::SwapChainSupportDetails const &swap_chain_support, vk::ImageUsageFlags image_usage,
+	SwapChain(const Device &device, BasicInit const& context, vk::ImageUsageFlags image_usage,
               int width, int height);
 	SwapChain(SwapChain const&) = delete;
     SwapChain& operator=(SwapChain const&) = delete;
