@@ -1,5 +1,5 @@
 #include <iostream>
-#include "initVulkan.hpp"
+#include "sandbox_useful/initVulkan.hpp"
 #include "sandbox_useful/basicInit.hpp"
 #include "sandbox_useful/device.hpp"
 #include "sandbox_useful/swapChain.hpp"
@@ -20,10 +20,9 @@ int main() {
 	BasicInit context{width, height, "test"};
 
 
-	Device device{context.get_vk_instance(),
+	Device device{context,
                   vk::QueueFlagBits::eGraphics,
                   devicesExtension,
-                  context.get_vk_surface(),
                   validationLayers};
 
 

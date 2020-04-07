@@ -7,11 +7,10 @@
 
 #include <vulkan/vulkan.hpp>
 #include <vector>
-
+class BasicInit;
 struct Device {
 
-	Device(vk::Instance instance, vk::QueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension,
-		   VkSurfaceKHR surface, std::vector<const char *> const &validationLayers);
+	Device(BasicInit const& constext, vk::QueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension, std::vector<const char *> const &validationLayers);
 	Device(Device const&) =delete;
 	Device& operator=(Device const&) = delete;
 	~Device();

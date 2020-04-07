@@ -7,7 +7,7 @@
 #include <set>
 #include "utils/log.hpp"
 #include "utils/utils.hpp"
-
+#include "basicInit.hpp"
 Device::QueueFamilyIndices find_queue_families(vk::PhysicalDevice const& device, VkSurfaceKHR surface, vk::QueueFlagBits queue_flag)
 {
 	Device::QueueFamilyIndices indices;
@@ -124,9 +124,9 @@ void Device::create_logical_device(std::vector<char const *> const &devicesExten
 	_present_queue = _device.getQueue(_indices.present_family, 0);
 }
 
-Device::Device(vk::Instance instance, vk::QueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension,
-			   VkSurfaceKHR surface, std::vector<const char *> const &validationLayers){
-	pick_up_physical_device(instance, queue_flag, devicesExtension, surface);
+Device::Device(BasicInit const& context, vk::QueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension, std::vector<const char *> const &validationLayers){
+	auto const& surface = context.get_vk_surface();
+	pick_up_physical_device(context.get_vk_instance(), queue_flag, devicesExtension,surface);
 
 	_swap_chain_details = query_swap_chain_support(_physical_device, surface);
 	_indices = find_queue_families(_physical_device, surface, queue_flag);

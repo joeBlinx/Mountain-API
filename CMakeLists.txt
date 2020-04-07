@@ -8,16 +8,8 @@ check_build_type()
 project(sandBox
 		LANGUAGES CXX
 		)
-include(FetchContent)
-FetchContent_Declare(
-		glfw_content
-		GIT_REPOSITORY https://github.com/glfw/glfw.git
-		GIT_TAG        3.3
-)
 
-message(STATUS "DOWNLOAD : GLFW3")
-FetchContent_MakeAvailable(glfw_content)
-
+download_dependencies()
 find_package(Vulkan REQUIRED)
 
 add_executable(${PROJECT_NAME})
@@ -27,8 +19,6 @@ add_subdirectory(utils)
 target_sources(${PROJECT_NAME} 	
 		PRIVATE 
 		src/main.cpp
-		src/initVulkan.cpp 
-		include/initVulkan.hpp
 		)
 
 set_common_properties(${PROJECT_NAME})
@@ -36,14 +26,11 @@ set_common_properties(${PROJECT_NAME})
 add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD COMMAND ${PROJECT_SOURCE_DIR}/compile.sh
 	${PROJECT_SOURCE_DIR}/shader ${${PROJECT_NAME}_BINARY_DIR} ${${PROJECT_NAME}_BINARY_DIR})
 
-target_compile_definitions(${PROJECT_NAME} PUBLIC -DGLFW_INCLUDE_VULKAN)
+
 
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-											vulkan::headers
-											glfw
 											SandBox::utils
-											utils::utils
 											)
 

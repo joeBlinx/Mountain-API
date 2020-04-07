@@ -35,3 +35,15 @@ function(check_build_type)
 		endif()
 	endif()
 endfunction()
+
+function(download_dependencies)
+	include(FetchContent)
+	FetchContent_Declare(
+			glfw_content
+			GIT_REPOSITORY https://github.com/glfw/glfw.git
+			GIT_TAG        3.3
+	)
+
+	message(STATUS "DOWNLOAD : GLFW3")
+	FetchContent_MakeAvailable(glfw_content)
+endfunction()
