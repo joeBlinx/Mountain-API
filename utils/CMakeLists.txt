@@ -12,7 +12,8 @@ set_sources(_headers
 			FOLDER  ${CMAKE_CURRENT_SOURCE_DIR}/inc/utils
 			FILES 
 				log.hpp
-				utils.hpp)
+				utils.hpp
+				type_trait.hpp)
 
 set_common_properties(utils)
 target_include_directories(utils PRIVATE inc/utils PUBLIC inc/)				

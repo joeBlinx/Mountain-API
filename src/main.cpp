@@ -5,7 +5,7 @@
 #include "sandbox_useful/swapChain.hpp"
 #include "sandbox_useful/renderpass/renderPass.hpp"
 #include <vector>
-
+#include "sandbox_useful/buffer/array_buffer.hpp"
 int main() {
 	const std::vector<const char*> validationLayers {
 			"VK_LAYER_LUNARG_standard_validation"
@@ -43,6 +43,10 @@ int main() {
 
 
 	init.loop(context.get_window());
+	struct Test{
+		float a;
+	};
 
+	CLASS_DESCRIPTION(Test, a);
 	return 0;
 }
