@@ -15,20 +15,9 @@
 #include <array>
 #include <sandbox_useful/swapChain.hpp>
 #include <sandbox_useful/basicInit.hpp>
+#include <sandbox_useful/buffer/array_buffer.hpp>
 
 
-InitVulkan::InitVulkan(int width, int height) : _width(width),
-												_height(height) {
-
-
-	createRenderPass();
-	createPipelineLayout();
-	createGraphicsPipeline();
-	createFrameBuffers();
-	createCommandPool();
-	createCommandBuffers();
-	createSemaphores();
-}
 
 void InitVulkan::loop(GLFWwindow *window) {
 
@@ -204,74 +193,7 @@ void InitVulkan::createPipelineLayout() // lot of parameter
 	_pipelineLayout = _device.createPipelineLayout(pipelineLayoutInfo);
 	
 }
-void InitVulkan::createGraphicsPipeline()
-{
-	std::vector<char> vertex = utils::readFile("trianglevert.spv");
-	std::vector<char> fragment = utils::readFile("trianglefrag.spv");
 
-	auto vertexModule = createShaderModule(vertex);
-	auto fragmentModule = createShaderModule(fragment);
-
-	auto pipelineVertex = createShaderInfo(vertexModule,
-		vk::ShaderStageFlagBits::eVertex);
-	auto pipelineFrag = createShaderInfo(fragmentModule,
-		vk::ShaderStageFlagBits::eFragment);
-
-	std::vector<vk::PipelineShaderStageCreateInfo> shaderStage{ pipelineVertex,pipelineFrag };
-
-	// vertex Input defintion -> in function ?
-	vk::PipelineVertexInputStateCreateInfo vertexInput{};
-	vertexInput.vertexBindingDescriptionCount = 0; // no vertex buffer
-	vertexInput.pVertexBindingDescriptions = nullptr; // Optional
-	vertexInput.vertexAttributeDescriptionCount = 0; // no attribute
-	vertexInput.pVertexAttributeDescriptions = nullptr; // Optional
-
-
-	// define the topology the vertices  and what kind of geometry
-	
-	auto inputAssembly = createAssembly(vk::PrimitiveTopology::eTriangleList);
-
-	auto viewportState = createViewportPipeline(_swapChainExtent);
-
-	auto rasterizer = createRasterizer();
-	auto multisampling = createMultisampling();
-
-	// DEPTH AND STENCIL
-
-	// COLOR_RENDERING
-	auto colorBlendAttachement = createColorBlendAttachement();
-	auto colorBlending = createColorBlendState(colorBlendAttachement);
-
-	std::array shaderStages{ pipelineVertex, pipelineFrag };
-
-	/**can be factorised in function
-	*/
-	vk::GraphicsPipelineCreateInfo pipelineInfo  {};
-	pipelineInfo.stageCount = shaderStages.size();
-	pipelineInfo.pStages = shaderStages.data();
-
-	pipelineInfo.pVertexInputState = &vertexInput;
-	pipelineInfo.pInputAssemblyState = &inputAssembly;
-	pipelineInfo.pViewportState = &viewportState;
-	pipelineInfo.pRasterizationState = &rasterizer;
-	pipelineInfo.pMultisampleState = &multisampling;
-	pipelineInfo.pDepthStencilState = nullptr; // Optional nostencil for now
-	pipelineInfo.pColorBlendState = &colorBlending;
-	pipelineInfo.pDynamicState = nullptr; // Optional
-	pipelineInfo.layout = _pipelineLayout;
-	pipelineInfo.renderPass = _renderpass;
-	pipelineInfo.subpass = 0;
-	// pipelineInfo.basePipelineHandle ; // Optional
-	pipelineInfo.basePipelineIndex = -1; // Optional
-	_graphicsPipeline = _device.createGraphicsPipeline({}, pipelineInfo).value;
-	// checkError(vkCreateGraphicsPipelines(_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_graphicsPipeline)
-	// 	, "failed to create graphics pipeline!"
-	// );
-
-	vkDestroyShaderModule(_device, fragmentModule, nullptr);
-	vkDestroyShaderModule(_device, vertexModule, nullptr);
-
-}
 // some parameter
 void InitVulkan::createRenderPass()
 {
@@ -415,11 +337,4 @@ InitVulkan::InitVulkan(const BasicInit &context, const Device &device, const Swa
 	_width = 1366;
 	_height = 768;
 
-
-	createPipelineLayout();
-	createGraphicsPipeline();
-	createFrameBuffers();
-	createCommandPool();
-	createCommandBuffers();
-	createSemaphores();
 }

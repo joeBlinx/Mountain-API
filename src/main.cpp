@@ -35,18 +35,19 @@ int main() {
 	RenderPass render_pass = RenderPass::create<SubPass{subpass_attachment::COLOR}>(
 			device.get_device(), swap_chain.get_swap_chain_image_format());
 
-	InitVulkan init(
+	
+
+	struct Test{
+		float position[2];
+		float color[3];
+	};
+	buffer::array::vertex_description vertex_description(0, 0, CLASS_DESCRIPTION(Test, position, color));
+	InitVulkan init = InitVulkan::create_vulkan(
             context,
             device,
             swap_chain,
-            render_pass);
-
-
+            render_pass, vertex_description);
 	init.loop(context.get_window());
-	struct Test{
-		float a;
-	};
 
-	CLASS_DESCRIPTION(Test, a);
 	return 0;
 }
