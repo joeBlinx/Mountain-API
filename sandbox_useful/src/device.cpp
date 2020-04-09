@@ -134,3 +134,22 @@ Device::Device(BasicInit const& context, vk::QueueFlagBits queue_flag, std::vect
 	create_logical_device(devicesExtension, validationLayers);
 
 }
+vk::UniqueDeviceMemory Device::create_device_memory(vk::MemoryRequirements const& mem_requirements, vk::MemoryPropertyFlags properties) const{
+	auto mem_properties = _physical_device.getMemoryProperties();
+
+	auto find_memory_type = [&mem_properties, type_filter = mem_requirements.memoryTypeBits, &properties]() {
+		for (uint32_t i =0; i < mem_properties.memoryTypeCount ;i++){
+			 if ((type_filter & (1 << i)) && (mem_properties.memoryTypes[i].propertyFlags & properties) == properties) {
+      		  	return i;
+    		}
+		}
+		throw std::runtime_error("failed to find suitable memory type!");
+		return 0u;
+	};
+	return _device.allocateMemoryUnique(
+		vk::MemoryAllocateInfo(
+			mem_requirements.size,
+			find_memory_type()
+		)
+	);
+}

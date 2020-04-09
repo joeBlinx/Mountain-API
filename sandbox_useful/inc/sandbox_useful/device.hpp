@@ -36,6 +36,7 @@ struct Device {
 	vk::PhysicalDevice const& get_physical_device() const{ return _physical_device;}
 	QueueFamilyIndices const& get_queue_family_indice() const { return _indices; }
 	SwapChainSupportDetails const& get_swap_chain_details() const { return _swap_chain_details; }
+	vk::UniqueDeviceMemory create_device_memory(vk::MemoryRequirements const& mem_requirements, vk::MemoryPropertyFlags type_filter) const;
 private:
 
 	vk::PhysicalDevice _physical_device;

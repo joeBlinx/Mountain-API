@@ -3,6 +3,8 @@
 #include <array>
 #include <utils/type_trait.hpp>
 #include <algorithm>
+#include "sandbox_useful/device.hpp"
+#include "utils/raii_helper.h"
 
 template<class T>
 constexpr vk::Format get_format(){
@@ -28,6 +30,7 @@ struct format_offset{
 #define CLASS_DESCRIPTION_6(object, attrib1,  attrib2, attrib3, attrib4, attrib5 ,attrib6)  CLASS_DESCRIPTION_5(object, attrib1,  attrib2, attrib3, attrib4, attrib5), format_offset<object>{ get_format<decltype(object::attrib6)>(), offsetof(object, attrib6) }
 
 #define CLASS_DESCRIPTION(object, ...) std::array{ CONC(CLASS_DESCRIPTION_, NARGS(__VA_ARGS__)) (object, __VA_ARGS__) }
+class Device;
 namespace buffer{
     namespace array{
         template<class T, size_t n>
@@ -53,10 +56,36 @@ namespace buffer{
             
         };
     }
+    template<class T>
+    concept bool Container = requires(T a){
+        {a.size()} -> size_t;
+        {a.data()} -> T::value_type*;
+    };
     struct vertex{
-        vertex(class Device const& device);
+      
+        vertex(Device const& device, Container && vertices):_device(device.get_device())
+    	{	
+            vk::BufferCreateInfo create_info;
+            create_info.size = sizeof(decltype(vertices)::value_type) * vertices.size();
+            create_info.usage = vk::BufferUsageFlagBits::eVertexBuffer;
+            create_info.sharingMode = vk::SharingMode::eExclusive;
+            _buffer = _device.createBufferUnique(create_info);
+
+            vk::MemoryRequirements mem_requirements;
+            _device.getBufferMemoryRequirements(*_buffer, &mem_requirements);
+            _buffer_memory = device.create_device_memory(mem_requirements, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+
+            _device.bindBufferMemory(*_buffer, *_buffer_memory, 0);
+            void* data{};
+            {
+                utils::raii_helper::MapMemory raii_mapping(_device, _buffer_memory, 0, create_info.size, &data);
+                memcpy(data, vertices.data(), static_cast<size_t>(create_info.size));
+            }
+
+	    }
     private:
         vk::Device _device;
         vk::UniqueBuffer _buffer;
+        vk::UniqueDeviceMemory _buffer_memory;
     };
 }

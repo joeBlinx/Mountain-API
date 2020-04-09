@@ -47,5 +47,7 @@ set_sources(_headers
 					initVulkan.hpp
 				)
 target_compile_definitions(SandBox_utils PUBLIC -DGLFW_INCLUDE_VULKAN)
+target_compile_options(SandBox_utils PUBLIC -fconcepts)
 target_sources(SandBox_utils PRIVATE ${_srcs} ${_srcs_buffer}
 							INTERFACE ${_headers} ${_headers_buffer})
+							
