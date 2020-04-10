@@ -59,14 +59,14 @@ namespace buffer{
     template<class T>
     concept bool Container = requires(T a){
         {a.size()} -> size_t;
-        {a.data()} -> T::value_type*;
+        {a.data()};
     };
     struct vertex{
-      
-        vertex(Device const& device, Container && vertices):_device(device.get_device())
+        template<Container container>
+        vertex(Device const& device, container && vertices):_device(device.get_device())
     	{	
             vk::BufferCreateInfo create_info;
-            create_info.size = sizeof(decltype(vertices)::value_type) * vertices.size();
+            create_info.size = sizeof(vertices[0]) * vertices.size();
             create_info.usage = vk::BufferUsageFlagBits::eVertexBuffer;
             create_info.sharingMode = vk::SharingMode::eExclusive;
             _buffer = _device.createBufferUnique(create_info);

@@ -5,7 +5,7 @@ namespace utils::raii_helper{
 
         MapMemory(vk::Device const& device, vk::UniqueDeviceMemory& device_memory, uint32_t offset, uint32_t size, void**data):_device(device),
         _device_memory(device_memory){
-            _device.mapMemory(*_device_memory, offset, size, vk::MemoryMapFlags::, data);
+            _device.mapMemory(*_device_memory, offset, size, vk::MemoryMapFlags(), data);
         }
         
         ~MapMemory(){

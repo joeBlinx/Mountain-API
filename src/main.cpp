@@ -36,12 +36,24 @@ int main() {
 			device.get_device(), swap_chain.get_swap_chain_image_format());
 
 	
-
-	struct Test{
-		float position[2];
-		float color[3];
+	struct vec2{
+		float a;
+		float b;
 	};
-	buffer::array::vertex_description vertex_description(0, 0, CLASS_DESCRIPTION(Test, position, color));
+	struct vec3{
+		float a, b, c;
+	};
+	struct Vertex{
+		vec2 position;
+		vec3 color;
+	};
+	std::array<Vertex, 3> vertices{
+		Vertex{vec2{0.0f, -0.5f}, vec3{1.0f, 1.0f, 1.0f}},
+		Vertex{vec2{0.5f, 0.5f}, vec3{0.0f, 1.0f, 0.0f}},
+		Vertex{vec2{-0.5f, 0.5f}, vec3{0.0f, 0.0f, 1.0f}}
+	};
+	buffer::array::vertex_description vertex_description(0, 0, CLASS_DESCRIPTION(Vertex, position, color));
+	buffer::vertex vertex(device, vertices);
 	InitVulkan init = InitVulkan::create_vulkan(
             context,
             device,

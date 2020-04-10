@@ -185,7 +185,7 @@ void InitVulkan::createGraphicsPipeline(Ts &&... vertex_description)
 	pipelineInfo.subpass = 0;
 	// pipelineInfo.basePipelineHandle ; // Optional
 	pipelineInfo.basePipelineIndex = -1; // Optional
-	_graphicsPipeline = _device.createGraphicsPipeline({}, pipelineInfo).value;
+	_graphicsPipeline = _device.createGraphicsPipeline({}, pipelineInfo);
 	vkDestroyShaderModule(_device, fragmentModule, nullptr);
 	vkDestroyShaderModule(_device, vertexModule, nullptr);
 
