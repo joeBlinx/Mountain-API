@@ -273,7 +273,7 @@ void InitVulkan::createCommandPool()
 	
 }
 //unique by software
-void InitVulkan::createCommandBuffers()
+void InitVulkan::createCommandBuffers(std::vector<vk::Buffer> const& buffers)
 {
 	_commandBuffers.resize(_swapchainFrameBuffer.size());
 	vk::CommandBufferAllocateInfo allocInfo = {};
@@ -306,6 +306,7 @@ void InitVulkan::createCommandBuffers()
 
 		vkCmdBeginRenderPass(_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 		vkCmdBindPipeline(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline); // bind the pipeline
+		_commandBuffers[i].bindVertexBuffers(0, 1, buffers.data(), std::vector<vk::DeviceSize>{0}.data());
 		vkCmdDraw(_commandBuffers[i], 3, 1, 0, 0); // draw buffer
 
 		vkCmdEndRenderPass(_commandBuffers[i]);

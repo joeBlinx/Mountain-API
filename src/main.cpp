@@ -54,11 +54,12 @@ int main() {
 	};
 	buffer::array::vertex_description vertex_description(0, 0, CLASS_DESCRIPTION(Vertex, position, color));
 	buffer::vertex vertex(device, vertices);
+
 	InitVulkan init = InitVulkan::create_vulkan(
             context,
             device,
             swap_chain,
-            render_pass, vertex_description);
+            render_pass, {static_cast<vk::Buffer>(vertex)}, vertex_description);
 	init.loop(context.get_window());
 
 	return 0;

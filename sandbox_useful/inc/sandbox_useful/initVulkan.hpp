@@ -14,7 +14,7 @@
 #include "sandbox_useful/renderpass/renderPass.hpp"
 #include "utils/utils.hpp"
 #include "sandbox_useful/buffer/array_buffer.hpp"
-
+#include <iostream>
 struct InitVulkan {
 private:
 	InitVulkan(const BasicInit &context, const Device &device, const SwapChain &swap_chain, RenderPass const& renderpass);
@@ -22,7 +22,7 @@ public:
 	void loop(GLFWwindow *window);
 	~InitVulkan();
 	template<class ...Ts>
-	static InitVulkan create_vulkan(const BasicInit &context, const Device &device, const SwapChain &swap_chain, RenderPass const& renderpass, Ts &&... vertex_description);
+	static InitVulkan create_vulkan(const BasicInit &context, const Device &device, const SwapChain &swap_chain, RenderPass const& renderpass, std::vector<vk::Buffer> const& buffers, Ts &&... vertex_description);
 
 private:
 	const std::vector<const char*> validationLayers {
@@ -67,7 +67,7 @@ private:
 	void createPipelineLayout(); // lot of parameter
 	void createRenderPass();
 	void createCommandPool();
-	void createCommandBuffers();
+	void createCommandBuffers(std::vector<vk::Buffer> const& buffers);
 	void drawFrame();
 	void createSemaphores();
 
@@ -75,21 +75,19 @@ private:
 };
 
 template<class ...Ts>
-InitVulkan InitVulkan::create_vulkan(const BasicInit &context, const Device &device, const SwapChain &swap_chain, RenderPass const& renderpass, Ts &&... vertex_description){
+InitVulkan InitVulkan::create_vulkan(const BasicInit &context, const Device &device, const SwapChain &swap_chain, RenderPass const& renderpass, std::vector<vk::Buffer> const& buffers, Ts &&... vertex_description){
 	InitVulkan initvulkan(context, device, swap_chain, renderpass);
 	initvulkan.createPipelineLayout();
 	initvulkan.createGraphicsPipeline(std::forward<Ts>(vertex_description)...);
 	initvulkan.createFrameBuffers();
 	initvulkan.createCommandPool();
-	initvulkan.createCommandBuffers();
+	initvulkan.createCommandBuffers(buffers);
 	initvulkan.createSemaphores();
 	return initvulkan;
 }
 template<class IT, class T, class ...Ts>
 auto copy (IT it_begin, T& array){
-				auto end = it_begin;
-				std::advance(end, array.size());
-				std::copy(it_begin, end, std::begin(array));
+				std::copy(std::begin(array), std::end(array), it_begin);
 }
 template<class IT, class T, class ...Ts>
 void copy(IT it_begin, T& array, Ts&... arrays){
@@ -109,9 +107,9 @@ public:
 		copy(std::begin(attribute_descriptions), vertex_description.attributes...);
 		bindings_descriptions = std::array{vertex_description.bindings...};
 		create_info.vertexBindingDescriptionCount = bindings_descriptions.size();
-		create_info.pVertexBindingDescriptions = bindings_descriptions.data(); // Optional
+		create_info.pVertexBindingDescriptions = bindings_descriptions.data(); 
 		create_info.vertexAttributeDescriptionCount = attribute_descriptions.size(); 
-		create_info.pVertexAttributeDescriptions = attribute_descriptions.data(); // Optional
+		create_info.pVertexAttributeDescriptions = attribute_descriptions.data();
 	}
 };
 
@@ -141,16 +139,9 @@ void InitVulkan::createGraphicsPipeline(Ts &&... vertex_description)
 
 	std::vector<vk::PipelineShaderStageCreateInfo> shaderStage{ pipelineVertex,pipelineFrag };
 
-	// // vertex Input defintion -> in function ?
-	// vk::PipelineVertexInputStateCreateInfo vertexInput{};
-	// vertexInput.vertexBindingDescriptionCount = 0; // no vertex buffer
-	// vertexInput.pVertexBindingDescriptions = nullptr; // Optional
-	// vertexInput.vertexAttributeDescriptionCount = 0; // no attribute
-	// vertexInput.pVertexAttributeDescriptions = nullptr; // Optional
 	VertexInfo vertex_info(std::forward<Ts>(vertex_description)...);
 
 	// define the topology the vertices  and what kind of geometry
-	
 	auto inputAssembly = createAssembly(vk::PrimitiveTopology::eTriangleList);
 
 	auto viewportState = createViewportPipeline(_swapChainExtent);
@@ -185,7 +176,7 @@ void InitVulkan::createGraphicsPipeline(Ts &&... vertex_description)
 	pipelineInfo.subpass = 0;
 	// pipelineInfo.basePipelineHandle ; // Optional
 	pipelineInfo.basePipelineIndex = -1; // Optional
-	_graphicsPipeline = _device.createGraphicsPipeline({}, pipelineInfo);
+	_graphicsPipeline = _device.createGraphicsPipeline({}, pipelineInfo).value;
 	vkDestroyShaderModule(_device, fragmentModule, nullptr);
 	vkDestroyShaderModule(_device, vertexModule, nullptr);
 

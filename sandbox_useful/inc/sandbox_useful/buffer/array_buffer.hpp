@@ -5,7 +5,6 @@
 #include <algorithm>
 #include "sandbox_useful/device.hpp"
 #include "utils/raii_helper.h"
-
 template<class T>
 constexpr vk::Format get_format(){
     return vertex_format_t<T, sizeof(T)/sizeof(uint32_t)> ;
@@ -46,7 +45,7 @@ namespace buffer{
             { 
                 std::generate(std::begin(attributes), std::end(attributes),
                             [form_offset = std::begin(format_offsets), location = location_start_from, binding] () mutable {
-                            vk::VertexInputAttributeDescription ret{binding, location++, form_offset->format, form_offset->offset};
+                            vk::VertexInputAttributeDescription ret{location++, binding,form_offset->format, form_offset->offset};
                             ++form_offset;
                             return ret;
                         }
@@ -83,6 +82,9 @@ namespace buffer{
             }
 
 	    }
+        operator vk::Buffer const&() const{
+            return *_buffer;
+        }
     private:
         vk::Device _device;
         vk::UniqueBuffer _buffer;
