@@ -66,14 +66,21 @@ namespace buffer{
     	{	
            
             vk::DeviceSize buffer_size = sizeof(vertices[0]) * vertices.size();
-            std::tie(_buffer, _buffer_memory) = device.create_buffer_and_memory(buffer_size, vk::BufferUsageFlagBits::eVertexBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
-           
-            _vk_device.bindBufferMemory(*_buffer, *_buffer_memory, 0);
+
+
+            auto[staging_buffer, staging_memory] = device.create_buffer_and_memory(buffer_size,
+                    vk::BufferUsageFlagBits::eTransferSrc,
+                    vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
             {
                 void* data{};
-                utils::raii_helper::MapMemory raii_mapping(_vk_device, _buffer_memory, 0, buffer_size, &data);
+                utils::raii_helper::MapMemory raii_mapping(_vk_device, staging_memory, 0, buffer_size, &data);
                 memcpy(data, vertices.data(), static_cast<size_t>(buffer_size));
             }
+
+            std::tie(_buffer, _buffer_memory) = device.create_buffer_and_memory(buffer_size,
+                    vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst,
+                    vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+    	    device.copy_buffer(_buffer, staging_buffer, buffer_size);
 
 	    }
         operator vk::Buffer const&() const{

@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <stdexcept>
 namespace utils {
 #ifdef NDEBUG
 	constexpr bool debug = false;
@@ -29,7 +30,7 @@ namespace utils {
 	void printFatalError(Ts && ...args) {
 		if constexpr (debug) {
 			((std::cerr << std::forward<Ts>(args) << " "), ...) << std::endl;
-			exit(1);
+			throw std::runtime_error("Fatal error");
 		}
 	}
 

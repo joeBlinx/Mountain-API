@@ -66,7 +66,9 @@ void InitVulkan::drawFrame()
 InitVulkan::~InitVulkan() {
     _device.destroy(_renderFinishedSemaphore);
     _device.destroy(_imageAvailableSemaphore);
-	_device.destroy(_commandPool);
+
+    _device.free(_commandPool, _commandBuffers);
+
 	for (auto &framebuffer : _swapchainFrameBuffer) {
 		_device.destroy(framebuffer);
 	}
@@ -194,51 +196,6 @@ void InitVulkan::createPipelineLayout() // lot of parameter
 	
 }
 
-// some parameter
-void InitVulkan::createRenderPass()
-{
-	vk::AttachmentDescription colorAttachment;
-	colorAttachment.format = _swapChainImageFormat;
-	colorAttachment.samples = vk::SampleCountFlagBits::e1;
-	colorAttachment.loadOp = vk::AttachmentLoadOp::eClear;
-	colorAttachment.storeOp = vk::AttachmentStoreOp::eStore;
-	colorAttachment.stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
-	colorAttachment.stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
-	colorAttachment.initialLayout = vk::ImageLayout::eUndefined;
-	colorAttachment.finalLayout = vk::ImageLayout::ePresentSrcKHR;
-
-	vk::AttachmentReference colorAttachmentRef = {};
-	colorAttachmentRef.attachment = 0;
-	colorAttachmentRef.layout = vk::ImageLayout::eColorAttachmentOptimal;
-
-	vk::SubpassDescription subpass = {};
-	subpass.pipelineBindPoint = vk::PipelineBindPoint::eGraphics;
-
-	subpass.colorAttachmentCount = 1;
-	subpass.pColorAttachments = &colorAttachmentRef;
-
-	vk::SubpassDependency dependency = {};
-	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-	dependency.dstSubpass = 0;
-	dependency.srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
-	dependency.srcAccessMask = vk::AccessFlagBits::eColorAttachmentWrite;
-	dependency.dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
-	dependency.dstAccessMask = vk::AccessFlagBits::eColorAttachmentRead| vk::AccessFlagBits::eColorAttachmentWrite;
-
-	vk::RenderPassCreateInfo renderPassInfo;
-	renderPassInfo.attachmentCount = 1;
-	renderPassInfo.pAttachments = &colorAttachment;
-	renderPassInfo.subpassCount = 1;
-	renderPassInfo.pSubpasses = &subpass;
-	renderPassInfo.dependencyCount = 1;
-	renderPassInfo.pDependencies = &dependency;
-
-	_renderpass = _device.createRenderPass(renderPassInfo);
-	// checkError(vkCreateRenderPass(_device, &renderPassInfo, nullptr, &_renderpass), 
-	// 	"failed to create render pass!");
-	
-}
-
 //need parameter
 void InitVulkan::createFrameBuffers()
 {
@@ -261,16 +218,6 @@ void InitVulkan::createFrameBuffers()
 	
 	}
 
-}
-void InitVulkan::createCommandPool()
-{
-	VkCommandPoolCreateInfo poolInfo = {};
-	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	poolInfo.queueFamilyIndex = _indices.graphics_family;
-	poolInfo.flags = 0; // Optional need parameter
-	_commandPool = _device.createCommandPool(poolInfo);
-	
-	
 }
 //unique by software
 void InitVulkan::createCommandBuffers(std::vector<vk::Buffer> const& buffers)
@@ -332,6 +279,7 @@ InitVulkan::InitVulkan(const BasicInit &context, const Device &device, const Swa
 		  _physicalDevice( device.get_physical_device()),
 		  _device(device.get_device()),
 		  _indices(device.get_queue_family_indice()),
+		  _commandPool(device.get_command_pool()),
 		  _graphicsQueue(device.get_graphics_queue()),
 		  _presentQueue(device.get_present_queue()),
 		  _renderpass(renderpass.get_renderpass()){

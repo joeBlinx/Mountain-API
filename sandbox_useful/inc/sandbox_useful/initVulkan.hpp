@@ -50,7 +50,7 @@ private:
 	vk::PipelineLayout _pipelineLayout;
 	vk::Pipeline _graphicsPipeline;
 	std::vector<vk::Framebuffer> _swapchainFrameBuffer;
-	vk::CommandPool _commandPool;
+	vk::CommandPool const& _commandPool;
 	std::vector<vk::CommandBuffer> _commandBuffers;
 	vk::Queue  _graphicsQueue;
 
@@ -65,8 +65,6 @@ private:
 	template<class ...Ts>
 	void createGraphicsPipeline(Ts &&... vertex_description); // multiple parameters but can surely be divide in some fucntions
 	void createPipelineLayout(); // lot of parameter
-	void createRenderPass();
-	void createCommandPool();
 	void createCommandBuffers(std::vector<vk::Buffer> const& buffers);
 	void drawFrame();
 	void createSemaphores();
@@ -80,7 +78,6 @@ InitVulkan InitVulkan::create_vulkan(const BasicInit &context, const Device &dev
 	initvulkan.createPipelineLayout();
 	initvulkan.createGraphicsPipeline(std::forward<Ts>(vertex_description)...);
 	initvulkan.createFrameBuffers();
-	initvulkan.createCommandPool();
 	initvulkan.createCommandBuffers(buffers);
 	initvulkan.createSemaphores();
 	return initvulkan;
