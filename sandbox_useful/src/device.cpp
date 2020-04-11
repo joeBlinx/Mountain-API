@@ -134,6 +134,25 @@ Device::Device(BasicInit const& context, vk::QueueFlagBits queue_flag, std::vect
 	create_logical_device(devicesExtension, validationLayers);
 
 }
+
+std::pair<vk::UniqueBuffer,
+		vk::UniqueDeviceMemory> Device::create_buffer_and_memory(vk::DeviceSize const& size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties) const{
+	vk::BufferCreateInfo buffer_info{
+		{},
+		size, 
+		usage,
+		vk::SharingMode::eExclusive
+	};
+	vk::UniqueBuffer buffer = _device.createBufferUnique(buffer_info);
+	
+	vk::MemoryRequirements mem_requirement;
+	_device.getBufferMemoryRequirements(*buffer, &mem_requirement);
+	
+	return {
+		std::move(buffer), 
+		create_device_memory(mem_requirement, properties)
+		};
+}
 vk::UniqueDeviceMemory Device::create_device_memory(vk::MemoryRequirements const& mem_requirements, vk::MemoryPropertyFlags properties) const{
 	auto mem_properties = _physical_device.getMemoryProperties();
 

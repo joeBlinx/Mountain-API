@@ -52,6 +52,7 @@ int main() {
 		Vertex{vec2{0.5f, 0.5f}, vec3{0.0f, 1.0f, 0.0f}},
 		Vertex{vec2{-0.5f, 0.5f}, vec3{0.0f, 0.0f, 1.0f}}
 	};
+	
 	buffer::array::vertex_description vertex_description(0, 0, CLASS_DESCRIPTION(Vertex, position, color));
 	buffer::vertex vertex(device, vertices);
 

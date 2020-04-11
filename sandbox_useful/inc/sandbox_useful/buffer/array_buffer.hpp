@@ -62,23 +62,17 @@ namespace buffer{
     };
     struct vertex{
         template<Container container>
-        vertex(Device const& device, container && vertices):_device(device.get_device())
+        vertex(Device const& device, container && vertices):_vk_device(device.get_device())
     	{	
-            vk::BufferCreateInfo create_info;
-            create_info.size = sizeof(vertices[0]) * vertices.size();
-            create_info.usage = vk::BufferUsageFlagBits::eVertexBuffer;
-            create_info.sharingMode = vk::SharingMode::eExclusive;
-            _buffer = _device.createBufferUnique(create_info);
-
-            vk::MemoryRequirements mem_requirements;
-            _device.getBufferMemoryRequirements(*_buffer, &mem_requirements);
-            _buffer_memory = device.create_device_memory(mem_requirements, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
-
-            _device.bindBufferMemory(*_buffer, *_buffer_memory, 0);
-            void* data{};
+           
+            vk::DeviceSize buffer_size = sizeof(vertices[0]) * vertices.size();
+            std::tie(_buffer, _buffer_memory) = device.create_buffer_and_memory(buffer_size, vk::BufferUsageFlagBits::eVertexBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+           
+            _vk_device.bindBufferMemory(*_buffer, *_buffer_memory, 0);
             {
-                utils::raii_helper::MapMemory raii_mapping(_device, _buffer_memory, 0, create_info.size, &data);
-                memcpy(data, vertices.data(), static_cast<size_t>(create_info.size));
+                void* data{};
+                utils::raii_helper::MapMemory raii_mapping(_vk_device, _buffer_memory, 0, buffer_size, &data);
+                memcpy(data, vertices.data(), static_cast<size_t>(buffer_size));
             }
 
 	    }
@@ -86,7 +80,7 @@ namespace buffer{
             return *_buffer;
         }
     private:
-        vk::Device _device;
+        vk::Device _vk_device;
         vk::UniqueBuffer _buffer;
         vk::UniqueDeviceMemory _buffer_memory;
     };

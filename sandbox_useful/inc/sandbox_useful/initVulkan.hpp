@@ -41,7 +41,7 @@ private:
 	vk::SurfaceKHR _surface;
 	vk::SwapchainKHR _swapchain;
 
-	std::vector<vk::ImageView> _swapChainImageViews;
+	std::vector<vk::ImageView> const& _swapChainImageViews;
 	vk::Format _swapChainImageFormat;
 	vk::Extent2D _swapChainExtent;
 	vk::PhysicalDevice _physicalDevice;
