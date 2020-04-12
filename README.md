@@ -11,5 +11,3 @@ make several config possible Stencil buffer? nb of renderpass, subpasses etc...
 config file system where you put all the specific features you need 
 
 When we load a share lib, read a config file, destroy the previous config and load the new
-
-migrate to the C++ API
