@@ -47,20 +47,24 @@ int main() {
 		vec2 position;
 		vec3 color;
 	};
-	std::array<Vertex, 3> vertices{
-		Vertex{vec2{0.0f, -0.5f}, vec3{1.0f, 1.0f, 1.0f}},
-		Vertex{vec2{0.5f, 0.5f}, vec3{0.0f, 1.0f, 0.0f}},
-		Vertex{vec2{-0.5f, 0.5f}, vec3{0.0f, 0.0f, 1.0f}}
+	std::array vertices{
+            Vertex{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+            Vertex{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+            Vertex{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+            Vertex{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
 	};
-	
 	buffer::array::vertex_description vertex_description(0, 0, CLASS_DESCRIPTION(Vertex, position, color));
-	buffer::vertex vertex(device, vertices);
+
+    std::vector<buffer::vertex> vertex;
+    vertex.emplace_back(buffer::vertex(device, vertices, {
+            0, 1, 2, 2, 3, 0
+    }));
 
 	InitVulkan init = InitVulkan::create_vulkan(
             context,
             device,
             swap_chain,
-            render_pass, {static_cast<vk::Buffer>(vertex)}, vertex_description);
+            render_pass, {vertex}, vertex_description);
 	init.loop(context.get_window());
 
 	return 0;

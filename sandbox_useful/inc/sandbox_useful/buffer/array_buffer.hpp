@@ -37,12 +37,12 @@ namespace buffer{
             static constexpr size_t attributes_size = n;
             vk::VertexInputBindingDescription bindings;
             std::array<vk::VertexInputAttributeDescription, n> attributes;
-            
+
             vertex_description(uint32_t binding, uint32_t location_start_from, std::array<format_offset<T>, n> const& format_offsets):
             bindings(binding,
                     sizeof(T),
                     vk::VertexInputRate::eVertex)
-            { 
+            {
                 std::generate(std::begin(attributes), std::end(attributes),
                             [form_offset = std::begin(format_offsets), location = location_start_from, binding] () mutable {
                             vk::VertexInputAttributeDescription ret{location++, binding,form_offset->format, form_offset->offset};
@@ -50,9 +50,9 @@ namespace buffer{
                             return ret;
                         }
         );
-                    
+
             }
-            
+
         };
     }
     template<class T>
@@ -61,34 +61,48 @@ namespace buffer{
         {a.data()};
     };
     struct vertex{
-        template<Container container>
-        vertex(Device const& device, container && vertices):_vk_device(device.get_device())
-    	{	
-           
-            vk::DeviceSize buffer_size = sizeof(vertices[0]) * vertices.size();
+        vertex(Device const& device, Container&& vertices, std::vector<uint16_t>&& indices):_device(device),_indices_count(indices.size()) {
+            create_buffer(vertices, vk::BufferUsageFlagBits::eVertexBuffer, _buffer, _buffer_memory);
+            create_buffer(indices, vk::BufferUsageFlagBits::eIndexBuffer, _indices_buffer, _indices_buffer_memory);
+        }
 
-
-            auto[staging_buffer, staging_memory] = device.create_buffer_and_memory(buffer_size,
-                    vk::BufferUsageFlagBits::eTransferSrc,
-                    vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
-            {
-                void* data{};
-                utils::raii_helper::MapMemory raii_mapping(_vk_device, staging_memory, 0, buffer_size, &data);
-                memcpy(data, vertices.data(), static_cast<size_t>(buffer_size));
-            }
-
-            std::tie(_buffer, _buffer_memory) = device.create_buffer_and_memory(buffer_size,
-                    vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst,
-                    vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
-    	    device.copy_buffer(_buffer, staging_buffer, buffer_size);
-
-	    }
-        operator vk::Buffer const&() const{
+        vk::Buffer const& get_buffer() const {
             return *_buffer;
         }
+        vk::Buffer const& get_indices_buffer() const{
+            return *_indices_buffer;
+        }
+
+        uint32_t get_indices_count() const{
+            return _indices_count;
+        }
     private:
-        vk::Device _vk_device;
+        void create_buffer(Container const& container, vk::BufferUsageFlagBits buffer_usage, vk::UniqueBuffer& buffer, vk::UniqueDeviceMemory& buffer_memory);
+        Device const& _device;
         vk::UniqueBuffer _buffer;
         vk::UniqueDeviceMemory _buffer_memory;
+
+        vk::UniqueBuffer _indices_buffer;
+        vk::UniqueDeviceMemory _indices_buffer_memory;
+        uint32_t _indices_count;
     };
+    void vertex::create_buffer(Container const& container, vk::BufferUsageFlagBits buffer_usage, vk::UniqueBuffer& buffer, vk::UniqueDeviceMemory& buffer_memory){
+        vk::DeviceSize buffer_size = sizeof(container[0]) * container.size();
+        auto const& vk_device = _device.get_device();
+
+        auto[staging_buffer, staging_memory] = _device.create_buffer_and_memory(buffer_size,
+                                                                               vk::BufferUsageFlagBits::eTransferSrc,
+                                                                               vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+        {
+            void* data{};
+            utils::raii_helper::MapMemory raii_mapping(vk_device, staging_memory, 0, buffer_size, &data);
+            memcpy(data, container.data(), static_cast<size_t>(buffer_size));
+        }
+
+        std::tie(buffer, buffer_memory) = _device.create_buffer_and_memory(buffer_size,
+                                                                            buffer_usage | vk::BufferUsageFlagBits::eTransferDst,
+                                                                            vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+        _device.copy_buffer(buffer, staging_buffer, buffer_size);
+    }
+
 }

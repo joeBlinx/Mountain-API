@@ -15,6 +15,7 @@
 #include "utils/utils.hpp"
 #include "sandbox_useful/buffer/array_buffer.hpp"
 #include <iostream>
+#include "sandbox_useful/buffer/array_buffer.hpp"
 struct InitVulkan {
 private:
 	InitVulkan(const BasicInit &context, const Device &device, const SwapChain &swap_chain, RenderPass const& renderpass);
@@ -22,15 +23,9 @@ public:
 	void loop(GLFWwindow *window);
 	~InitVulkan();
 	template<class ...Ts>
-	static InitVulkan create_vulkan(const BasicInit &context, const Device &device, const SwapChain &swap_chain, RenderPass const& renderpass, std::vector<vk::Buffer> const& buffers, Ts &&... vertex_description);
+	static InitVulkan create_vulkan(const BasicInit &context, const Device &device, const SwapChain &swap_chain, RenderPass const& renderpass, std::vector<buffer::vertex> const& buffers, Ts &&... vertex_description);
 
 private:
-	const std::vector<const char*> validationLayers {
-			"VK_LAYER_LUNARG_standard_validation"
-	};
-	std::vector<const char*> const _devicesExtension{
-		VK_KHR_SWAPCHAIN_EXTENSION_NAME
-	};
 #ifdef NDEBUG
 	static bool constexpr _enableValidationLayer = false;
 #else
@@ -65,7 +60,7 @@ private:
 	template<class ...Ts>
 	void createGraphicsPipeline(Ts &&... vertex_description); // multiple parameters but can surely be divide in some fucntions
 	void createPipelineLayout(); // lot of parameter
-	void createCommandBuffers(std::vector<vk::Buffer> const& buffers);
+	void createCommandBuffers(const std::vector<buffer::vertex> &buffer);
 	void drawFrame();
 	void createSemaphores();
 
@@ -73,7 +68,7 @@ private:
 };
 
 template<class ...Ts>
-InitVulkan InitVulkan::create_vulkan(const BasicInit &context, const Device &device, const SwapChain &swap_chain, RenderPass const& renderpass, std::vector<vk::Buffer> const& buffers, Ts &&... vertex_description){
+InitVulkan InitVulkan::create_vulkan(const BasicInit &context, const Device &device, const SwapChain &swap_chain, RenderPass const& renderpass, std::vector<buffer::vertex> const& buffers, Ts &&... vertex_description){
 	InitVulkan initvulkan(context, device, swap_chain, renderpass);
 	initvulkan.createPipelineLayout();
 	initvulkan.createGraphicsPipeline(std::forward<Ts>(vertex_description)...);

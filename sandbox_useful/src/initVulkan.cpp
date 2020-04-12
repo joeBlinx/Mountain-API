@@ -220,7 +220,7 @@ void InitVulkan::createFrameBuffers()
 
 }
 //unique by software
-void InitVulkan::createCommandBuffers(std::vector<vk::Buffer> const& buffers)
+void InitVulkan::createCommandBuffers(const std::vector<buffer::vertex> &buffers)
 {
 	_commandBuffers.resize(_swapchainFrameBuffer.size());
 	vk::CommandBufferAllocateInfo allocInfo = {};
@@ -253,8 +253,12 @@ void InitVulkan::createCommandBuffers(std::vector<vk::Buffer> const& buffers)
 
 		vkCmdBeginRenderPass(_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 		vkCmdBindPipeline(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline); // bind the pipeline
-		_commandBuffers[i].bindVertexBuffers(0, 1, buffers.data(), std::vector<vk::DeviceSize>{0}.data());
-		vkCmdDraw(_commandBuffers[i], 3, 1, 0, 0); // draw buffer
+
+		for(auto const& vertex_buffer : buffers){
+            _commandBuffers[i].bindVertexBuffers(0, 1, &vertex_buffer.get_buffer(), std::vector<vk::DeviceSize>{0}.data());
+            _commandBuffers[i].bindIndexBuffer(vertex_buffer.get_indices_buffer(), 0, vk::IndexType::eUint16);
+            vkCmdDrawIndexed(_commandBuffers[i], vertex_buffer.get_indices_count(), 1, 0, 0, 0); // draw buffer
+        }
 
 		vkCmdEndRenderPass(_commandBuffers[i]);
 		checkError(vkEndCommandBuffer(_commandBuffers[i]),
