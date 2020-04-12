@@ -5,7 +5,7 @@
 #include "sandbox_useful/swapChain.hpp"
 #include "sandbox_useful/renderpass/renderPass.hpp"
 #include <vector>
-#include "sandbox_useful/buffer/array_buffer.hpp"
+#include "sandbox_useful/buffer/vertex.hpp"
 int main() {
 	const std::vector<const char*> validationLayers {
 			"VK_LAYER_LUNARG_standard_validation"
@@ -53,18 +53,20 @@ int main() {
             Vertex{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
             Vertex{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
 	};
-	buffer::array::vertex_description vertex_description(0, 0, CLASS_DESCRIPTION(Vertex, position, color));
-
+	;
     std::vector<buffer::vertex> vertex;
-    vertex.emplace_back(buffer::vertex(device, vertices, {
-            0, 1, 2, 2, 3, 0
-    }));
+    vertex.emplace_back(buffer::vertex(device,
+            buffer::vertex_description(0, 0, CLASS_DESCRIPTION(Vertex, position, color)),
+            vertices,
+            {0, 1, 2, 2, 3, 0}
+            ));
 
 	InitVulkan init = InitVulkan::create_vulkan(
             context,
             device,
             swap_chain,
-            render_pass, {vertex}, vertex_description);
+            render_pass,
+            {vertex});
 	init.loop(context.get_window());
 
 	return 0;

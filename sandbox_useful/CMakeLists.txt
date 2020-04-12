@@ -13,7 +13,8 @@ target_include_directories(SandBox_utils
 								inc/sandbox_useful/renderpass
 								inc/sandbox_useful/buffer
 								)
-target_link_libraries(SandBox_utils PRIVATE 																						vulkan::headers
+target_link_libraries(SandBox_utils PRIVATE
+										vulkan::headers
 									PUBLIC
 										utils::utils
 										glfw
@@ -28,14 +29,15 @@ set_sources(_srcs
 					swapChain.cpp
 					initVulkan.cpp
 			)
-set_sources(_srcs_buffer 
+set_sources(_srcs_buffer
 			FOLDER src/buffer
 			FILES
-				array_buffer.cpp)
+				vertex.cpp)
 set_sources(_headers_buffer
 			FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/inc/sandbox_useful/buffer
 			FILES 
-				array_buffer.hpp
+				vertex.hpp
+				vertex.tpp
 )			
 set_sources(_headers 
 				FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/inc/sandbox_useful
