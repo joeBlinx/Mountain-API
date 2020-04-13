@@ -61,12 +61,18 @@ int main() {
             {0, 1, 2, 2, 3, 0}
             ));
 
-	InitVulkan init = InitVulkan::create_vulkan(
+    GraphicsPipeline pipeline(device,
+                              swap_chain,
+                              render_pass,
+                              {vertex});
+	InitVulkan init(
             context,
             device,
             swap_chain,
             render_pass,
+            pipeline,
             {vertex});
+
 	init.loop(context.get_window());
 
 	return 0;

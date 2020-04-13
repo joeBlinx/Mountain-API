@@ -15,13 +15,15 @@
 #include "utils/utils.hpp"
 #include "sandbox_useful/buffer/vertex.hpp"
 #include "sandbox_useful/buffer/vertex.hpp"
+#include "graphics_pipeline.hpp"
+struct GraphicsPipeline;
 struct InitVulkan {
-private:
-	InitVulkan(const BasicInit &context, const Device &device, const SwapChain &swap_chain, RenderPass const& renderpass);
-public:
+
+	InitVulkan(const BasicInit &context, const Device &device, const SwapChain &swap_chain,
+               RenderPass const &renderpass, GraphicsPipeline const &graphics_pipeline,
+               const std::vector<buffer::vertex> &buffers);
 	void loop(GLFWwindow *window);
 	~InitVulkan();
-	static InitVulkan create_vulkan(const BasicInit &context, const Device &device, const SwapChain &swap_chain, RenderPass const& renderpass, std::vector<buffer::vertex> const& buffers);
 
 private:
 #ifdef NDEBUG
@@ -40,7 +42,6 @@ private:
 	vk::PhysicalDevice _physicalDevice;
 	vk::Device _device;
 	Device::QueueFamilyIndices _indices;
-	vk::PipelineLayout _pipelineLayout;
 	vk::Pipeline _graphicsPipeline;
 	std::vector<vk::Framebuffer> _swapchainFrameBuffer;
 	vk::CommandPool const& _commandPool;
@@ -52,11 +53,7 @@ private:
 
 	vk::Semaphore _imageAvailableSemaphore;
 	vk::Semaphore _renderFinishedSemaphore;
-
-
-	vk::ShaderModule createShaderModule(std::vector<char> const & code);
-	void createGraphicsPipeline(const std::vector<buffer::vertex> &buffers); // multiple parameters but can surely be divide in some fucntions
-	void createPipelineLayout(); // lot of parameter
+	
 	void createCommandBuffers(const std::vector<buffer::vertex> &buffer);
 	void drawFrame();
 	void createSemaphores();
