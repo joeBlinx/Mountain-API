@@ -133,7 +133,7 @@ void InitVulkan::createCommandBuffers(const std::vector<buffer::vertex> &buffers
 
 		for(auto const& vertex_buffer : buffers){
             _commandBuffers[i].bindVertexBuffers(0, 1, &vertex_buffer.get_buffer(), std::vector<vk::DeviceSize>{0}.data());
-            _commandBuffers[i].bindIndexBuffer(vertex_buffer.get_indices_buffer(), 0, vk::IndexType::eUint16);
+            _commandBuffers[i].bindIndexBuffer(vertex_buffer.get_buffer(), vertex_buffer.get_indices_offset(), vk::IndexType::eUint16);
             vkCmdDrawIndexed(_commandBuffers[i], vertex_buffer.get_indices_count(), 1, 0, 0, 0); // draw buffer
         }
 
