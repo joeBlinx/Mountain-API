@@ -6,7 +6,7 @@
 #include "device.hpp"
 #include <set>
 #include "utils/utils.hpp"
-#include "basicInit.hpp"
+#include "context.hpp"
 Device::QueueFamilyIndices find_queue_families(vk::PhysicalDevice const& device, VkSurfaceKHR surface, vk::QueueFlagBits queue_flag)
 {
 	Device::QueueFamilyIndices indices;
@@ -124,7 +124,11 @@ void Device::create_logical_device(std::vector<char const *> const &devicesExten
 	_present_queue = _device.getQueue(_indices.present_family, 0);
 }
 
-Device::Device(BasicInit const& context, vk::QueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension, std::vector<const char *> const &validationLayers){
+Device::Device(Context const& context, std::vector<const char *> const &devicesExtension){
+	auto queue_flag = vk::QueueFlagBits::eGraphics;
+	const std::vector<const char*> validationLayers {
+			"VK_LAYER_LUNARG_standard_validation"
+	};
 	auto const& surface = context.get_vk_surface();
 	pick_up_physical_device(context.get_vk_instance(), queue_flag, devicesExtension,surface);
 

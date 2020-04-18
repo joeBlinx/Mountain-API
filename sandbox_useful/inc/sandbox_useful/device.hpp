@@ -8,10 +8,10 @@
 #include <vulkan/vulkan.hpp>
 #include <vector>
 #include <utility>
-class BasicInit;
+class Context;
 struct Device {
 
-	Device(BasicInit const& constext, vk::QueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension, std::vector<const char *> const &validationLayers);
+	Device(Context const& constext, std::vector<const char *> const &devicesExtension);
 	Device(Device const&) =delete;
 	Device& operator=(Device const&) = delete;
 	~Device();

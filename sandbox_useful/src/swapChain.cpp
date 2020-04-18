@@ -7,7 +7,7 @@
 #include "utils/log.hpp"
 #include "device.hpp"
 #include  <algorithm>
-#include "basicInit.hpp"
+#include "context.hpp"
 vk::SurfaceFormatKHR chooseSwapSurfaceFormat(std::vector<vk::SurfaceFormatKHR> const & available_formats)
 {
 	if (available_formats.size() == 1 && available_formats[0].format == vk::Format::eUndefined) {
@@ -132,7 +132,7 @@ SwapChain::~SwapChain() {
 	_device.destroy(_swap_chain);
 }
 
-SwapChain::SwapChain(const Device &device, BasicInit const& context, vk::ImageUsageFlags image_usage,
+SwapChain::SwapChain(const Device &device, Context const& context, vk::ImageUsageFlags image_usage,
               int width, int height): _device( device.get_device()) {
 	create_swap_chain( context.get_vk_surface(), device.get_queue_family_indice(), device.get_swap_chain_details(), image_usage, width, height);
 	create_image_views();

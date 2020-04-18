@@ -9,7 +9,7 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 #include "sandbox_useful/swapChain.hpp"
-#include "sandbox_useful/basicInit.hpp"
+#include "sandbox_useful/context.hpp"
 #include "sandbox_useful/device.hpp"
 #include "sandbox_useful/renderpass/renderPass.hpp"
 #include "utils/utils.hpp"
@@ -19,7 +19,7 @@
 struct GraphicsPipeline;
 struct InitVulkan {
 
-	InitVulkan(const BasicInit &context, const Device &device, const SwapChain &swap_chain,
+	InitVulkan(const Context &context, const Device &device, const SwapChain &swap_chain,
                RenderPass const &renderpass, GraphicsPipeline const &graphics_pipeline,
                const std::vector<buffer::vertex> &buffers);
 	void loop(GLFWwindow *window);

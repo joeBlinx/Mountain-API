@@ -116,7 +116,7 @@ _device(device){
     pipelineInfo.subpass = 0;
     // pipelineInfo.basePipelineHandle ; // Optional
     pipelineInfo.basePipelineIndex = -1; // Optional
-    _pipeline = _device.get_device().createGraphicsPipeline({}, pipelineInfo).value;
+    _pipeline = _device.get_device().createGraphicsPipeline({}, pipelineInfo);
     vkDestroyShaderModule(_device.get_device(), fragmentModule, nullptr);
     vkDestroyShaderModule(_device.get_device(), vertexModule, nullptr);
 }

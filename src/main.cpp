@@ -1,15 +1,13 @@
 #include <iostream>
 #include "sandbox_useful/initVulkan.hpp"
-#include "sandbox_useful/basicInit.hpp"
+#include "sandbox_useful/context.hpp"
 #include "sandbox_useful/device.hpp"
 #include "sandbox_useful/swapChain.hpp"
 #include "sandbox_useful/renderpass/renderPass.hpp"
 #include <vector>
 #include "sandbox_useful/buffer/vertex.hpp"
 int main() {
-	const std::vector<const char*> validationLayers {
-			"VK_LAYER_LUNARG_standard_validation"
-	};
+	
 	std::vector<const char*> const devicesExtension{
 			VK_KHR_SWAPCHAIN_EXTENSION_NAME
 	};
@@ -17,12 +15,10 @@ int main() {
 	int constexpr width = 1366;
 	int constexpr height = 768;
 
-	BasicInit context{width, height, "test"};
+	Context context{width, height, "test", devicesExtension};
 
 	Device device{context,
-                  vk::QueueFlagBits::eGraphics,
-                  devicesExtension,
-                  validationLayers};
+                  devicesExtension};
 
 	SwapChain swap_chain{
             device,

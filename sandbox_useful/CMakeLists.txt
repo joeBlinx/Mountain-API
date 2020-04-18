@@ -23,7 +23,7 @@ set_common_properties(SandBox_utils)
 set_sources(_srcs
 				FOLDER src
 				FILES 
-					basicInit.cpp
+					context.cpp
 					device.cpp
 					renderpass/renderPass.cpp
 					swapChain.cpp
@@ -43,7 +43,7 @@ set_sources(_headers_buffer
 set_sources(_headers 
 				FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/inc/sandbox_useful
 				FILES 
-					basicInit.hpp
+					context.hpp
 					device.hpp
 					renderpass/renderPass.hpp
 					swapChain.hpp

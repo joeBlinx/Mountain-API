@@ -14,7 +14,7 @@
 #include "utils/utils.hpp"
 #include <array>
 #include <sandbox_useful/swapChain.hpp>
-#include <sandbox_useful/basicInit.hpp>
+#include <sandbox_useful/context.hpp>
 #include <sandbox_useful/buffer/vertex.hpp>
 
 void InitVulkan::loop(GLFWwindow *window) {
@@ -151,7 +151,7 @@ void InitVulkan::createSemaphores()
 	
 }
 
-InitVulkan::InitVulkan(const BasicInit &context, const Device &device, const SwapChain &swap_chain,
+InitVulkan::InitVulkan(const Context &context, const Device &device, const SwapChain &swap_chain,
                        RenderPass const &renderpass, GraphicsPipeline const &graphics_pipeline,
                        const std::vector<buffer::vertex> &buffers)
 		: _instance( context.get_vk_instance()), _surface(context.get_vk_surface()),

@@ -9,10 +9,10 @@
 #include <vector>
 #include "sandbox_useful/device.hpp"
 
-class BasicInit;
+class Context;
 struct SwapChain {
 
-	SwapChain(const Device &device, BasicInit const& context, vk::ImageUsageFlags image_usage,
+	SwapChain(const Device &device, Context const& context, vk::ImageUsageFlags image_usage,
               int width, int height);
 	SwapChain(SwapChain const&) = delete;
     SwapChain& operator=(SwapChain const&) = delete;
