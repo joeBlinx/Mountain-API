@@ -12,12 +12,12 @@ struct Device;
 struct SwapChain;
 struct RenderPass;
 struct GraphicsPipeline{
-    GraphicsPipeline(Device const &device, SwapChain const &swap_chain, RenderPass const &render_pass,
+    GraphicsPipeline(Context const &device, SwapChain const &swap_chain, RenderPass const &render_pass,
                      const std::vector<buffer::vertex> &buffers);
     vk::Pipeline const& get_pipeline() const {return _pipeline;}
     ~GraphicsPipeline();
 private:
-    Device const& _device;
+    Context const& _device;
     vk::Pipeline _pipeline;
     vk::UniquePipelineLayout _pipeline_layout;
 

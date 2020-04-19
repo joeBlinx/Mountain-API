@@ -10,7 +10,6 @@
 #include <vector>
 #include "sandbox_useful/swapChain.hpp"
 #include "sandbox_useful/context.hpp"
-#include "sandbox_useful/device.hpp"
 #include "sandbox_useful/renderpass/renderPass.hpp"
 #include "utils/utils.hpp"
 #include "sandbox_useful/buffer/vertex.hpp"
@@ -19,9 +18,8 @@
 struct GraphicsPipeline;
 struct InitVulkan {
 
-	InitVulkan(const Context &context, const Device &device, const SwapChain &swap_chain,
-               RenderPass const &renderpass, GraphicsPipeline const &graphics_pipeline,
-               const std::vector<buffer::vertex> &buffers);
+	InitVulkan(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass,
+               GraphicsPipeline const &graphics_pipeline, const std::vector<buffer::vertex> &buffers);
 	void loop(GLFWwindow *window);
 	~InitVulkan();
 
@@ -41,7 +39,7 @@ private:
 	vk::Extent2D _swapChainExtent;
 	vk::PhysicalDevice _physicalDevice;
 	vk::Device _device;
-	Device::QueueFamilyIndices _indices;
+	Context::QueueFamilyIndices _indices;
 	vk::Pipeline _graphicsPipeline;
 	std::vector<vk::Framebuffer> _swapchainFrameBuffer;
 	vk::CommandPool const& _commandPool;

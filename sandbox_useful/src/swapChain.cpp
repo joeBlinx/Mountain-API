@@ -4,10 +4,7 @@
 
 
 #include "swapChain.hpp"
-#include "utils/log.hpp"
-#include "device.hpp"
 #include  <algorithm>
-#include "context.hpp"
 vk::SurfaceFormatKHR chooseSwapSurfaceFormat(std::vector<vk::SurfaceFormatKHR> const & available_formats)
 {
 	if (available_formats.size() == 1 && available_formats[0].format == vk::Format::eUndefined) {
@@ -52,8 +49,8 @@ vk::Extent2D chooseSwapExtent(VkSurfaceCapabilitiesKHR const &capabilities, int 
 		return actualExtent;
 	}
 }
-void SwapChain::create_swap_chain(VkSurfaceKHR surface, Device::QueueFamilyIndices const &indices,
-                                  Device::SwapChainSupportDetails const &swap_chain_support,
+void SwapChain::create_swap_chain(VkSurfaceKHR surface, Context::QueueFamilyIndices const& indices,
+                                  const Context::SwapChainSupportDetails &swap_chain_support,
                                   vk::ImageUsageFlags image_usage, int width, int height) {
 
 
@@ -132,9 +129,8 @@ SwapChain::~SwapChain() {
 	_device.destroy(_swap_chain);
 }
 
-SwapChain::SwapChain(const Device &device, Context const& context, vk::ImageUsageFlags image_usage,
-              int width, int height): _device( device.get_device()) {
-	create_swap_chain( context.get_vk_surface(), device.get_queue_family_indice(), device.get_swap_chain_details(), image_usage, width, height);
+SwapChain::SwapChain(Context const &context, vk::ImageUsageFlags image_usage, int width, int height) : _device(context.get_device()) {
+	create_swap_chain( context.get_vk_surface(), context.get_queue_family_indice(), context.get_swap_chain_details(), image_usage, width, height);
 	create_image_views();
 
 }

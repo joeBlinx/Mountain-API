@@ -4,7 +4,7 @@
 
 #include "graphics_pipeline.hpp"
 #include "utils/utils.hpp"
-#include "device.hpp"
+#include "context.hpp"
 #include "swapChain.hpp"
 #include "renderPass.hpp"
 vk::PipelineShaderStageCreateInfo createShaderInfo(vk::ShaderModule & module, vk::ShaderStageFlagBits type);
@@ -60,7 +60,7 @@ private:
     vk::Rect2D scissor;
 };
 
-GraphicsPipeline::GraphicsPipeline(Device const &device, SwapChain const &swap_chain, RenderPass const &render_pass,
+GraphicsPipeline::GraphicsPipeline(Context const &device, SwapChain const &swap_chain, RenderPass const &render_pass,
                                    const std::vector<buffer::vertex> &buffers) :
 _device(device){
 
@@ -116,7 +116,13 @@ _device(device){
     pipelineInfo.subpass = 0;
     // pipelineInfo.basePipelineHandle ; // Optional
     pipelineInfo.basePipelineIndex = -1; // Optional
-    _pipeline = _device.get_device().createGraphicsPipeline({}, pipelineInfo);
+    auto create_pipeline = [&]{ // create pipeline this way because for some reason I cannot use the c++ APi the same way on different computers
+        VkPipeline temp_pipeline{};
+        auto temp = (VkGraphicsPipelineCreateInfo)pipelineInfo;
+        vkCreateGraphicsPipelines(_device.get_device(),nullptr, 1, &temp, nullptr, &temp_pipeline); // for some re
+        return temp_pipeline;
+    };
+    _pipeline = create_pipeline();
     vkDestroyShaderModule(_device.get_device(), fragmentModule, nullptr);
     vkDestroyShaderModule(_device.get_device(), vertexModule, nullptr);
 }

@@ -1,11 +1,22 @@
 #include <iostream>
 #include "sandbox_useful/initVulkan.hpp"
 #include "sandbox_useful/context.hpp"
-#include "sandbox_useful/device.hpp"
 #include "sandbox_useful/swapChain.hpp"
 #include "sandbox_useful/renderpass/renderPass.hpp"
 #include <vector>
 #include "sandbox_useful/buffer/vertex.hpp"
+struct vec2{
+    float a;
+    float b;
+};
+struct vec3{
+    float a, b, c;
+};
+struct Vertex{
+    vec2 position;
+    vec3 color;
+};
+
 int main() {
 	
 	std::vector<const char*> const devicesExtension{
@@ -15,34 +26,22 @@ int main() {
 	int constexpr width = 1366;
 	int constexpr height = 768;
 
-	Context context{width, height, "test", devicesExtension};
-
-	Device device{context,
-                  devicesExtension};
+	Context context{width,
+                 height,
+                 "test",
+                 devicesExtension};
 
 	SwapChain swap_chain{
-            device,
             context,
             vk::ImageUsageFlagBits::eColorAttachment,
             width,
             height
-	};
+    };
 
 	RenderPass render_pass = RenderPass::create<SubPass{subpass_attachment::COLOR}>(
-			device.get_device(), swap_chain.get_swap_chain_image_format());
+			context.get_device(), swap_chain.get_swap_chain_image_format());
 
-	
-	struct vec2{
-		float a;
-		float b;
-	};
-	struct vec3{
-		float a, b, c;
-	};
-	struct Vertex{
-		vec2 position;
-		vec3 color;
-	};
+
 	std::array vertices{
             Vertex{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
             Vertex{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
@@ -51,19 +50,18 @@ int main() {
 	};
 	;
     std::vector<buffer::vertex> vertex;
-    vertex.emplace_back(buffer::vertex(device,
+    vertex.emplace_back(buffer::vertex(context,
             buffer::vertex_description(0, 0, CLASS_DESCRIPTION(Vertex, position, color)),
             vertices,
             {0, 1, 2, 2, 3, 0}
             ));
 
-    GraphicsPipeline pipeline(device,
+    GraphicsPipeline pipeline(context,
                               swap_chain,
                               render_pass,
                               {vertex});
 	InitVulkan init(
             context,
-            device,
             swap_chain,
             render_pass,
             pipeline,

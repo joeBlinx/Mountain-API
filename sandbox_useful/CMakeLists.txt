@@ -24,7 +24,6 @@ set_sources(_srcs
 				FOLDER src
 				FILES 
 					context.cpp
-					device.cpp
 					renderpass/renderPass.cpp
 					swapChain.cpp
 					initVulkan.cpp
@@ -44,7 +43,6 @@ set_sources(_headers
 				FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/inc/sandbox_useful
 				FILES 
 					context.hpp
-					device.hpp
 					renderpass/renderPass.hpp
 					swapChain.hpp
 					initVulkan.hpp

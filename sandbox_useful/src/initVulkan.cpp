@@ -151,21 +151,20 @@ void InitVulkan::createSemaphores()
 	
 }
 
-InitVulkan::InitVulkan(const Context &context, const Device &device, const SwapChain &swap_chain,
-                       RenderPass const &renderpass, GraphicsPipeline const &graphics_pipeline,
-                       const std::vector<buffer::vertex> &buffers)
+InitVulkan::InitVulkan(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass,
+                       GraphicsPipeline const &graphics_pipeline, const std::vector<buffer::vertex> &buffers)
 		: _instance( context.get_vk_instance()), _surface(context.get_vk_surface()),
 		  _swapchain( swap_chain.get_swap_chain()),
 		  _swapChainImageViews(swap_chain.get_swap_chain_image_views()),
 		  _swapChainImageFormat(swap_chain.get_swap_chain_image_format()),
 		  _swapChainExtent(swap_chain.get_swap_chain_extent()),
-		  _physicalDevice( device.get_physical_device()),
-		  _device(device.get_device()),
-		  _indices(device.get_queue_family_indice()),
+		  _physicalDevice( context.get_physical_device()),
+		  _device(context.get_device()),
+		  _indices(context.get_queue_family_indice()),
 		  _graphicsPipeline(graphics_pipeline.get_pipeline()),
-		  _commandPool(device.get_command_pool()),
-		  _graphicsQueue(device.get_graphics_queue()),
-		  _presentQueue(device.get_present_queue()),
+		  _commandPool(context.get_command_pool()),
+		  _graphicsQueue(context.get_graphics_queue()),
+		  _presentQueue(context.get_present_queue()),
 		  _renderpass(renderpass.get_renderpass()){
 	_width = 1366;
 	_height = 768;

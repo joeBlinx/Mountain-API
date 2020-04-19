@@ -3,7 +3,7 @@
 #include <vector>
 #include <utils/type_trait.hpp>
 #include <algorithm>
-#include "sandbox_useful/device.hpp"
+#include "sandbox_useful/context.hpp"
 #include "utils/raii_helper.h"
 template<class T>
 constexpr vk::Format get_format(){
@@ -58,7 +58,7 @@ namespace buffer{
         {a.data()};
     };
     struct vertex{
-        vertex(Device const& device, vertex_description&& description, Container && vertices, std::vector<uint16_t>&& indices);
+        vertex(Context const& device, vertex_description&& description, Container && vertices, std::vector<uint16_t>&& indices);
 
         vk::Buffer const &get_buffer() const {return *_buffer;}
         uint32_t get_indices_count() const {return _indices_count;}
@@ -70,7 +70,7 @@ namespace buffer{
 
     private:
         void create_buffer(Container const& container, vk::BufferUsageFlags buffer_usage, vk::UniqueBuffer& buffer, vk::UniqueDeviceMemory& buffer_memory);
-        Device const& _device;
+        Context const& _device;
         vk::UniqueBuffer _buffer;
         vk::UniqueDeviceMemory _buffer_memory;
 
