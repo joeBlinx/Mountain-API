@@ -28,7 +28,7 @@ struct Context
 	~Context();
 	vk::Instance const& get_vk_instance() const{return _instance;}
 	VkSurfaceKHR get_vk_surface() const{return _surface;}
-	GLFWwindow * get_window() {return _window;}
+	GLFWwindow * get_window() const {return _window;}
 		vk::Device const& get_device() const{ return _device; }
 	const vk::Queue & get_graphics_queue() const {return _graphics_queue;}
 	const vk::Queue & get_present_queue() const{return _present_queue;}

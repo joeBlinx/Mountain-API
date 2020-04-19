@@ -123,6 +123,18 @@ InitVulkan::InitVulkan(const Context &context, const SwapChain &swap_chain, Rend
 	_width = 1366;
 	_height = 768;
     createFrameBuffers();
+
+    allocate_command_buffer();
+
     createSemaphores();
 
+}
+
+void InitVulkan::allocate_command_buffer() {
+    _commandBuffers.resize(_swapchainFrameBuffer.size());
+    vk::CommandBufferAllocateInfo allocInfo = {};
+    allocInfo.commandPool = _commandPool;
+    allocInfo.level = vk::CommandBufferLevel::ePrimary;
+    allocInfo.commandBufferCount = (uint32_t) _commandBuffers.size();
+    _commandBuffers = _device.allocateCommandBuffers(allocInfo);
 }

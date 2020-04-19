@@ -16,6 +16,40 @@ struct Vertex{
     vec2 position;
     vec3 color;
 };
+struct Test{
+    float dir{};
+    float size{};
+    float new_color{0.5};
+};
+struct object{
+    buffer::vertex const& vertices;
+    std::vector<Test> values;
+};
+struct move_rectangle{
+    InitVulkan& init;
+    object obj;
+    void move(){
+        obj.values[0].dir += +0.2;
+        init.createCommandBuffers(obj);
+    }
+};
+void key_callback(GLFWwindow* window, int key, int , int action, int)
+{
+    auto* obj = static_cast<move_rectangle*>(glfwGetWindowUserPointer(window));
+
+    if (key == GLFW_KEY_E && action == GLFW_PRESS){
+        obj->move();
+
+    }
+}
+void loop(InitVulkan& init, Context const& context) {
+
+    while (!glfwWindowShouldClose(context.get_window())) {
+        glfwPollEvents();
+        init.drawFrame();
+    }
+    vkDeviceWaitIdle(context.get_device());
+}
 
 int main() {
 	
@@ -30,7 +64,7 @@ int main() {
                  height,
                  "test",
                  devicesExtension};
-
+    glfwSetKeyCallback(context.get_window(), key_callback);
 	SwapChain swap_chain{
             context,
             vk::ImageUsageFlagBits::eColorAttachment,
@@ -63,11 +97,7 @@ int main() {
 	struct Fragment{
 	    float new_color{};
 	};
-    struct Test{
-        float dir{};
-        float size{};
-        float new_color{0.5};
-    };
+
 	PushConstant<Vertex> push_vertex{
 		vk::ShaderStageFlagBits::eVertex
 	};
@@ -78,19 +108,16 @@ int main() {
                               swap_chain,
                               render_pass,
                               vertex, push_vertex, push_frag);
-
-    struct object{
-        buffer::vertex const& vertices;
-        std::vector<Test> values;
-    }obj{vertex[0], {{0.5, 0.25}, {-0.5, 0.25}, {0, 0.25}}};
 	InitVulkan init(
             context,
             swap_chain,
             render_pass,
             pipeline);
 
-    init.createCommandBuffers(obj);
-	init.loop(context.get_window());
+    move_rectangle move{init, {vertex[0], {{0.5, 0.25}, {-1, 0.25}, {0, 0.25}}}};
+    glfwSetWindowUserPointer(context.get_window(), &move);
+    init.createCommandBuffers(move.obj);
+	loop(init, context);
 
 	return 0;
 }

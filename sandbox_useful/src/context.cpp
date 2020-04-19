@@ -297,7 +297,7 @@ void Context::create_logical_device(std::vector<char const *> const &devicesExte
 }
 void Context::create_command_pool(){
 	vk::CommandPoolCreateInfo pool_info{
-		{},
+		vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
 		static_cast<uint32_t>(_indices.graphics_family)
 	};
 	_command_pool = _device.createCommandPool(pool_info);

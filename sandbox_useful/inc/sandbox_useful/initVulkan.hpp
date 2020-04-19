@@ -24,6 +24,7 @@ struct InitVulkan {
 	void loop(GLFWwindow *window);
     template <class T>
     void createCommandBuffers(T const& obj);
+    void drawFrame();
     ~InitVulkan();
 
 private:
@@ -56,22 +57,17 @@ private:
 	vk::Semaphore _renderFinishedSemaphore;
 
 
-	void drawFrame();
 	void createSemaphores();
 
 	void createFrameBuffers();
+
+    void allocate_command_buffer();
 };
 
 
 template <class T>
 void InitVulkan::createCommandBuffers(T const& obj)
 {
-    _commandBuffers.resize(_swapchainFrameBuffer.size());
-    vk::CommandBufferAllocateInfo allocInfo = {};
-    allocInfo.commandPool = _commandPool;
-    allocInfo.level = vk::CommandBufferLevel::ePrimary;
-    allocInfo.commandBufferCount = (uint32_t)_commandBuffers.size();
-    _commandBuffers = _device.allocateCommandBuffers(allocInfo);
 
 
     for (size_t i = 0; i < _commandBuffers.size(); i++) {
