@@ -60,10 +60,9 @@ private:
     vk::Rect2D scissor;
 };
 
-GraphicsPipeline::GraphicsPipeline(Context const &device, SwapChain const &swap_chain, RenderPass const &render_pass,
-                                   const std::vector<buffer::vertex> &buffers) :
-_device(device){
 
+void GraphicsPipeline::init(const SwapChain &swap_chain, const RenderPass &render_pass,
+                            const std::vector<buffer::vertex> &buffers) {
     std::vector<char> vertex = utils::readFile("trianglevert.spv");
     std::vector<char> fragment = utils::readFile("trianglefrag.spv");
 
@@ -75,7 +74,7 @@ _device(device){
     auto pipelineFrag = createShaderInfo(fragmentModule,
                                          vk::ShaderStageFlagBits::eFragment);
 
-    std::vector<vk::PipelineShaderStageCreateInfo> shaderStage{ pipelineVertex,pipelineFrag };
+    std::vector<vk::PipelineShaderStageCreateInfo> shaderStage{pipelineVertex, pipelineFrag};
 
     VertexInfo vertex_info(buffers);
 
@@ -97,7 +96,6 @@ _device(device){
 
     /**can be factorised in function
     */
-    create_pipeline_layout();
 
     vk::GraphicsPipelineCreateInfo pipelineInfo  {};
     pipelineInfo.stageCount = shaderStages.size();
@@ -125,16 +123,6 @@ _device(device){
     _pipeline = create_pipeline();
     vkDestroyShaderModule(_device.get_device(), fragmentModule, nullptr);
     vkDestroyShaderModule(_device.get_device(), vertexModule, nullptr);
-}
-void GraphicsPipeline::create_pipeline_layout() // lot of parameter
-{
-    vk::PipelineLayoutCreateInfo pipelineLayoutInfo = {};
-    pipelineLayoutInfo.setLayoutCount = 0; // Optional
-    pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
-    pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
-    pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
-    _pipeline_layout = _device.get_device().createPipelineLayoutUnique(pipelineLayoutInfo);
-
 }
 
 

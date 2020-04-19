@@ -97,53 +97,7 @@ void InitVulkan::createFrameBuffers()
 
 }
 //unique by software
-void InitVulkan::createCommandBuffers(const std::vector<buffer::vertex> &buffers)
-{
-	_commandBuffers.resize(_swapchainFrameBuffer.size());
-	vk::CommandBufferAllocateInfo allocInfo = {};
-	allocInfo.commandPool = _commandPool;
-	allocInfo.level = vk::CommandBufferLevel::ePrimary;
-	allocInfo.commandBufferCount = (uint32_t)_commandBuffers.size();
-	_commandBuffers = _device.allocateCommandBuffers(allocInfo);
-	
 
-	for (size_t i = 0; i < _commandBuffers.size(); i++) {
-		VkCommandBufferBeginInfo beginInfo = {};
-		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-		beginInfo.pInheritanceInfo = nullptr; // Optional
-
-		checkError(vkBeginCommandBuffer(_commandBuffers[i], &beginInfo),
-			"failed to begin recording command buffer!");
-		/* may be can be put into a function */
-		VkRenderPassBeginInfo renderPassInfo {};
-		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		renderPassInfo.renderPass = _renderpass;
-		renderPassInfo.framebuffer = _swapchainFrameBuffer[i];
-		
-		renderPassInfo.renderArea.offset = { 0, 0 };
-		renderPassInfo.renderArea.extent = _swapChainExtent;
-
-		VkClearValue clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
-		renderPassInfo.clearValueCount = 1;
-		renderPassInfo.pClearValues = &clearColor;
-
-		vkCmdBeginRenderPass(_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-		vkCmdBindPipeline(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline); // bind the pipeline
-
-		for(auto const& vertex_buffer : buffers){
-            _commandBuffers[i].bindVertexBuffers(0, 1, &vertex_buffer.get_buffer(), std::vector<vk::DeviceSize>{0}.data());
-            _commandBuffers[i].bindIndexBuffer(vertex_buffer.get_buffer(), vertex_buffer.get_indices_offset(), vk::IndexType::eUint16);
-            vkCmdDrawIndexed(_commandBuffers[i], vertex_buffer.get_indices_count(), 1, 0, 0, 0); // draw buffer
-        }
-
-		vkCmdEndRenderPass(_commandBuffers[i]);
-		checkError(vkEndCommandBuffer(_commandBuffers[i]),
-			"failed to record command buffer!");
-		
-	}
-
-}
 void InitVulkan::createSemaphores()
 {
 	_imageAvailableSemaphore = _device.createSemaphore({});
@@ -152,7 +106,7 @@ void InitVulkan::createSemaphores()
 }
 
 InitVulkan::InitVulkan(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass,
-                       GraphicsPipeline const &graphics_pipeline, const std::vector<buffer::vertex> &buffers)
+                       GraphicsPipeline const &graphics_pipeline)
 		: _instance( context.get_vk_instance()), _surface(context.get_vk_surface()),
 		  _swapchain( swap_chain.get_swap_chain()),
 		  _swapChainImageViews(swap_chain.get_swap_chain_image_views()),
@@ -161,7 +115,7 @@ InitVulkan::InitVulkan(const Context &context, const SwapChain &swap_chain, Rend
 		  _physicalDevice( context.get_physical_device()),
 		  _device(context.get_device()),
 		  _indices(context.get_queue_family_indice()),
-		  _graphicsPipeline(graphics_pipeline.get_pipeline()),
+          _graphicsPipeline(graphics_pipeline),
 		  _commandPool(context.get_command_pool()),
 		  _graphicsQueue(context.get_graphics_queue()),
 		  _presentQueue(context.get_present_queue()),
@@ -169,7 +123,6 @@ InitVulkan::InitVulkan(const Context &context, const SwapChain &swap_chain, Rend
 	_width = 1366;
 	_height = 768;
     createFrameBuffers();
-    createCommandBuffers(buffers);
     createSemaphores();
 
 }

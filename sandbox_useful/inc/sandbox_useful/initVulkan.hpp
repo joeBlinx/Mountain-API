@@ -15,13 +15,16 @@
 #include "sandbox_useful/buffer/vertex.hpp"
 #include "sandbox_useful/buffer/vertex.hpp"
 #include "graphics_pipeline.hpp"
+#include <cstddef>
 struct GraphicsPipeline;
 struct InitVulkan {
 
 	InitVulkan(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass,
-               GraphicsPipeline const &graphics_pipeline, const std::vector<buffer::vertex> &buffers);
+               GraphicsPipeline const &graphics_pipeline);
 	void loop(GLFWwindow *window);
-	~InitVulkan();
+    template <class T>
+    void createCommandBuffers(T const& obj);
+    ~InitVulkan();
 
 private:
 #ifdef NDEBUG
@@ -40,8 +43,8 @@ private:
 	vk::PhysicalDevice _physicalDevice;
 	vk::Device _device;
 	Context::QueueFamilyIndices _indices;
-	vk::Pipeline _graphicsPipeline;
-	std::vector<vk::Framebuffer> _swapchainFrameBuffer;
+    GraphicsPipeline const& _graphicsPipeline;
+    std::vector<vk::Framebuffer> _swapchainFrameBuffer;
 	vk::CommandPool const& _commandPool;
 	std::vector<vk::CommandBuffer> _commandBuffers;
 	vk::Queue  _graphicsQueue;
@@ -51,8 +54,8 @@ private:
 
 	vk::Semaphore _imageAvailableSemaphore;
 	vk::Semaphore _renderFinishedSemaphore;
-	
-	void createCommandBuffers(const std::vector<buffer::vertex> &buffer);
+
+
 	void drawFrame();
 	void createSemaphores();
 
@@ -60,6 +63,59 @@ private:
 };
 
 
+template <class T>
+void InitVulkan::createCommandBuffers(T const& obj)
+{
+    _commandBuffers.resize(_swapchainFrameBuffer.size());
+    vk::CommandBufferAllocateInfo allocInfo = {};
+    allocInfo.commandPool = _commandPool;
+    allocInfo.level = vk::CommandBufferLevel::ePrimary;
+    allocInfo.commandBufferCount = (uint32_t)_commandBuffers.size();
+    _commandBuffers = _device.allocateCommandBuffers(allocInfo);
 
 
+    for (size_t i = 0; i < _commandBuffers.size(); i++) {
+        VkCommandBufferBeginInfo beginInfo = {};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+        beginInfo.pInheritanceInfo = nullptr; // Optional
+
+        checkError(vkBeginCommandBuffer(_commandBuffers[i], &beginInfo),
+                   "failed to begin recording command buffer!");
+        /* may be can be put into a function */
+        VkRenderPassBeginInfo renderPassInfo {};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassInfo.renderPass = _renderpass;
+        renderPassInfo.framebuffer = _swapchainFrameBuffer[i];
+
+        renderPassInfo.renderArea.offset = { 0, 0 };
+        renderPassInfo.renderArea.extent = _swapChainExtent;
+
+        VkClearValue clearColor = { 0.5f, 0.5f, 0.5f, 1.0f };
+        renderPassInfo.clearValueCount = 1;
+        renderPassInfo.pClearValues = &clearColor;
+
+        vkCmdBeginRenderPass(_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdBindPipeline(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline.get_pipeline()); // bind the pipeline
+        auto& vertex_buffer = obj.vertices;
+//        for(auto const& vertex_buffer : buffers){
+            _commandBuffers[i].bindVertexBuffers(0, 1, &vertex_buffer.get_buffer(), std::vector<vk::DeviceSize>{0}.data());
+            _commandBuffers[i].bindIndexBuffer(vertex_buffer.get_buffer(), vertex_buffer.get_indices_offset(), vk::IndexType::eUint16);
+            for (auto const& value: obj.values) {
+                for (auto const &push_constant_range : _graphicsPipeline.get_push_constant_ranges()) {
+                    _commandBuffers[i].pushConstants(_graphicsPipeline.get_pipeline_layout(),
+                                                     push_constant_range.stageFlags, push_constant_range.offset,
+                                                     push_constant_range.size, (reinterpret_cast<std::byte const*>(&value)+push_constant_range.offset));
+                }
+                vkCmdDrawIndexed(_commandBuffers[i], vertex_buffer.get_indices_count(), 1, 0, 0, 0); // draw buffer
+            }
+//        }
+
+        vkCmdEndRenderPass(_commandBuffers[i]);
+        checkError(vkEndCommandBuffer(_commandBuffers[i]),
+                   "failed to record command buffer!");
+
+    }
+
+}
 #endif //SANDBOX_INITVULKAN_HPP

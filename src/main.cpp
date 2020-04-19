@@ -43,10 +43,10 @@ int main() {
 
 
 	std::array vertices{
-            Vertex{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-            Vertex{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-            Vertex{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-            Vertex{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+            Vertex{{-1.f, -1.f}, {1.0f, 0.0f, 0.0f}},
+            Vertex{{1.f, -1.f}, {0.0f, 1.0f, 0.0f}},
+            Vertex{{1.f, 1.f}, {0.0f, 0.0f, 1.0f}},
+            Vertex{{-1.f, 1.f}, {1.0f, 1.0f, 1.0f}}
 	};
 	;
     std::vector<buffer::vertex> vertex;
@@ -56,17 +56,40 @@ int main() {
             {0, 1, 2, 2, 3, 0}
             ));
 
+	struct Vertex{
+        float dir{};
+        float size{};
+	};
+	struct Fragment{
+	    float new_color{};
+	};
+    struct Test{
+        float dir{};
+        float size{};
+        float new_color{0.5};
+    };
+	PushConstant<Vertex> push_vertex{
+		vk::ShaderStageFlagBits::eVertex
+	};
+    PushConstant<Fragment> push_frag{
+            vk::ShaderStageFlagBits::eFragment
+    };
     GraphicsPipeline pipeline(context,
                               swap_chain,
                               render_pass,
-                              {vertex});
+                              vertex, push_vertex, push_frag);
+
+    struct object{
+        buffer::vertex const& vertices;
+        std::vector<Test> values;
+    }obj{vertex[0], {{0.5, 0.25}, {-0.5, 0.25}, {0, 0.25}}};
 	InitVulkan init(
             context,
             swap_chain,
             render_pass,
-            pipeline,
-            {vertex});
+            pipeline);
 
+    init.createCommandBuffers(obj);
 	init.loop(context.get_window());
 
 	return 0;
