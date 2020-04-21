@@ -105,8 +105,7 @@ void InitVulkan::createSemaphores()
 	
 }
 
-InitVulkan::InitVulkan(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass,
-                       GraphicsPipeline const &graphics_pipeline)
+InitVulkan::InitVulkan(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass)
 		: _instance( context.get_vk_instance()), _surface(context.get_vk_surface()),
 		  _swapchain( swap_chain.get_swap_chain()),
 		  _swapChainImageViews(swap_chain.get_swap_chain_image_views()),
@@ -115,7 +114,6 @@ InitVulkan::InitVulkan(const Context &context, const SwapChain &swap_chain, Rend
 		  _physicalDevice( context.get_physical_device()),
 		  _device(context.get_device()),
 		  _indices(context.get_queue_family_indice()),
-          _graphicsPipeline(graphics_pipeline),
 		  _commandPool(context.get_command_pool()),
 		  _graphicsQueue(context.get_graphics_queue()),
 		  _presentQueue(context.get_present_queue()),

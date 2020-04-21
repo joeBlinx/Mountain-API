@@ -23,6 +23,7 @@ struct Test{
 };
 struct object{
     buffer::vertex const& vertices;
+    GraphicsPipeline const& graphics_pipeline;
     std::vector<Test> values;
 };
 struct move_rectangle{
@@ -64,7 +65,6 @@ int main() {
                  height,
                  "test",
                  devicesExtension};
-    glfwSetKeyCallback(context.get_window(), key_callback);
 	SwapChain swap_chain{
             context,
             vk::ImageUsageFlagBits::eColorAttachment,
@@ -111,11 +111,14 @@ int main() {
 	InitVulkan init(
             context,
             swap_chain,
-            render_pass,
-            pipeline);
+            render_pass);
 
-    move_rectangle move{init, {vertex[0], {{0.5, 0.25}, {-1, 0.25}, {0, 0.25}}}};
+    move_rectangle move{init, {vertex[0], pipeline, {{0.5, 0.25}, {-1, 0.25}, {0, 0.25}}}};
+
+    glfwSetKeyCallback(context.get_window(), key_callback);
     glfwSetWindowUserPointer(context.get_window(), &move);
+
+
     init.createCommandBuffers(move.obj);
 	loop(init, context);
 

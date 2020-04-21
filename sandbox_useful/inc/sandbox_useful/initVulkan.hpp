@@ -19,8 +19,7 @@
 struct GraphicsPipeline;
 struct InitVulkan {
 
-	InitVulkan(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass,
-               GraphicsPipeline const &graphics_pipeline);
+	InitVulkan(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass);
 	void loop(GLFWwindow *window);
     template <class T>
     void createCommandBuffers(T const& obj);
@@ -44,7 +43,6 @@ private:
 	vk::PhysicalDevice _physicalDevice;
 	vk::Device _device;
 	Context::QueueFamilyIndices _indices;
-    GraphicsPipeline const& _graphicsPipeline;
     std::vector<vk::Framebuffer> _swapchainFrameBuffer;
 	vk::CommandPool const& _commandPool;
 	std::vector<vk::CommandBuffer> _commandBuffers;
@@ -92,14 +90,14 @@ void InitVulkan::createCommandBuffers(T const& obj)
         renderPassInfo.pClearValues = &clearColor;
 
         vkCmdBeginRenderPass(_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-        vkCmdBindPipeline(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline.get_pipeline()); // bind the pipeline
+        vkCmdBindPipeline(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, obj.graphics_pipeline.get_pipeline()); // bind the pipeline
         auto& vertex_buffer = obj.vertices;
 //        for(auto const& vertex_buffer : buffers){
             _commandBuffers[i].bindVertexBuffers(0, 1, &vertex_buffer.get_buffer(), std::vector<vk::DeviceSize>{0}.data());
             _commandBuffers[i].bindIndexBuffer(vertex_buffer.get_buffer(), vertex_buffer.get_indices_offset(), vk::IndexType::eUint16);
             for (auto const& value: obj.values) {
-                for (auto const &push_constant_range : _graphicsPipeline.get_push_constant_ranges()) {
-                    _commandBuffers[i].pushConstants(_graphicsPipeline.get_pipeline_layout(),
+                for (auto const &push_constant_range : obj.graphics_pipeline.get_push_constant_ranges()) {
+                    _commandBuffers[i].pushConstants(obj.graphics_pipeline.get_pipeline_layout(),
                                                      push_constant_range.stageFlags, push_constant_range.offset,
                                                      push_constant_range.size, (reinterpret_cast<std::byte const*>(&value)+push_constant_range.offset));
                 }
