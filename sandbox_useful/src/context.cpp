@@ -20,16 +20,14 @@ _height(height)
 	setUpDebugCallBack();
 
 	auto queue_flag = vk::QueueFlagBits::eGraphics;
-	const std::vector<const char*> validationLayers {
-			"VK_LAYER_LUNARG_standard_validation"
-	};
+
 	auto const& surface = get_vk_surface();
 	pick_up_physical_device(get_vk_instance(), queue_flag, devicesExtension,surface);
 
 	_swap_chain_details = query_swap_chain_support(_physical_device, surface);
 	_indices = find_queue_families(_physical_device, surface, queue_flag);
 
-	create_logical_device(devicesExtension, validationLayers);
+	create_logical_device(devicesExtension, _validationLayers);
     create_command_pool();
 }
 
@@ -106,6 +104,7 @@ bool Context::checkValidationLayerSupport() {
 	bool layerFound = false;
 	for (auto layer : _validationLayers) {
 		for (auto available : availableLayer) {
+		    std::string test(available.layerName);
 			if (!strcmp(layer, available.layerName)) {
 				layerFound = true;
 				break;
@@ -225,7 +224,7 @@ bool check_device_extension_support(vk::PhysicalDevice const& device, std::vecto
 
 	for (auto const & extension : availableExtensions)
 	{
-		requiredExtensions.erase(extension.extensionName);
+		requiredExtensions.erase(extension.extensionName.data());
 	}
 	return requiredExtensions.empty();
 }

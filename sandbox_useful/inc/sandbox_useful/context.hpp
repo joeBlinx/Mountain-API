@@ -43,7 +43,7 @@ struct Context
 	void copy_buffer(vk::UniqueBuffer& destination, vk::UniqueBuffer const& source, vk::DeviceSize const& size) const;
 private:
 	 std::vector<const char*> const _validationLayers = {
-			"VK_LAYER_LUNARG_standard_validation"
+			"VK_LAYER_KHRONOS_validation"
 	};
 #ifdef NDEBUG
 	 static bool constexpr _enableValidationLayer = false;

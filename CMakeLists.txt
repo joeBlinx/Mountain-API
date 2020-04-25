@@ -10,7 +10,7 @@ project(sandBox
 		)
 
 download_dependencies()
-find_package(Vulkan REQUIRED)
+find_package(Vulkan 1.2 REQUIRED)
 
 add_executable(${PROJECT_NAME})
 add_subdirectory(cmake)
