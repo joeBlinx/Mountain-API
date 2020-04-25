@@ -3,10 +3,17 @@
 layout(location = 0) in vec2 pos;
 layout(location = 1) in vec3 colors;
 layout(location = 0) out vec3 fragColor;
-
-
+layout(push_constant) uniform pushConstants {
+    float test1;
+    float size;
+} dir;
+//layout(binding = 0) uniform uniform_buffer{
+//    mat4 model;
+//    mat4 view;
+//    mat4 proj;
+//}ubo;
 
 void main() {
-    gl_Position = vec4(pos, 0.0, 1.0);
-    fragColor = colors;
+    gl_Position = /*ubo.proj * ubo.view * ubo.model * */vec4((pos + vec2(dir.test1))*dir.size, 0.0, 1.0);
+    fragColor = colors/**u_pushConstants.test1*/;
 }

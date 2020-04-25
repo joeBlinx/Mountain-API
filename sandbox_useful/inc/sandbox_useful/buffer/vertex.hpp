@@ -3,7 +3,7 @@
 #include <vector>
 #include <utils/type_trait.hpp>
 #include <algorithm>
-#include "sandbox_useful/device.hpp"
+#include "sandbox_useful/context.hpp"
 #include "utils/raii_helper.h"
 template<class T>
 constexpr vk::Format get_format(){
@@ -58,26 +58,25 @@ namespace buffer{
         {a.data()};
     };
     struct vertex{
-        vertex(Device const& device, vertex_description&& description, Container && vertices, std::vector<uint16_t>&& indices);
+        vertex(Context const& device, vertex_description&& description, Container && vertices, std::vector<uint16_t>&& indices);
 
         vk::Buffer const &get_buffer() const {return *_buffer;}
-        vk::Buffer const &get_indices_buffer() const {return *_indices_buffer;}
         uint32_t get_indices_count() const {return _indices_count;}
 
         uint32_t get_attribute_size() const {return _description.attributes_size;}
         vk::VertexInputBindingDescription const &get_bindings() const {return _description.bindings;}
         std::vector<vk::VertexInputAttributeDescription> const &get_attributes() const {return _description.attributes;}
+        uint32_t get_indices_offset() const{return _indices_offset;}
 
     private:
-        void create_buffer(Container const& container, vk::BufferUsageFlagBits buffer_usage, vk::UniqueBuffer& buffer, vk::UniqueDeviceMemory& buffer_memory);
-        Device const& _device;
+        void create_buffer(Container const& container, vk::BufferUsageFlags buffer_usage, vk::UniqueBuffer& buffer, vk::UniqueDeviceMemory& buffer_memory);
+        Context const& _device;
         vk::UniqueBuffer _buffer;
         vk::UniqueDeviceMemory _buffer_memory;
 
-        vk::UniqueBuffer _indices_buffer;
-        vk::UniqueDeviceMemory _indices_buffer_memory;
         uint32_t _indices_count;
         vertex_description _description;
+        uint8_t _indices_offset;
     };
 
 #include "sandbox_useful/buffer/vertex.tpp"

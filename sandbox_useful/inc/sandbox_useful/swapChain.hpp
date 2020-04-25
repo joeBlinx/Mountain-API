@@ -7,13 +7,12 @@
 
 #include <vulkan/vulkan.hpp>
 #include <vector>
-#include "sandbox_useful/device.hpp"
+#include "sandbox_useful/context.hpp"
 
-class BasicInit;
+class Context;
 struct SwapChain {
 
-	SwapChain(const Device &device, BasicInit const& context, vk::ImageUsageFlags image_usage,
-              int width, int height);
+	SwapChain(Context const &context, vk::ImageUsageFlags image_usage, int width, int height);
 	SwapChain(SwapChain const&) = delete;
     SwapChain& operator=(SwapChain const&) = delete;
 	~SwapChain();
@@ -36,8 +35,8 @@ private:
 
 	vk::Extent2D _swap_chain_extent{};
 
-	void create_swap_chain(VkSurfaceKHR surface, Device::QueueFamilyIndices const &indices,
-                           Device::SwapChainSupportDetails const &swap_chain_support,
+	void create_swap_chain(VkSurfaceKHR surface, const Context::QueueFamilyIndices &indices,
+                           const Context::SwapChainSupportDetails &swap_chain_support,
                            vk::ImageUsageFlags image_usage, int width, int height); // there are some parameter
 	void create_image_views();
 };

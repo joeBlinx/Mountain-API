@@ -23,11 +23,11 @@ set_common_properties(SandBox_utils)
 set_sources(_srcs
 				FOLDER src
 				FILES 
-					basicInit.cpp
-					device.cpp
+					context.cpp
 					renderpass/renderPass.cpp
 					swapChain.cpp
 					initVulkan.cpp
+					graphics_pipeline.cpp
 			)
 set_sources(_srcs_buffer
 			FOLDER src/buffer
@@ -42,11 +42,11 @@ set_sources(_headers_buffer
 set_sources(_headers 
 				FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/inc/sandbox_useful
 				FILES 
-					basicInit.hpp
-					device.hpp
+					context.hpp
 					renderpass/renderPass.hpp
 					swapChain.hpp
 					initVulkan.hpp
+					graphics_pipeline.hpp
 				)
 target_compile_definitions(SandBox_utils PUBLIC -DGLFW_INCLUDE_VULKAN)
 target_compile_options(SandBox_utils PUBLIC -fconcepts)
