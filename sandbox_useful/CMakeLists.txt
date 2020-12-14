@@ -17,7 +17,7 @@ target_link_libraries(SandBox_utils PRIVATE
 										vulkan::headers
 									PUBLIC
 										utils::utils
-										glfw
+										window
 											)
 set_common_properties(SandBox_utils)
 set_sources(_srcs

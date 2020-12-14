@@ -4,7 +4,6 @@
 
 #include "initVulkan.hpp"
 #include "utils/log.hpp"
-#include <GLFW/glfw3.h>
 #include <stdexcept>
 #include <vector>
 #include <iostream>
@@ -17,14 +16,7 @@
 #include <sandbox_useful/context.hpp>
 #include <sandbox_useful/buffer/vertex.hpp>
 
-void InitVulkan::loop(GLFWwindow *window) {
 
-	while (!glfwWindowShouldClose(window)) {
-		glfwPollEvents();
-		drawFrame();
-	}
-	vkDeviceWaitIdle(_device);
-}
 void InitVulkan::drawFrame()
 {
 	uint32_t imageIndex;

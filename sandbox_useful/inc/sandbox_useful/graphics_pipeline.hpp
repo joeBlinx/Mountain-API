@@ -13,7 +13,7 @@ struct Device;
 struct SwapChain;
 struct RenderPass;
 template<class T>
-concept bool PushConstantType = sizeof(T) <= 256 && sizeof(T)%4 == 0;
+concept PushConstantType = sizeof(T) <= 256 && sizeof(T)%4 == 0;
 template <PushConstantType>
 struct PushConstant{
     vk::ShaderStageFlagBits shader_stage;

@@ -37,13 +37,20 @@ function(check_build_type)
 endfunction()
 
 function(download_dependencies)
-	include(FetchContent)
-	FetchContent_Declare(
-			glfw_content
-			GIT_REPOSITORY https://github.com/glfw/glfw.git
-			GIT_TAG        3.3
-	)
+	list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/module)
+	if(${USE_GLFW})
+		include(FetchContent)
+		FetchContent_Declare(
+				glfw_content
+				GIT_REPOSITORY https://github.com/glfw/glfw.git
+				GIT_TAG        3.3
+		)
 
-	message(STATUS "DOWNLOAD : GLFW3")
-	FetchContent_MakeAvailable(glfw_content)
+		message(STATUS "DOWNLOAD : GLFW3")
+		FetchContent_MakeAvailable(glfw_content)
+
+	else(${USE_SDL2})
+		find_package(SDL2 REQUIRED)
+
+	endif()
 endfunction()

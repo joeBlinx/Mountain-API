@@ -4,6 +4,7 @@
 #include <vector>
 #include <vulkan/vulkan.hpp>
 #include <string_view>
+#include "window.h"
 struct GLFWwindow;
 struct Context
 {
@@ -28,7 +29,7 @@ struct Context
 	~Context();
 	vk::Instance const& get_vk_instance() const{return _instance;}
 	VkSurfaceKHR get_vk_surface() const{return _surface;}
-	GLFWwindow * get_window() const {return _window;}
+	Window const& get_window() const {return _window;}
 		vk::Device const& get_device() const{ return _device; }
 	const vk::Queue & get_graphics_queue() const {return _graphics_queue;}
 	const vk::Queue & get_present_queue() const{return _present_queue;}
@@ -43,16 +44,14 @@ struct Context
 	void copy_buffer(vk::UniqueBuffer& destination, vk::UniqueBuffer const& source, vk::DeviceSize const& size) const;
 private:
 	 std::vector<const char*> const _validationLayers = {
-			"VK_LAYER_KHRONOS_validation"
+			"VK_LAYER_LUNARG_standard_validation"
 	};
 #ifdef NDEBUG
 	 static bool constexpr _enableValidationLayer = false;
 #else
 	 static bool constexpr _enableValidationLayer = true;
 #endif
-
-	GLFWwindow * _window;
-	unsigned _width, _height;
+    Window _window;
 	vk::Instance _instance;
 	VkSurfaceKHR _surface;
 	
@@ -73,8 +72,6 @@ private:
 							   std::vector<const char *> const &validationLayers);
 	void create_command_pool();
 
-
-	void initWindow(std::string_view title);
 	bool checkValidationLayerSupport();
 	std::vector<char const * > getRequiredExtension();
 	void createInstance(std::string_view title);

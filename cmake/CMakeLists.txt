@@ -4,9 +4,9 @@ add_library(common_target INTERFACE)
 add_library(common_target::common_target ALIAS common_target)
 
 if(${CMAKE_CXX_COMPILER_ID} MATCHES GNU OR ${CMAKE_CXX_COMPILER_ID} MATCHES Clang)
-    target_compile_options(common_target INTERFACE -Wall -Wextra -pedantic -Werror)
+    target_compile_options(common_target INTERFACE -Wall -Wextra -pedantic $<$<CONFIG:Release>:-Werror>)
 endif()
-
+target_compile_features(common_target INTERFACE cxx_std_20)
 add_library(vulkan_headers INTERFACE)
 add_library(vulkan::headers ALIAS vulkan_headers)
 

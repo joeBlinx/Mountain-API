@@ -7,7 +7,7 @@
 
 #ifndef SANDBOX_VERTEX_H
 #define SANDBOX_VERTEX_H
-void vertex::create_buffer(Container const& container, vk::BufferUsageFlags buffer_usage, vk::UniqueBuffer& buffer, vk::UniqueDeviceMemory& buffer_memory){
+void vertex::create_buffer(Container auto const& container, vk::BufferUsageFlags buffer_usage, vk::UniqueBuffer& buffer, vk::UniqueDeviceMemory& buffer_memory){
     vk::DeviceSize buffer_size = sizeof(container[0]) * container.size();
     auto const& vk_device = _device.get_device();
 
@@ -25,7 +25,7 @@ void vertex::create_buffer(Container const& container, vk::BufferUsageFlags buff
                                                                        vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
     _device.copy_buffer(buffer, staging_buffer, buffer_size);
 }
-vertex::vertex(Context const &device, vertex_description&& description, Container &&vertices, std::vector<uint16_t> &&indices)
+vertex::vertex(Context const &device, vertex_description&& description, Container auto &&vertices, std::vector<uint16_t> &&indices)
         :_device(device),
         _indices_count(indices.size()),
         _description(std::move(description))

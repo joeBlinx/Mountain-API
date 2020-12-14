@@ -8,6 +8,10 @@ check_build_type()
 project(sandBox
 		LANGUAGES CXX
 		)
+option(USE_SDL2 "use sdl2 for window managment" OFF)
+option(USE_GLFW "use glfw for window managment" ON)
+message("USE_SDL2 is ${USE_SDL2}")
+message("USE_GLFW is ${USE_GLFW}")
 
 download_dependencies()
 find_package(Vulkan 1.2 REQUIRED)
@@ -16,6 +20,7 @@ add_executable(${PROJECT_NAME})
 add_subdirectory(cmake)
 add_subdirectory(sandbox_useful)
 add_subdirectory(utils)
+add_subdirectory(window_management)
 target_sources(${PROJECT_NAME} 	
 		PRIVATE 
 		src/main.cpp

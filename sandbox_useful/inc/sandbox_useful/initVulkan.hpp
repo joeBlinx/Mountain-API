@@ -6,7 +6,6 @@
 #define SANDBOX_INITVULKAN_HPP
 
 #include <vulkan/vulkan.hpp>
-#include <GLFW/glfw3.h>
 #include <vector>
 #include "sandbox_useful/swapChain.hpp"
 #include "sandbox_useful/context.hpp"
@@ -20,7 +19,6 @@ struct GraphicsPipeline;
 struct InitVulkan {
 
 	InitVulkan(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass);
-	void loop(GLFWwindow *window);
     template <class T>
     void createCommandBuffers(T const& obj);
     void drawFrame();
