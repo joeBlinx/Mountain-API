@@ -36,20 +36,20 @@ struct move_rectangle{
 };
 void key_callback(GLFWwindow* window, int key, int , int action, int)
 {
-//    auto* obj = static_cast<move_rectangle*>(glfwGetWindowUserPointer(window));
-//
-//    if (key == GLFW_KEY_E && action == GLFW_PRESS){
-//        obj->move();
-//
-//    }
+    auto* obj = static_cast<move_rectangle*>(glfwGetWindowUserPointer(window));
+
+    if (key == GLFW_KEY_E && action == GLFW_PRESS){
+        obj->move();
+
+    }
 }
 void loop(InitVulkan& init, Context const& context) {
 
-//    while (!glfwWindowShouldClose(context.get_window())) {
-//        glfwPollEvents();
-//        init.drawFrame();
-//    }
-//    vkDeviceWaitIdle(context.get_device());
+    while (!glfwWindowShouldClose(context.get_window().get_window())) {
+        glfwPollEvents();
+        init.drawFrame();
+    }
+    vkDeviceWaitIdle(context.get_device());
 }
 
 int main() {
@@ -115,8 +115,8 @@ int main() {
 
     move_rectangle move{init, {vertex[0], pipeline, {{0.5, 0.25}, {-1, 0.25}, {0, 0.25}}}};
 
-//    glfwSetKeyCallback(context.get_window(), key_callback);
-//    glfwSetWindowUserPointer(context.get_window(), &move);
+    glfwSetKeyCallback(context.get_window().get_window(), key_callback);
+    glfwSetWindowUserPointer(context.get_window().get_window(), &move);
 
 
     init.createCommandBuffers(move.obj);

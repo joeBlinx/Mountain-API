@@ -220,22 +220,52 @@ bool is_device_suitable(vk::PhysicalDevice const& device, vk::QueueFlagBits queu
 	return indices.isComplete() && extensionSupported && swapChainAdequate;
 }
 
-
+int get_point_to_device_type(vk::PhysicalDeviceType device_type){
+    switch (device_type) {
+        case vk::PhysicalDeviceType::eOther:
+            return 0;
+        case vk::PhysicalDeviceType::eCpu:
+            return 1;
+        case vk::PhysicalDeviceType::eVirtualGpu:
+            return 2;
+        case vk::PhysicalDeviceType::eIntegratedGpu:
+            return 3;
+        case vk::PhysicalDeviceType::eDiscreteGpu:
+            return 4;
+    }
+    return 0;
+}
 void Context::pick_up_physical_device(vk::Instance instance, vk::QueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension,
 									 VkSurfaceKHR surface) {
 	
 	auto physicalDevices = instance.enumeratePhysicalDevices();
-	if(!physicalDevices.size()){
+	if(physicalDevices.empty()){
 		utils::printFatalError("failed to find gpu with vulkan support");
 	}
-
+    struct RankGpu{
+	    vk::PhysicalDevice device;
+	    int rank{};
+	    bool operator>(RankGpu const& a)const{
+	        return rank > a.rank;
+	    }
+	};
+	std::set<RankGpu, std::greater<>> physical_available;
 	for(auto device : physicalDevices){
 		if(is_device_suitable(device, queue_flag, devicesExtension, surface)){
-			_physical_device = device;
-			return;
+			vk::PhysicalDeviceProperties prop;
+            device.getProperties(&prop);
+			physical_available.insert(
+			        RankGpu{
+			            device,
+                        get_point_to_device_type(prop.deviceType)
+			        }
+			        );
 		}
 	}
-
+	if( ! physical_available.empty()){
+        _physical_device = physical_available.begin()->device;
+        return;
+    }
 	utils::printFatalError("no suitable GPU found");
 }
 
