@@ -145,9 +145,9 @@ void Context::createInstance(std::string_view title)
 
 	if constexpr (_enableValidationLayer)
 	{
-		std::cout << "available extensions:" << std::endl;
+		utils::print("available extensions:");
 		for (const auto &extension : extensionsProperties) {
-			std::cout << "\t" << extension.extensionName << std::endl;
+			utils::print("\t", extension.extensionName);
 		}
 	}
 }

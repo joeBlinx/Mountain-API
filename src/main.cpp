@@ -16,28 +16,33 @@ struct Vertex{
     vec2 position;
     vec3 color;
 };
-struct Test{
+struct Model{
     float dir{};
     float size{};
-    float new_color{0.5};
+};
+struct Color{
+    float new_color{};
+};
+struct Uniform{
+   Model model;
+   Color new_color{0.5};
 };
 struct object{
     buffer::vertex const& vertices;
     GraphicsPipeline const& graphics_pipeline;
-    std::vector<Test> values;
+    std::vector<Uniform> values;
 };
 struct move_rectangle{
     InitVulkan& init;
     object obj;
     void move(){
-        obj.values[0].dir += +0.2;
+        obj.values[0].model.dir += +0.2;
         init.createCommandBuffers(obj);
     }
 };
 void key_callback(GLFWwindow* window, int key, int , int action, int)
 {
     auto* obj = static_cast<move_rectangle*>(glfwGetWindowUserPointer(window));
-
     if (key == GLFW_KEY_E && action == GLFW_PRESS){
         obj->move();
 
@@ -63,7 +68,7 @@ int main() {
 
 	Context context{width,
                  height,
-                 "test",
+                 "Vulkan Window",
                  devicesExtension};
 	SwapChain swap_chain{
             context,
@@ -85,23 +90,18 @@ int main() {
 	;
     std::vector<buffer::vertex> vertex;
     vertex.emplace_back(buffer::vertex(context,
-            buffer::vertex_description(0, 0, CLASS_DESCRIPTION(Vertex, position, color)),
+            buffer::vertex_description(0, 0,
+                                       CLASS_DESCRIPTION(Vertex, position, color)),
             vertices,
             {0, 1, 2, 2, 3, 0}
             ));
 
-	struct Vertex{
-        float dir{};
-        float size{};
-	};
-	struct Fragment{
-	    float new_color{};
-	};
 
-	PushConstant<Vertex> push_vertex{
+
+	PushConstant<Model> push_vertex{
 		vk::ShaderStageFlagBits::eVertex
 	};
-    PushConstant<Fragment> push_frag{
+    PushConstant<Color> push_frag{
             vk::ShaderStageFlagBits::eFragment
     };
     GraphicsPipeline pipeline(context,
@@ -113,7 +113,12 @@ int main() {
             swap_chain,
             render_pass);
 
-    move_rectangle move{init, {vertex[0], pipeline, {{0.5, 0.25}, {-1, 0.25}, {0, 0.25}}}};
+    move_rectangle move{init,
+                        {vertex[0], pipeline,
+                         {
+                            {0.5, 0.25},
+                          {-1, 0.25},
+                          {0, 0.25}}}};
 
     glfwSetKeyCallback(context.get_window().get_window(), key_callback);
     glfwSetWindowUserPointer(context.get_window().get_window(), &move);
