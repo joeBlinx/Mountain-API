@@ -45,7 +45,9 @@ void key_callback(GLFWwindow* window, int key, int , int action, int)
     auto* obj = static_cast<move_rectangle*>(glfwGetWindowUserPointer(window));
     if (key == GLFW_KEY_E && action == GLFW_PRESS){
         obj->move();
-
+    }
+    if(key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE){
+        glfwSetWindowShouldClose(window, true);
     }
 }
 void loop(InitVulkan& init, Context const& context) {
