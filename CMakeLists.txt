@@ -16,26 +16,29 @@ message("USE_GLFW is ${USE_GLFW}")
 download_dependencies()
 find_package(Vulkan 1.2 REQUIRED)
 
-add_executable(${PROJECT_NAME})
+add_executable(sample)
 add_subdirectory(cmake)
 add_subdirectory(sandbox_useful)
 add_subdirectory(utils)
 add_subdirectory(window_management)
-target_sources(${PROJECT_NAME} 	
+target_sources(sample
 		PRIVATE 
 		src/main.cpp
 		)
 
-set_common_properties(${PROJECT_NAME})
+set_common_properties(sample)
 
-add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD COMMAND ${PROJECT_SOURCE_DIR}/compile.sh
-	${PROJECT_SOURCE_DIR}/shader ${${PROJECT_NAME}_BINARY_DIR} ${${PROJECT_NAME}_BINARY_DIR})
+add_custom_target(build_shader ALL
+		COMMAND ${PROJECT_SOURCE_DIR}/compile.sh
+		${PROJECT_SOURCE_DIR}/shader ${${PROJECT_NAME}_BINARY_DIR} ${${PROJECT_NAME}_BINARY_DIR})
+
+add_dependencies(sample build_shader)
 
 
+target_include_directories(sample PRIVATE include)
 
-target_include_directories(${PROJECT_NAME} PRIVATE include)
-
-target_link_libraries(${PROJECT_NAME} PRIVATE
+target_link_libraries(sample PRIVATE
 											SandBox::utils
+											CONAN_PKG::glm
 											)
 
