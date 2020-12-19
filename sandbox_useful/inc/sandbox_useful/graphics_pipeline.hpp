@@ -14,6 +14,7 @@ struct SwapChain;
 struct RenderPass;
 template<class T>
 concept PushConstantType = sizeof(T) <= 256 && sizeof(T)%4 == 0;
+
 template <PushConstantType>
 struct PushConstant{
     vk::ShaderStageFlagBits shader_stage;
@@ -46,9 +47,11 @@ private:
         _pipeline_layout = _device.get_device().createPipelineLayoutUnique(pipelineLayoutInfo);
     }
 };
+
 template<class ...Ts>
 GraphicsPipeline::GraphicsPipeline(Context const &device, SwapChain const &swap_chain, RenderPass const &render_pass,
-                                   const std::vector<buffer::vertex> &buffers, PushConstant<Ts> const& ...push_constant) :
+                                   const std::vector<buffer::vertex> &buffers,
+                                   PushConstant<Ts> const& ...push_constant) :
         _device(device){
 
     create_pipeline_layout(push_constant...);

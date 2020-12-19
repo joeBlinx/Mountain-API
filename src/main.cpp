@@ -6,6 +6,7 @@
 #include <vector>
 #include "sandbox_useful/buffer/vertex.hpp"
 #include "glm/glm.hpp"
+#include "glm/ext/matrix_transform.hpp"
 struct vec2{
     float a;
     float b;
@@ -39,6 +40,10 @@ struct move_rectangle{
         //obj.values[0].model.dir += +0.2;
         init.createCommandBuffers(obj);
     }
+};
+struct VP{
+    glm::mat4 view;
+    glm::mat4 proj;
 };
 void key_callback(GLFWwindow* window, int key, int , int action, int)
 {
@@ -106,10 +111,28 @@ int main() {
     PushConstant<Color> push_frag{
             vk::ShaderStageFlagBits::eFragment
     };
+
+    vk::DescriptorSetLayoutBinding ubo_binding_layout{};
+    ubo_binding_layout.binding = 0;
+    ubo_binding_layout.descriptorType = vk::DescriptorType::eUniformBuffer;
+    ubo_binding_layout.descriptorCount = 1;
+    ubo_binding_layout.stageFlags = vk::ShaderStageFlagBits::eVertex;
+
+
+    vk::DescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo{};
+    descriptorSetLayoutCreateInfo.bindingCount = 1;
+    descriptorSetLayoutCreateInfo.pBindings = &ubo_binding_layout;
+
+    vk::DescriptorSetLayout descriptor_layout;
+    context.get_device().createDescriptorSetLayout(&descriptorSetLayoutCreateInfo,
+                                                                            nullptr,
+                                                                            &descriptor_layout);
+
     GraphicsPipeline pipeline(context,
                               swap_chain,
                               render_pass,
-                              vertex_buffers, push_vertex, push_frag);
+                              vertex_buffers,
+                              push_vertex, push_frag);
 	InitVulkan init(
             context,
             swap_chain,
@@ -118,7 +141,12 @@ int main() {
     move_rectangle move{init,
                         {vertex_buffers[0], pipeline,
                          {
-                            {}}}};
+                            {
+                {glm::scale(glm::mat4{1.}, glm::vec3{0.5})}}
+
+                         }
+                        }
+    };
 
     glfwSetKeyCallback(context.get_window().get_window(), key_callback);
     glfwSetWindowUserPointer(context.get_window().get_window(), &move);
