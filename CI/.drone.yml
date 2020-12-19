@@ -1,0 +1,34 @@
+kind: pipeline
+type: docker
+name: default
+
+
+steps:
+  - name: build_image
+    image: docker
+    volumes:
+      - name : build_docker
+        path: /var/run/docker.sock
+    commands :
+      - docker build docker/ -t ubuntu_docker
+
+  - name: build
+    image: ubuntu_docker
+    pull : never
+    volumes:
+      - name : build_folder
+        path : /workspace/build
+    commands:
+      - mkdir build || exit 0
+      - cd build
+      - cmake -GNinja ..
+      - cmake --build . -j 10
+
+
+volumes:
+  - name: build_docker
+    host:
+      path: /var/run/docker.sock
+  - name: build_folder
+    host:
+      path: /home/.build/sandbox
