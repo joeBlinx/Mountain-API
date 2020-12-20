@@ -9,7 +9,7 @@
 #include <vector>
 #include "sandbox_useful/context.hpp"
 
-class Context;
+struct Context;
 struct SwapChain {
 
 	SwapChain(Context const &context, vk::ImageUsageFlags image_usage, int width, int height);

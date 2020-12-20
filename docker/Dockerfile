@@ -7,3 +7,9 @@ apt install cmake -y && \
 apt install git -y && \
 apt install libvulkan-dev spirv-tools -y && \
 apt install libx11-dev xorg-dev libglu1-mesa-dev -y
+RUN apt install -y python3-pip && \
+python3 -m pip install ninja
+RUN apt install -y openssh-server ssh
+RUN apt clean
+RUN useradd -m user && yes password | passwd user
+

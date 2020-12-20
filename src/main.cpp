@@ -4,6 +4,7 @@
 #include "sandbox_useful/swapChain.hpp"
 #include "sandbox_useful/renderpass/renderPass.hpp"
 #include <vector>
+#include <sandbox_useful/buffer/uniform.h>
 #include "sandbox_useful/buffer/vertex.hpp"
 #include "glm/glm.hpp"
 #include "glm/ext/matrix_transform.hpp"
@@ -42,8 +43,8 @@ struct move_rectangle{
     }
 };
 struct VP{
-    glm::mat4 view;
-    glm::mat4 proj;
+    glm::mat4 view{1.};
+    glm::mat4 proj{1.};
 };
 void key_callback(GLFWwindow* window, int key, int , int action, int)
 {
@@ -59,7 +60,7 @@ void loop(InitVulkan& init, Context const& context) {
 
     while (!glfwWindowShouldClose(context.get_window().get_window())) {
         glfwPollEvents();
-        init.drawFrame();
+        init.drawFrame({});
     }
     vkDeviceWaitIdle(context.get_device());
 }
@@ -127,17 +128,19 @@ int main() {
     context.get_device().createDescriptorSetLayout(&descriptorSetLayoutCreateInfo,
                                                                             nullptr,
                                                                             &descriptor_layout);
-
     GraphicsPipeline pipeline(context,
                               swap_chain,
                               render_pass,
                               vertex_buffers,
+                              {descriptor_layout},
                               push_vertex, push_frag);
 	InitVulkan init(
             context,
             swap_chain,
             render_pass);
-
+	buffer::uniform<VP> uniform_vp(context, swap_chain.get_swap_chain_image_views().size());
+    init.create_descriptor_sets_uniforms({descriptor_layout},
+                                         uniform_vp);
     move_rectangle move{init,
                         {vertex_buffers[0], pipeline,
                          {
@@ -153,7 +156,18 @@ int main() {
 
 
     init.createCommandBuffers(move.obj);
-	loop(init, context);
+
+
+
+
+
+    std::vector<buffer::uniform_updater> updaters;
+    updaters.emplace_back(uniform_vp.get_uniform_updater(VP{}));
+    while (!glfwWindowShouldClose(context.get_window().get_window())) {
+        glfwPollEvents();
+        init.drawFrame(std::move(updaters));
+    }
+    vkDeviceWaitIdle(context.get_device());
 
 	return 0;
 }

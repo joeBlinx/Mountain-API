@@ -21,7 +21,7 @@ steps:
     commands:
       - mkdir build || exit 0
       - cd build
-      - cmake -GNinja ..
+      - cmake -GNinja -DCMAKE_BUILD_TYPE=Release ..
       - cmake --build . -j 10
 
 

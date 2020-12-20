@@ -28,6 +28,7 @@ set_sources(_srcs
 					swapChain.cpp
 					initVulkan.cpp
 					graphics_pipeline.cpp
+					buffer/uniform.cpp
 			)
 set_sources(_srcs_buffer
 			FOLDER src/buffer
@@ -38,6 +39,7 @@ set_sources(_headers_buffer
 			FILES 
 				vertex.hpp
 				vertex.tpp
+				uniform.h
 )			
 set_sources(_headers 
 				FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/inc/sandbox_useful

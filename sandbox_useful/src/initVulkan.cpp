@@ -15,13 +15,37 @@
 #include <sandbox_useful/swapChain.hpp>
 #include <sandbox_useful/context.hpp>
 #include <sandbox_useful/buffer/vertex.hpp>
+#include <uniform.h>
 
+InitVulkan::InitVulkan(const Context &context,
+                       const SwapChain &swap_chain,
+                       RenderPass const &renderpass
+)
+        :
+        _swapchain( swap_chain.get_swap_chain()),
+        _swapChainImageViews(swap_chain.get_swap_chain_image_views()),
+        _swapChainExtent(swap_chain.get_swap_chain_extent()),
+        _context(context),
+        _commandPool(context.get_command_pool()),
+        _graphicsQueue(context.get_graphics_queue()),
+        _presentQueue(context.get_present_queue()),
+        _renderpass(renderpass.get_renderpass()){
+    createFrameBuffers();
 
-void InitVulkan::drawFrame()
+    allocate_command_buffer();
+    create_descriptor_pool();
+    createSemaphores();
+
+}
+void InitVulkan::drawFrame(std::vector<buffer::uniform_updater> &&updaters)
 {
 	uint32_t imageIndex;
-	vkAcquireNextImageKHR(_device, _swapchain, std::numeric_limits<uint64_t>::max(), _imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+	vkAcquireNextImageKHR(_context.get_device(), _swapchain, std::numeric_limits<uint64_t>::max(), _imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
+	for(auto& updater : updaters){
+	    updater(_context, imageIndex);
+	}
+	
 	vk::SubmitInfo submitInfo;
 	vk::Semaphore waitSemaphores[] = { _imageAvailableSemaphore };
 
@@ -54,13 +78,13 @@ void InitVulkan::drawFrame()
 }
 
 InitVulkan::~InitVulkan() {
-    _device.destroy(_renderFinishedSemaphore);
-    _device.destroy(_imageAvailableSemaphore);
+    _context.get_device().destroy(_renderFinishedSemaphore);
+    _context.get_device().destroy(_imageAvailableSemaphore);
 
-    _device.free(_commandPool, _commandBuffers);
+    _context.get_device().free(_commandPool, _commandBuffers);
 
 	for (auto &framebuffer : _swapchainFrameBuffer) {
-		_device.destroy(framebuffer);
+		_context.get_device().destroy(framebuffer);
 	}
 
 }
@@ -82,7 +106,7 @@ void InitVulkan::createFrameBuffers()
 		framebufferInfo.width = _swapChainExtent.width;
 		framebufferInfo.height = _swapChainExtent.height;
 		framebufferInfo.layers = 1;
-		_swapchainFrameBuffer[i] = _device.createFramebuffer(framebufferInfo);
+		_swapchainFrameBuffer[i] = _context.get_device().createFramebuffer(framebufferInfo);
 		
 	
 	}
@@ -92,27 +116,9 @@ void InitVulkan::createFrameBuffers()
 
 void InitVulkan::createSemaphores()
 {
-	_imageAvailableSemaphore = _device.createSemaphore({});
-	_renderFinishedSemaphore = _device.createSemaphore({});
+	_imageAvailableSemaphore = _context.get_device().createSemaphore({});
+	_renderFinishedSemaphore = _context.get_device().createSemaphore({});
 	
-}
-
-InitVulkan::InitVulkan(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass)
-		:
-		  _swapchain( swap_chain.get_swap_chain()),
-		  _swapChainImageViews(swap_chain.get_swap_chain_image_views()),
-		  _swapChainExtent(swap_chain.get_swap_chain_extent()),
-		  _device(context.get_device()),
-		  _commandPool(context.get_command_pool()),
-		  _graphicsQueue(context.get_graphics_queue()),
-		  _presentQueue(context.get_present_queue()),
-		  _renderpass(renderpass.get_renderpass()){
-    createFrameBuffers();
-
-    allocate_command_buffer();
-
-    createSemaphores();
-
 }
 
 void InitVulkan::allocate_command_buffer() {
@@ -121,5 +127,22 @@ void InitVulkan::allocate_command_buffer() {
     allocInfo.commandPool = _commandPool;
     allocInfo.level = vk::CommandBufferLevel::ePrimary;
     allocInfo.commandBufferCount = (uint32_t) _commandBuffers.size();
-    _commandBuffers = _device.allocateCommandBuffers(allocInfo);
+    _commandBuffers = _context.get_device().allocateCommandBuffers(allocInfo);
 }
+
+void InitVulkan::create_descriptor_pool() {
+    vk::DescriptorPoolSize pool_size;
+    pool_size.type = vk::DescriptorType::eUniformBuffer;
+    pool_size.descriptorCount = _swapChainImageViews.size();
+
+    vk::DescriptorPoolCreateInfo _pool_info;
+    _pool_info.poolSizeCount = 1;
+    _pool_info.pPoolSizes = &pool_size;
+    _pool_info.maxSets = _swapChainImageViews.size();
+
+    checkError(
+            _context.get_device().createDescriptorPool(&_pool_info, nullptr, &_descriptor_pool)
+            , "Failed to create descriptor pool");
+
+}
+

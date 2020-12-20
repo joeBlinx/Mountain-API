@@ -42,7 +42,7 @@ std::map<int, std::string> VkResultStr{
 };
 void checkError(VkResult result, const std::string& log){
 	if(result != VK_SUCCESS){
-		throw std::runtime_error(log + " error is:" + VkResultStr[result]);
+		throw std::runtime_error(log + "\n error is:" + VkResultStr[result]);
 	}
 }
 
