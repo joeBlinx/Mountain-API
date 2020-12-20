@@ -5,9 +5,10 @@
 #include "sandbox_useful/renderpass/renderPass.hpp"
 #include <vector>
 #include <sandbox_useful/buffer/uniform.h>
+#include <chrono>
 #include "sandbox_useful/buffer/vertex.hpp"
 #include "glm/glm.hpp"
-#include "glm/ext/matrix_transform.hpp"
+#include "glm/ext.hpp"
 struct vec2{
     float a;
     float b;
@@ -56,15 +57,21 @@ void key_callback(GLFWwindow* window, int key, int , int action, int)
         glfwSetWindowShouldClose(window, true);
     }
 }
-void loop(InitVulkan& init, Context const& context) {
+VP create_vp_matrix(int width, int height){
+    static auto startTime = std::chrono::high_resolution_clock::now();
 
-    while (!glfwWindowShouldClose(context.get_window().get_window())) {
-        glfwPollEvents();
-        init.drawFrame({});
-    }
-    vkDeviceWaitIdle(context.get_device());
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+    (void)time;
+    VP ubo{};
+    ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    ubo.proj = glm::perspective(glm::radians(45.0f),
+                                width / (float) height,
+                                0.1f, 10.0f);
+    ubo.proj[1][1] *= -1;
+
+    return ubo;
 }
-
 int main() {
 	
 	std::vector<const char*> const devicesExtension{
@@ -90,10 +97,10 @@ int main() {
 
 
 	std::array vertices{
-            Vertex{{-1.f, -1.f}, {1.0f, 0.0f, 0.0f}},
-            Vertex{{1.f, -1.f}, {0.0f, 1.0f, 0.0f}},
-            Vertex{{1.f, 1.f}, {0.0f, 0.0f, 1.0f}},
-            Vertex{{-1.f, 1.f}, {1.0f, 1.0f, 1.0f}}
+            Vertex{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+            Vertex{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+            Vertex{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+            Vertex{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
 	};
 	;
     std::vector<buffer::vertex> vertex_buffers;
@@ -145,7 +152,7 @@ int main() {
                         {vertex_buffers[0], pipeline,
                          {
                             {
-                {glm::scale(glm::mat4{1.}, glm::vec3{0.5})}}
+                {glm::scale(glm::mat4{1.}, glm::vec3{1.})}}
 
                          }
                         }
@@ -157,12 +164,8 @@ int main() {
 
     init.createCommandBuffers(move.obj);
 
-
-
-
-
     std::vector<buffer::uniform_updater> updaters;
-    updaters.emplace_back(uniform_vp.get_uniform_updater(VP{}));
+    updaters.emplace_back(uniform_vp.get_uniform_updater(create_vp_matrix(width, height)));
     while (!glfwWindowShouldClose(context.get_window().get_window())) {
         glfwPollEvents();
         init.drawFrame(std::move(updaters));
