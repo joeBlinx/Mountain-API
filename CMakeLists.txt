@@ -29,6 +29,7 @@ target_sources(sample
 set_common_properties(sample)
 
 add_custom_target(build_shader ALL
+		chmod +x ${PROJECT_SOURCE_DIR}/compile.sh
 		COMMAND ${PROJECT_SOURCE_DIR}/compile.sh
 		${PROJECT_SOURCE_DIR}/shader ${${PROJECT_NAME}_BINARY_DIR} ${${PROJECT_NAME}_BINARY_DIR})
 
