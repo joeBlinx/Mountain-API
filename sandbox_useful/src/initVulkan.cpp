@@ -17,10 +17,8 @@
 #include <sandbox_useful/buffer/vertex.hpp>
 #include <uniform.h>
 
-InitVulkan::InitVulkan(const Context &context,
-                       const SwapChain &swap_chain,
-                       RenderPass const &renderpass
-)
+InitVulkan::InitVulkan(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass,
+                       int nb_uniform)
         :
         _swapchain( swap_chain.get_swap_chain()),
         _swapChainImageViews(swap_chain.get_swap_chain_image_views()),
@@ -33,7 +31,7 @@ InitVulkan::InitVulkan(const Context &context,
     createFrameBuffers();
 
     allocate_command_buffer();
-    create_descriptor_pool();
+    create_descriptor_pool(nb_uniform);
     createSemaphores();
 
 }
@@ -130,7 +128,7 @@ void InitVulkan::allocate_command_buffer() {
     _commandBuffers = _context.get_device().allocateCommandBuffers(allocInfo);
 }
 
-void InitVulkan::create_descriptor_pool() {
+void InitVulkan::create_descriptor_pool(int nb_uniform) {
     vk::DescriptorPoolSize pool_size;
     pool_size.type = vk::DescriptorType::eUniformBuffer;
     pool_size.descriptorCount = _swapChainImageViews.size();
@@ -138,7 +136,7 @@ void InitVulkan::create_descriptor_pool() {
     vk::DescriptorPoolCreateInfo _pool_info;
     _pool_info.poolSizeCount = 1;
     _pool_info.pPoolSizes = &pool_size;
-    _pool_info.maxSets = _swapChainImageViews.size();
+    _pool_info.maxSets = _swapChainImageViews.size()*nb_uniform;
 
     checkError(
             _context.get_device().createDescriptorPool(&_pool_info, nullptr, &_descriptor_pool)

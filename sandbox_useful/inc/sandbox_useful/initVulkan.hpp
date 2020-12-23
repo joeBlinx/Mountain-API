@@ -26,10 +26,7 @@ struct PipelineData{
 };
 struct InitVulkan {
 
-	InitVulkan(const Context &context,
-            const SwapChain &swap_chain,
-            RenderPass const &renderpass
-            );
+	InitVulkan(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass, int nb_uniform);
     template <class T>
     void createCommandBuffers(PipelineData<T> const& pipeline_data);
     template<class ...Ts>
@@ -72,7 +69,7 @@ private:
 
     void allocate_command_buffer();
 
-    void create_descriptor_pool();
+    void create_descriptor_pool(int nb_uniform);
 
 
 };
@@ -111,25 +108,31 @@ void InitVulkan::create_descriptor_sets_uniforms(
      */
     for (auto it = begin(_descriptor_sets); it != end(_descriptor_sets);){
         auto configure_descriptor_set = [this, &it]<class T>(buffer::uniform<T>const & uniform_buffer)mutable{
+            std::vector<vk::WriteDescriptorSet> write_sets(uniform_buffer.size());
+            std::vector<vk::DescriptorBufferInfo> buffer_infos(uniform_buffer.size());
+
+            auto it_write_sets = begin(write_sets);
+            auto it_buffers_infos = begin(buffer_infos);
             for(auto& uniform: uniform_buffer){
-                vk::DescriptorBufferInfo buffer_info{};
-                buffer_info.buffer = *uniform;
-                buffer_info.offset = 0;
-                buffer_info.range = sizeof(T);
+                it_buffers_infos->buffer = *uniform;
+                it_buffers_infos->offset = 0;
+                it_buffers_infos->range = sizeof(T);
 
-                vk::WriteDescriptorSet write_descriptor_set{};
-                write_descriptor_set.dstSet = *it;
-                write_descriptor_set.dstBinding = 0; //this is a bug
-                write_descriptor_set.dstArrayElement = 0 ;//that too
-                write_descriptor_set.descriptorType= vk::DescriptorType ::eUniformBuffer;
-                write_descriptor_set.descriptorCount = 1;
-                write_descriptor_set.pBufferInfo = &buffer_info;
-                write_descriptor_set.pImageInfo = nullptr;
-                write_descriptor_set.pTexelBufferView = nullptr;
+                it_write_sets->dstSet = *it;
+                it_write_sets->dstBinding = 0; //this is a bug
+                it_write_sets->dstArrayElement = 0 ;//that too
+                it_write_sets->descriptorType= vk::DescriptorType ::eUniformBuffer;
+                it_write_sets->descriptorCount = 1;
+                it_write_sets->pBufferInfo = &*it_buffers_infos;
+                it_write_sets->pImageInfo = nullptr;
+                it_write_sets->pTexelBufferView = nullptr;
 
-                _context.get_device().updateDescriptorSets(1, &write_descriptor_set, 0, nullptr);
                 it++;
+                it_write_sets++;
+                it_buffers_infos++;
             }
+            _context.get_device().updateDescriptorSets(write_sets.size(),
+                                                       write_sets.data(), 0, nullptr);
         };
         (configure_descriptor_set(uniform_buffers), ...);
     }

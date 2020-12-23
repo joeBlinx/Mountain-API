@@ -33,6 +33,10 @@ namespace buffer{
         const_iterator begin() const{return std::begin(_buffers);}
         const_iterator end() const{return std::end(_buffers);}
 
+        int size() const{
+            return _buffers.size();
+        }
+
     private:
         std::vector<vk::UniqueBuffer> _buffers;
         std::vector<vk::UniqueDeviceMemory> _buffer_memories;

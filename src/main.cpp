@@ -9,7 +9,7 @@
 #include "sandbox_useful/buffer/vertex.hpp"
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
-#include "descriptor_setlayout_binding/descriptorset_layout.h"
+#include "sandbox_useful/descriptor_setlayout_binding/descriptorset_layout.h"
 struct vec2{
     float a;
     float b;
@@ -124,10 +124,15 @@ int main() {
     vk::DescriptorSetLayoutBinding ubo_binding_layout =
             descriptorset_layout::create_descriptor_uniform(0, vk::ShaderStageFlagBits::eVertex);
 
+    vk::DescriptorSetLayoutBinding ubo_layout_frag_color =
+            descriptorset_layout::create_descriptor_uniform(1, vk::ShaderStageFlagBits::eFragment);
+
     vk::DescriptorSetLayout descriptor_layout = descriptorset_layout::create_descriptorset_layout(
             context, {ubo_binding_layout}
             );
-
+    vk::DescriptorSetLayout descriptor_layout_frag = descriptorset_layout::create_descriptorset_layout(
+            context, {ubo_layout_frag_color}
+    );
     GraphicsPipeline pipeline(context,
                               swap_chain,
                               render_pass,
@@ -137,8 +142,9 @@ int main() {
 	InitVulkan init(
             context,
             swap_chain,
-            render_pass);
+            render_pass, 2);
 	buffer::uniform<VP> uniform_vp(context, swap_chain.get_swap_chain_image_views().size());
+	buffer::uniform<float> uniform_color(context, swap_chain.get_swap_chain_image_views().size());
     init.create_descriptor_sets_uniforms({descriptor_layout},
                                          uniform_vp);
     move_rectangle move{init,

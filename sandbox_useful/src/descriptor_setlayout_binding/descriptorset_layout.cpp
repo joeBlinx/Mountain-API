@@ -8,7 +8,7 @@ namespace descriptorset_layout {
         vk::DescriptorSetLayoutBinding ubo_binding_layout{};
         ubo_binding_layout.binding = binding;
         ubo_binding_layout.descriptorType = vk::DescriptorType::eUniformBuffer;
-        ubo_binding_layout.descriptorCount = 1;
+        ubo_binding_layout.descriptorCount = 1; // can be greater than 1 if we use uniform arrays
         ubo_binding_layout.stageFlags = shader;
         return ubo_binding_layout;
 
