@@ -29,6 +29,7 @@ set_sources(_srcs
 					initVulkan.cpp
 					graphics_pipeline.cpp
 					buffer/uniform.cpp
+					descriptor_setlayout_binding/descriptorset_layout.cpp
 			)
 set_sources(_srcs_buffer
 			FOLDER src/buffer

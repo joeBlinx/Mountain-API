@@ -9,6 +9,7 @@
 #include "sandbox_useful/buffer/vertex.hpp"
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
+#include "descriptor_setlayout_binding/descriptorset_layout.h"
 struct vec2{
     float a;
     float b;
@@ -120,21 +121,13 @@ int main() {
             vk::ShaderStageFlagBits::eFragment
     };
 
-    vk::DescriptorSetLayoutBinding ubo_binding_layout{};
-    ubo_binding_layout.binding = 0;
-    ubo_binding_layout.descriptorType = vk::DescriptorType::eUniformBuffer;
-    ubo_binding_layout.descriptorCount = 1;
-    ubo_binding_layout.stageFlags = vk::ShaderStageFlagBits::eVertex;
+    vk::DescriptorSetLayoutBinding ubo_binding_layout =
+            descriptorset_layout::create_descriptor_uniform(0, vk::ShaderStageFlagBits::eVertex);
 
+    vk::DescriptorSetLayout descriptor_layout = descriptorset_layout::create_descriptorset_layout(
+            context, {ubo_binding_layout}
+            );
 
-    vk::DescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo{};
-    descriptorSetLayoutCreateInfo.bindingCount = 1;
-    descriptorSetLayoutCreateInfo.pBindings = &ubo_binding_layout;
-
-    vk::DescriptorSetLayout descriptor_layout;
-    context.get_device().createDescriptorSetLayout(&descriptorSetLayoutCreateInfo,
-                                                                            nullptr,
-                                                                            &descriptor_layout);
     GraphicsPipeline pipeline(context,
                               swap_chain,
                               render_pass,
