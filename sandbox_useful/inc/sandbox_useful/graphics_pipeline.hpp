@@ -58,7 +58,7 @@ GraphicsPipeline::GraphicsPipeline(Context const &device, SwapChain const &swap_
                                    PushConstant<Ts> const& ...push_constant) :
         _device(device){
 
-    create_pipeline_layout(std::move(descriptor_layout), push_constant...);
+    create_pipeline_layout(descriptor_layout, push_constant...);
     init(swap_chain, render_pass, buffers);
 }
 template<class ...Ts>
@@ -75,10 +75,10 @@ void GraphicsPipeline::create_pipeline_layout(std::vector<vk::DescriptorSetLayou
     std::vector push_constant_range{create_push_constant_ranges(push_constant)...};
     std::swap(_push_constant_ranges, push_constant_range);
     vk::PipelineLayoutCreateInfo pipelineLayoutInfo = {};
-    pipelineLayoutInfo.setLayoutCount = descriptor_layout.size(); // Optional
+    pipelineLayoutInfo.setLayoutCount = descriptor_layout.size();
     pipelineLayoutInfo.pSetLayouts = descriptor_layout.data();
-    pipelineLayoutInfo.pushConstantRangeCount = _push_constant_ranges.size(); // Optional
-    pipelineLayoutInfo.pPushConstantRanges = _push_constant_ranges.data(); // Optional
+    pipelineLayoutInfo.pushConstantRangeCount = _push_constant_ranges.size();
+    pipelineLayoutInfo.pPushConstantRanges = _push_constant_ranges.data();
     _pipeline_layout = _device.get_device().createPipelineLayoutUnique(pipelineLayoutInfo);
 
 }

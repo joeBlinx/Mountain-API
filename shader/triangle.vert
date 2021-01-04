@@ -6,7 +6,7 @@ layout(location = 0) out vec3 fragColor;
 layout(push_constant) uniform pushConstants {
    mat4 model;
 } model;
-layout(binding = 0) uniform uniform_buffer{
+layout(set = 0, binding = 2) uniform uniform_buffer{
     mat4 view;
     mat4 proj;
 }ubo;

@@ -29,6 +29,12 @@ struct InitVulkan {
 	InitVulkan(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass, int nb_uniform);
     template <class T>
     void createCommandBuffers(PipelineData<T> const& pipeline_data);
+
+    void allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> const &descriptor_set_layouts);
+
+    template<class T>
+    void create_descriptor_set_uniform(int first_descriptor_set_index, buffer::uniform<T> const& uniform_buffer);
+
     template<class ...Ts>
     void create_descriptor_sets_uniforms(
             std::vector<vk::DescriptorSetLayout> const& descriptor_set_layouts,
@@ -53,7 +59,7 @@ private:
 
 	vk::DescriptorPool _descriptor_pool;
 	std::vector<vk::DescriptorSet> _descriptor_sets;
-
+    int _nb_descriptor_set_by_image{};
 
 	vk::Queue  _graphicsQueue;
 	vk::Queue  _presentQueue;
@@ -82,27 +88,12 @@ void InitVulkan::create_descriptor_sets_uniforms(
     /*
      * We use one descriptor set layout by image of the swap chain,
      * but for using multiple set layout, we store them as follow:
-     * |A|A|A|B|B|B|
+     * |A|B|A|B|A|B|
      * where A and B are different descriptor set layout
+     *
+     * First we store them like that |A|A|A|B|B|B| and after we rearrange them
      */
-    std::vector<vk::DescriptorSetLayout> layouts;
-    layouts.reserve(_swapChainImageViews.size() * descriptor_set_layouts.size());
-    std::for_each(begin(descriptor_set_layouts), end(descriptor_set_layouts),
-                  [&layouts, image_nb = _swapChainImageViews.size()](auto set_layout)mutable{
-                      for(size_t i = 0; i < image_nb; i++){
-                          layouts.emplace_back(set_layout);
-                      }
-                  });
-    vk::DescriptorSetAllocateInfo allo_info{};
-    allo_info.descriptorPool = _descriptor_pool;
-    allo_info.descriptorSetCount = layouts.size();
-    allo_info.pSetLayouts = layouts.data();
-
-    _descriptor_sets.resize(layouts.size());
-    checkError(
-            _context.get_device().allocateDescriptorSets(&allo_info, _descriptor_sets.data()),
-            "Failed to allocate descriptor set"
-    );
+    allocate_descriptor_set(descriptor_set_layouts);
     /*
      * the following function can be enhance
      */
@@ -136,6 +127,16 @@ void InitVulkan::create_descriptor_sets_uniforms(
         };
         (configure_descriptor_set(uniform_buffers), ...);
     }
+
+    decltype(_descriptor_sets) tmp;
+    tmp.reserve(_descriptor_sets.size());
+    auto const nb_image_swap_chain = _swapChainImageViews.size();
+    for(size_t j = 0; j < nb_image_swap_chain; j++){
+        for (size_t i = j; i < _descriptor_sets.size(); i+=nb_image_swap_chain){
+            tmp.emplace_back(_descriptor_sets[i]);
+        }
+    }
+
 
 }
 
@@ -172,7 +173,7 @@ void InitVulkan::createCommandBuffers(PipelineData<T> const& pipeline_data)
             if(! _descriptor_sets.empty()) {
                 _commandBuffers[i].bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
                                                       pipeline_data.graphics_pipeline.get_pipeline_layout(),
-                                                      0, 1, &_descriptor_sets[i], 0, nullptr);
+                                                      0, _nb_descriptor_set_by_image, &_descriptor_sets[i*_nb_descriptor_set_by_image], 0, nullptr);
             }
             for (auto const& value: pipeline_data.push_constant_values) {
                 for (auto const &push_constant_range : pipeline_data.graphics_pipeline.get_push_constant_ranges()) {
@@ -191,5 +192,37 @@ void InitVulkan::createCommandBuffers(PipelineData<T> const& pipeline_data)
     }
 
 }
+
+template<class T>
+void InitVulkan::create_descriptor_set_uniform(int first_descriptor_set_index, const buffer::uniform<T> &uniform_buffer) {
+    std::vector<vk::WriteDescriptorSet> write_sets(uniform_buffer.size());
+    std::vector<vk::DescriptorBufferInfo> buffer_infos(uniform_buffer.size());
+    auto const swap_chain_image_size = _swapChainImageViews.size();
+    auto it_descriptor_set = begin(_descriptor_sets) + first_descriptor_set_index;
+    auto it_write_sets = begin(write_sets);
+    auto it_buffers_infos = begin(buffer_infos);
+    for(auto& uniform: uniform_buffer){
+        it_buffers_infos->buffer = *uniform;
+        it_buffers_infos->offset = 0;
+        it_buffers_infos->range = sizeof(T);
+
+        it_write_sets->dstSet = *it_descriptor_set;
+        it_write_sets->dstBinding = 0; //this is a bug
+        it_write_sets->dstArrayElement = 0 ;//that too
+        it_write_sets->descriptorType= vk::DescriptorType ::eUniformBuffer;
+        it_write_sets->descriptorCount = 1;
+        it_write_sets->pBufferInfo = &*it_buffers_infos;
+        it_write_sets->pImageInfo = nullptr;
+        it_write_sets->pTexelBufferView = nullptr;
+
+        it_write_sets++;
+        it_buffers_infos++;
+        it_descriptor_set += _descriptor_sets.size()/swap_chain_image_size;
+    }
+    _context.get_device().updateDescriptorSets(write_sets.size(),
+                                               write_sets.data(), 0, nullptr);
+}
+
+
 #endif //SANDBOX_INITVULKAN_HPP
 

@@ -43,6 +43,14 @@ struct move_rectangle{
         //obj.values[0].model.dir += +0.2;
         init.createCommandBuffers(obj);
     }
+    void rotate(){
+        static auto startTime = std::chrono::high_resolution_clock::now();
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+        obj.push_constant_values[0].model.model = glm::rotate(glm::mat4{1.}, time*glm::radians<float>(30.), glm::vec3(0., 0., 1.));
+        init.createCommandBuffers(obj);
+
+    }
 };
 struct VP{
     glm::mat4 view{1.};
@@ -59,11 +67,8 @@ void key_callback(GLFWwindow* window, int key, int , int action, int)
     }
 }
 VP create_vp_matrix(int width, int height){
-    static auto startTime = std::chrono::high_resolution_clock::now();
 
-    auto currentTime = std::chrono::high_resolution_clock::now();
-    float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-    (void)time;
+
     VP ubo{};
     ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     ubo.proj = glm::perspective(glm::radians(45.0f),
@@ -122,10 +127,10 @@ int main() {
     };
 
     vk::DescriptorSetLayoutBinding ubo_binding_layout =
-            descriptorset_layout::create_descriptor_uniform(0, vk::ShaderStageFlagBits::eVertex);
+            descriptorset_layout::create_descriptor_uniform(2, vk::ShaderStageFlagBits::eVertex);
 
     vk::DescriptorSetLayoutBinding ubo_layout_frag_color =
-            descriptorset_layout::create_descriptor_uniform(1, vk::ShaderStageFlagBits::eFragment);
+            descriptorset_layout::create_descriptor_uniform(0, vk::ShaderStageFlagBits::eFragment);
 
     vk::DescriptorSetLayout descriptor_layout = descriptorset_layout::create_descriptorset_layout(
             context, {ubo_binding_layout}
@@ -133,20 +138,23 @@ int main() {
     vk::DescriptorSetLayout descriptor_layout_frag = descriptorset_layout::create_descriptorset_layout(
             context, {ubo_layout_frag_color}
     );
+    auto const layouts = std::vector{descriptor_layout};
     GraphicsPipeline pipeline(context,
                               swap_chain,
                               render_pass,
                               vertex_buffers,
-                              {descriptor_layout},
+                              layouts,
                               push_vertex, push_frag);
 	InitVulkan init(
             context,
             swap_chain,
             render_pass, 2);
+	init.allocate_descriptor_set(layouts);
 	buffer::uniform<VP> uniform_vp(context, swap_chain.get_swap_chain_image_views().size());
-	buffer::uniform<float> uniform_color(context, swap_chain.get_swap_chain_image_views().size());
-    init.create_descriptor_sets_uniforms({descriptor_layout},
-                                         uniform_vp);
+	init.create_descriptor_set_uniform(0, uniform_vp);
+	//buffer::uniform<float> uniform_color(context, swap_chain.get_swap_chain_image_views().size());
+    /*init.create_descriptor_sets_uniforms(layouts,
+                                         uniform_vp);*/
     move_rectangle move{init,
                         {vertex_buffers[0], pipeline,
                          {
@@ -164,10 +172,12 @@ int main() {
     init.createCommandBuffers(move.obj);
 
     std::vector<buffer::uniform_updater> updaters;
+    //updaters.emplace_back(uniform_color.get_uniform_updater(1.0f));
     updaters.emplace_back(uniform_vp.get_uniform_updater(create_vp_matrix(width, height)));
     while (!glfwWindowShouldClose(context.get_window().get_window())) {
         glfwPollEvents();
         init.drawFrame(std::move(updaters));
+        move.rotate();
     }
     vkDeviceWaitIdle(context.get_device());
 

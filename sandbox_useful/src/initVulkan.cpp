@@ -144,3 +144,25 @@ void InitVulkan::create_descriptor_pool(int nb_uniform) {
 
 }
 
+void InitVulkan::allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> const &descriptor_set_layouts) {
+    size_t const nb_image_swap_chain = _swapChainImageViews.size();
+    _nb_descriptor_set_by_image = descriptor_set_layouts.size();
+    std::vector<vk::DescriptorSetLayout> layouts;
+    layouts.reserve(nb_image_swap_chain * descriptor_set_layouts.size());
+    std::for_each(begin(descriptor_set_layouts), end(descriptor_set_layouts),
+                  [&layouts, image_nb = nb_image_swap_chain](auto set_layout)mutable{
+                      for(size_t i = 0; i < image_nb; i++){
+                          layouts.emplace_back(set_layout);
+                      }
+                  });
+    vk::DescriptorSetAllocateInfo allo_info{};
+    allo_info.descriptorPool = _descriptor_pool;
+    allo_info.descriptorSetCount = layouts.size();
+    allo_info.pSetLayouts = layouts.data();
+
+    _descriptor_sets.resize(layouts.size());
+    checkError(
+            _context.get_device().allocateDescriptorSets(&allo_info, _descriptor_sets.data()),
+            "Failed to allocate descriptor set"
+    );
+}
