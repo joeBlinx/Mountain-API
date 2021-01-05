@@ -37,13 +37,34 @@ function(check_build_type)
 endfunction()
 
 function(download_dependencies)
-	include(FetchContent)
-	FetchContent_Declare(
-			glfw_content
-			GIT_REPOSITORY https://github.com/glfw/glfw.git
-			GIT_TAG        3.3
-	)
+	list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/module)
+	if(${USE_GLFW})
+		include(FetchContent)
+		FetchContent_Declare(
+				glfw_content
+				GIT_REPOSITORY https://github.com/glfw/glfw.git
+				GIT_TAG        3.3
+		)
 
-	message(STATUS "DOWNLOAD : GLFW3")
-	FetchContent_MakeAvailable(glfw_content)
+		message(STATUS "DOWNLOAD : GLFW3")
+		FetchContent_MakeAvailable(glfw_content)
+
+	else(${USE_SDL2})
+		find_package(SDL2 REQUIRED)
+	endif()
+
+	# Download automatically, you can also just copy the conan.cmake file
+	if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+		message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+		file(DOWNLOAD "https://github.com/conan-io/cmake-conan/raw/v0.15/conan.cmake"
+				"${CMAKE_BINARY_DIR}/conan.cmake"
+				TLS_VERIFY ON)
+	endif()
+
+	include(${CMAKE_BINARY_DIR}/conan.cmake)
+
+	conan_cmake_run(REQUIRES glm/0.9.9.8
+			BASIC_SETUP CMAKE_TARGETS
+			BUILD missing)
+
 endfunction()

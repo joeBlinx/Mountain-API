@@ -1,5 +1,4 @@
 #include "context.hpp"	
-#include <GLFW/glfw3.h>
 #include "utils/utils.hpp"
 #include <string_view>
 #include "utils/log.hpp"
@@ -11,10 +10,8 @@ Context::SwapChainSupportDetails query_swap_chain_support(vk::PhysicalDevice con
 Context::QueueFamilyIndices find_queue_families(vk::PhysicalDevice const& device, VkSurfaceKHR surface, vk::QueueFlagBits queue_flag);
 
 Context::Context(int width, int height, std::string_view title, std::vector<const char*> const& devicesExtension)
-:_width(width),
-_height(height)
+:_window(title, width, height)
 {
-	initWindow(title);
 	createInstance(title);
 	createSurface();
 	setUpDebugCallBack();
@@ -29,10 +26,6 @@ _height(height)
 
 	create_logical_device(devicesExtension, _validationLayers);
     create_command_pool();
-}
-
-void errorGLFW([[maybe_unused]] int error, const char * msg) {
-	utils::printError(msg);
 }
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -50,11 +43,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 	return VK_FALSE;
 }
 std::vector<char const *> Context::getRequiredExtension() {
-
-	uint32_t glfwExtensionCount = 0;
-	const char **glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-	std::vector<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+	std::vector<const char *> extensions(_window.get_instance_extension());
 
 	if (_enableValidationLayer) {
 		extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
@@ -79,22 +68,9 @@ Context::~Context()
 	}
 	_instance.destroy(_surface);
 	_instance.destroy();
-	glfwDestroyWindow(_window);
-	glfwTerminate();
 }
 
-void Context::initWindow(std::string_view title) {
 
-	glfwInit();
-	glfwSetErrorCallback(errorGLFW);
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
-	_window = glfwCreateWindow(_width, _height, title.data(), nullptr, nullptr);
-	if (!_window) {
-		utils::printFatalError("unable to Create window");
-	}
-}
 bool Context::checkValidationLayerSupport() {
 
 	uint32_t layerCount;
@@ -105,6 +81,7 @@ bool Context::checkValidationLayerSupport() {
 	for (auto layer : _validationLayers) {
 		for (auto available : availableLayer) {
 		    std::string test(available.layerName);
+		    utils::print(available.layerName);
 			if (!strcmp(layer, available.layerName)) {
 				layerFound = true;
 				break;
@@ -168,15 +145,15 @@ void Context::createInstance(std::string_view title)
 
 	if constexpr (_enableValidationLayer)
 	{
-		std::cout << "available extensions:" << std::endl;
+		utils::print("available extensions:");
 		for (const auto &extension : extensionsProperties) {
-			std::cout << "\t" << extension.extensionName << std::endl;
+			utils::print("\t", extension.extensionName);
 		}
 	}
 }
 
 void Context::createSurface() {
-	checkError(glfwCreateWindowSurface(_instance,
+	checkError(create_window_surface(_instance,
 		_window, nullptr, &_surface),
 		"unable to create surface");
 }
@@ -243,22 +220,52 @@ bool is_device_suitable(vk::PhysicalDevice const& device, vk::QueueFlagBits queu
 	return indices.isComplete() && extensionSupported && swapChainAdequate;
 }
 
-
+int get_point_to_device_type(vk::PhysicalDeviceType device_type){
+    switch (device_type) {
+        case vk::PhysicalDeviceType::eOther:
+            return 0;
+        case vk::PhysicalDeviceType::eCpu:
+            return 1;
+        case vk::PhysicalDeviceType::eVirtualGpu:
+            return 2;
+        case vk::PhysicalDeviceType::eIntegratedGpu:
+            return 3;
+        case vk::PhysicalDeviceType::eDiscreteGpu:
+            return 4;
+    }
+    return 0;
+}
 void Context::pick_up_physical_device(vk::Instance instance, vk::QueueFlagBits queue_flag, std::vector<const char *> const &devicesExtension,
 									 VkSurfaceKHR surface) {
 	
 	auto physicalDevices = instance.enumeratePhysicalDevices();
-	if(!physicalDevices.size()){
+	if(physicalDevices.empty()){
 		utils::printFatalError("failed to find gpu with vulkan support");
 	}
-
+    struct RankGpu{
+	    vk::PhysicalDevice device;
+	    int rank{};
+	    bool operator>(RankGpu const& a)const{
+	        return rank > a.rank;
+	    }
+	};
+	std::set<RankGpu, std::greater<>> physical_available;
 	for(auto device : physicalDevices){
 		if(is_device_suitable(device, queue_flag, devicesExtension, surface)){
-			_physical_device = device;
-			return;
+			vk::PhysicalDeviceProperties prop;
+            device.getProperties(&prop);
+			physical_available.insert(
+			        RankGpu{
+			            device,
+                        get_point_to_device_type(prop.deviceType)
+			        }
+			        );
 		}
 	}
-
+	if( ! physical_available.empty()){
+        _physical_device = physical_available.begin()->device;
+        return;
+    }
 	utils::printFatalError("no suitable GPU found");
 }
 

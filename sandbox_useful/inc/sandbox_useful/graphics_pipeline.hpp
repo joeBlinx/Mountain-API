@@ -13,7 +13,8 @@ struct Device;
 struct SwapChain;
 struct RenderPass;
 template<class T>
-concept bool PushConstantType = sizeof(T) <= 256 && sizeof(T)%4 == 0;
+concept PushConstantType = sizeof(T) <= 256 && sizeof(T)%4 == 0;
+
 template <PushConstantType>
 struct PushConstant{
     vk::ShaderStageFlagBits shader_stage;
@@ -21,7 +22,9 @@ struct PushConstant{
 struct GraphicsPipeline{
     template <class ...Ts>
     GraphicsPipeline(Context const &device, SwapChain const &swap_chain, RenderPass const &render_pass,
-                     const std::vector<buffer::vertex> &buffers, PushConstant<Ts> const& ...push_constant);
+                     const std::vector<buffer::vertex> &buffers,
+                     std::vector<vk::DescriptorSetLayout> const& descriptor_layout,
+                     PushConstant<Ts> const& ...push_constant);
     vk::Pipeline const& get_pipeline() const {return _pipeline;}
     vk::PipelineLayout const& get_pipeline_layout() const{return *_pipeline_layout;}
     std::vector<vk::PushConstantRange> const& get_push_constant_ranges () const{return _push_constant_ranges;}
@@ -33,7 +36,8 @@ private:
     std::vector<vk::PushConstantRange> _push_constant_ranges;
     vk::ShaderModule createShaderModule(std::vector<char> const & code);
     template<class ...Ts>
-    void create_pipeline_layout(PushConstant<Ts> const& ...push_constant);
+    void create_pipeline_layout(std::vector<vk::DescriptorSetLayout> const& descriptor_layout,
+                                PushConstant<Ts> const& ...push_constant);
     void init(SwapChain const &swap_chain, RenderPass const &render_pass,
               const std::vector<buffer::vertex> &buffers);
 
@@ -46,16 +50,20 @@ private:
         _pipeline_layout = _device.get_device().createPipelineLayoutUnique(pipelineLayoutInfo);
     }
 };
+
 template<class ...Ts>
 GraphicsPipeline::GraphicsPipeline(Context const &device, SwapChain const &swap_chain, RenderPass const &render_pass,
-                                   const std::vector<buffer::vertex> &buffers, PushConstant<Ts> const& ...push_constant) :
+                                   const std::vector<buffer::vertex> &buffers,
+                                   std::vector<vk::DescriptorSetLayout> const& descriptor_layout,
+                                   PushConstant<Ts> const& ...push_constant) :
         _device(device){
 
-    create_pipeline_layout(push_constant...);
+    create_pipeline_layout(descriptor_layout, push_constant...);
     init(swap_chain, render_pass, buffers);
 }
 template<class ...Ts>
-void GraphicsPipeline::create_pipeline_layout(PushConstant<Ts> const& ...push_constant)
+void GraphicsPipeline::create_pipeline_layout(std::vector<vk::DescriptorSetLayout> const& descriptor_layout,
+                                              PushConstant<Ts> const& ...push_constant)
 {
     int offset = 0;
     auto create_push_constant_ranges = [&offset]<class T>(PushConstant<T> const& push_constant) mutable {
@@ -67,10 +75,10 @@ void GraphicsPipeline::create_pipeline_layout(PushConstant<Ts> const& ...push_co
     std::vector push_constant_range{create_push_constant_ranges(push_constant)...};
     std::swap(_push_constant_ranges, push_constant_range);
     vk::PipelineLayoutCreateInfo pipelineLayoutInfo = {};
-    pipelineLayoutInfo.setLayoutCount = 0; // Optional
-    pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
-    pipelineLayoutInfo.pushConstantRangeCount = _push_constant_ranges.size(); // Optional
-    pipelineLayoutInfo.pPushConstantRanges = _push_constant_ranges.data(); // Optional
+    pipelineLayoutInfo.setLayoutCount = descriptor_layout.size();
+    pipelineLayoutInfo.pSetLayouts = descriptor_layout.data();
+    pipelineLayoutInfo.pushConstantRangeCount = _push_constant_ranges.size();
+    pipelineLayoutInfo.pPushConstantRanges = _push_constant_ranges.data();
     _pipeline_layout = _device.get_device().createPipelineLayoutUnique(pipelineLayoutInfo);
 
 }

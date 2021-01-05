@@ -12,9 +12,13 @@
 extern std::map<int, std::string> VkResultStr;
 
 void checkError(VkResult result,  std::string const& log);
+inline void checkError(vk::Result result,  std::string const& log){
+    checkError(static_cast<VkResult>(result), log);
+}
+
 template<class T>
 void checkError(T const& , const std::string& ){
-	
+
 }
 
 
