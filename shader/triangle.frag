@@ -9,11 +9,11 @@ layout(push_constant) uniform pushConstants {
     layout(offset=64) float color;
 } u_push;
 
-/*layout(set = 1, binding = 0) uniform buf{
+layout(set = 1, binding = 0) uniform buf{
     float color;
-}ubo_color;*/
+}ubo_color;
 
 
 void main() {
-    outColor = vec4(fragColor*u_push.color, 1.0);
+    outColor = vec4(ubo_color.color*fragColor*u_push.color, 1.0);
 }

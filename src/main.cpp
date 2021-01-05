@@ -138,7 +138,7 @@ int main() {
     vk::DescriptorSetLayout descriptor_layout_frag = descriptorset_layout::create_descriptorset_layout(
             context, {ubo_layout_frag_color}
     );
-    auto const layouts = std::vector{descriptor_layout};
+    auto const layouts = std::vector{descriptor_layout, descriptor_layout_frag};
     GraphicsPipeline pipeline(context,
                               swap_chain,
                               render_pass,
@@ -151,10 +151,10 @@ int main() {
             render_pass, 2);
 	init.allocate_descriptor_set(layouts);
 	buffer::uniform<VP> uniform_vp(context, swap_chain.get_swap_chain_image_views().size());
-	init.create_descriptor_set_uniform(0, uniform_vp);
-	//buffer::uniform<float> uniform_color(context, swap_chain.get_swap_chain_image_views().size());
-    /*init.create_descriptor_sets_uniforms(layouts,
-                                         uniform_vp);*/
+    buffer::uniform<float> uniform_color(context, swap_chain.get_swap_chain_image_views().size());
+    init.create_descriptor_set_uniform(0, uniform_vp);
+    init.create_descriptor_set_uniform(1, uniform_color);
+
     move_rectangle move{init,
                         {vertex_buffers[0], pipeline,
                          {
@@ -172,7 +172,7 @@ int main() {
     init.createCommandBuffers(move.obj);
 
     std::vector<buffer::uniform_updater> updaters;
-    //updaters.emplace_back(uniform_color.get_uniform_updater(1.0f));
+    updaters.emplace_back(uniform_color.get_uniform_updater(2.0f));
     updaters.emplace_back(uniform_vp.get_uniform_updater(create_vp_matrix(width, height)));
     while (!glfwWindowShouldClose(context.get_window().get_window())) {
         glfwPollEvents();

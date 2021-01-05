@@ -85,14 +85,7 @@ template<class ...Ts>
 void InitVulkan::create_descriptor_sets_uniforms(
         std::vector<vk::DescriptorSetLayout> const& descriptor_set_layouts,
         buffer::uniform<Ts> const& ... uniform_buffers) {
-    /*
-     * We use one descriptor set layout by image of the swap chain,
-     * but for using multiple set layout, we store them as follow:
-     * |A|B|A|B|A|B|
-     * where A and B are different descriptor set layout
-     *
-     * First we store them like that |A|A|A|B|B|B| and after we rearrange them
-     */
+
     allocate_descriptor_set(descriptor_set_layouts);
     /*
      * the following function can be enhance
@@ -195,6 +188,13 @@ void InitVulkan::createCommandBuffers(PipelineData<T> const& pipeline_data)
 
 template<class T>
 void InitVulkan::create_descriptor_set_uniform(int first_descriptor_set_index, const buffer::uniform<T> &uniform_buffer) {
+    /*
+    * We use one descriptor set layout by image of the swap chain,
+    * but for using multiple set layout, we store them as follow:
+    * |A|B|A|B|A|B|
+    * where A and B are different descriptor set layout
+    *
+    */
     std::vector<vk::WriteDescriptorSet> write_sets(uniform_buffer.size());
     std::vector<vk::DescriptorBufferInfo> buffer_infos(uniform_buffer.size());
     auto const swap_chain_image_size = _swapChainImageViews.size();
@@ -217,7 +217,10 @@ void InitVulkan::create_descriptor_set_uniform(int first_descriptor_set_index, c
 
         it_write_sets++;
         it_buffers_infos++;
-        it_descriptor_set += _descriptor_sets.size()/swap_chain_image_size;
+        it_descriptor_set += _nb_descriptor_set_by_image;
+        /*
+         *  |A|B|A|B|A|B| we pass from A to the other A
+         * */
     }
     _context.get_device().updateDescriptorSets(write_sets.size(),
                                                write_sets.data(), 0, nullptr);

@@ -145,16 +145,24 @@ void InitVulkan::create_descriptor_pool(int nb_uniform) {
 }
 
 void InitVulkan::allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> const &descriptor_set_layouts) {
+    /*
+     * We use one descriptor set layout by image of the swap chain,
+     * but for using multiple set layout, we store them as follow:
+     * |A|B|A|B|A|B|
+     * where A and B are different descriptor set layout
+     * We order descriptor set this way to be able to use vkcmdBindDescriptorset with arrays
+     */
     size_t const nb_image_swap_chain = _swapChainImageViews.size();
     _nb_descriptor_set_by_image = descriptor_set_layouts.size();
     std::vector<vk::DescriptorSetLayout> layouts;
-    layouts.reserve(nb_image_swap_chain * descriptor_set_layouts.size());
-    std::for_each(begin(descriptor_set_layouts), end(descriptor_set_layouts),
-                  [&layouts, image_nb = nb_image_swap_chain](auto set_layout)mutable{
-                      for(size_t i = 0; i < image_nb; i++){
-                          layouts.emplace_back(set_layout);
-                      }
-                  });
+    layouts.resize(nb_image_swap_chain * _nb_descriptor_set_by_image);
+
+    for(auto it_set_layouts = begin(descriptor_set_layouts); it_set_layouts != end(descriptor_set_layouts); it_set_layouts++){
+        size_t index = it_set_layouts - begin(descriptor_set_layouts);
+        for(size_t i = 0; i < layouts.size(); i += _nb_descriptor_set_by_image){
+            layouts[i + index] = *it_set_layouts; // We pass from the first A to the second A
+        }
+    }
     vk::DescriptorSetAllocateInfo allo_info{};
     allo_info.descriptorPool = _descriptor_pool;
     allo_info.descriptorSetCount = layouts.size();
