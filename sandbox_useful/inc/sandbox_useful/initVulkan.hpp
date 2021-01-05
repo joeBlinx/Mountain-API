@@ -197,7 +197,6 @@ void InitVulkan::create_descriptor_set_uniform(int first_descriptor_set_index, c
     */
     std::vector<vk::WriteDescriptorSet> write_sets(uniform_buffer.size());
     std::vector<vk::DescriptorBufferInfo> buffer_infos(uniform_buffer.size());
-    auto const swap_chain_image_size = _swapChainImageViews.size();
     auto it_descriptor_set = begin(_descriptor_sets) + first_descriptor_set_index;
     auto it_write_sets = begin(write_sets);
     auto it_buffers_infos = begin(buffer_infos);
