@@ -127,11 +127,13 @@ int main() {
     vk::DescriptorSetLayoutBinding ubo_binding_layout =
             descriptorset_layout::create_descriptor_uniform(2, vk::ShaderStageFlagBits::eVertex);
 
+    vk::DescriptorSetLayoutBinding image_sampler_layout =
+            descriptorset_layout::create_descriptor_image_sampler(0, vk::ShaderStageFlagBits::eFragment);
     vk::DescriptorSetLayoutBinding ubo_layout_frag_color =
             descriptorset_layout::create_descriptor_uniform(0, vk::ShaderStageFlagBits::eFragment);
 
     vk::DescriptorSetLayout descriptor_layout = descriptorset_layout::create_descriptorset_layout(
-            context, {ubo_binding_layout}
+            context, {ubo_binding_layout, ubo_layout_frag_color}
             );
     vk::DescriptorSetLayout descriptor_layout_frag = descriptorset_layout::create_descriptorset_layout(
             context, {ubo_layout_frag_color}

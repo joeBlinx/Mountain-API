@@ -129,13 +129,16 @@ void InitVulkan::allocate_command_buffer() {
 }
 
 void InitVulkan::create_descriptor_pool(int nb_uniform) {
-    vk::DescriptorPoolSize pool_size;
-    pool_size.type = vk::DescriptorType::eUniformBuffer;
-    pool_size.descriptorCount = _swapChainImageViews.size();
+    std::array<vk::DescriptorPoolSize,2> pool_size;
+    pool_size[0].type = vk::DescriptorType::eUniformBuffer;
+    pool_size[0].descriptorCount = _swapChainImageViews.size();
+
+    pool_size[1].type = vk::DescriptorType::eCombinedImageSampler;
+    pool_size[1].descriptorCount = _swapChainImageViews.size();
 
     vk::DescriptorPoolCreateInfo _pool_info;
-    _pool_info.poolSizeCount = 1;
-    _pool_info.pPoolSizes = &pool_size;
+    _pool_info.poolSizeCount = pool_size.size();
+    _pool_info.pPoolSizes = pool_size.data();
     _pool_info.maxSets = _swapChainImageViews.size()*nb_uniform;
 
     checkError(

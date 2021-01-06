@@ -4,6 +4,15 @@
 #include <context.hpp>
 #include "descriptor_setlayout_binding/descriptorset_layout.h"
 namespace descriptorset_layout {
+    vk::DescriptorSetLayoutBinding create_descriptor_image_sampler(int binding, vk::ShaderStageFlags const &shader){
+        vk::DescriptorSetLayoutBinding image_layout{};
+        image_layout.binding = binding;
+        image_layout.descriptorType = vk::DescriptorType::eCombinedImageSampler;
+        image_layout.pImmutableSamplers = nullptr;
+        image_layout.descriptorCount = 1; // can be greater than 1 if we use uniform arrays
+        image_layout.stageFlags = shader;
+        return image_layout;
+    }
     vk::DescriptorSetLayoutBinding create_descriptor_uniform(int binding, vk::ShaderStageFlags const &shader) {
         vk::DescriptorSetLayoutBinding ubo_binding_layout{};
         ubo_binding_layout.binding = binding;
