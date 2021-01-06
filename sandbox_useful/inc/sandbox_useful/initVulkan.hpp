@@ -15,7 +15,9 @@
 #include "sandbox_useful/buffer/vertex.hpp"
 #include "sandbox_useful/graphics_pipeline.hpp"
 #include <cstddef>
+#include <sandbox_useful/buffer/image2d.h>
 #include "sandbox_useful/buffer/uniform.h"
+#include "sampler.h"
 
 struct GraphicsPipeline;
 template <class PushConstant>
@@ -33,7 +35,10 @@ struct InitVulkan {
     void allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> const &descriptor_set_layouts);
 
     template<class T>
-    void create_descriptor_set_uniform(int first_descriptor_set_index, buffer::uniform<T> const& uniform_buffer);
+    void update_descriptor_set(int first_descriptor_set_index, int binding,
+                               const buffer::uniform<T> &uniform_buffer);
+
+    void update_descriptor_set(int first_descriptor_set_index, int binding, buffer::image2d const& image, image::sampler const& sampler);
 
     void drawFrame(std::vector<buffer::uniform_updater> &&updaters);
     ~InitVulkan();
@@ -131,7 +136,8 @@ void InitVulkan::createCommandBuffers(PipelineData<T> const& pipeline_data)
 }
 
 template<class T>
-void InitVulkan::create_descriptor_set_uniform(int first_descriptor_set_index, const buffer::uniform<T> &uniform_buffer) {
+void InitVulkan::update_descriptor_set(int first_descriptor_set_index, int binding,
+                                       const buffer::uniform<T> &uniform_buffer) {
     /*
     * We use one descriptor set layout by image of the swap chain,
     * but for using multiple set layout, we store them as follow:
@@ -150,7 +156,7 @@ void InitVulkan::create_descriptor_set_uniform(int first_descriptor_set_index, c
         it_buffers_infos->range = sizeof(T);
 
         it_write_sets->dstSet = *it_descriptor_set;
-        it_write_sets->dstBinding = 0; //this is a bug
+        it_write_sets->dstBinding = binding; //this is a bug
         it_write_sets->dstArrayElement = 0 ;//that too
         it_write_sets->descriptorType= vk::DescriptorType ::eUniformBuffer;
         it_write_sets->descriptorCount = 1;
@@ -168,7 +174,6 @@ void InitVulkan::create_descriptor_set_uniform(int first_descriptor_set_index, c
     _context.get_device().updateDescriptorSets(write_sets.size(),
                                                write_sets.data(), 0, nullptr);
 }
-
 
 #endif //SANDBOX_INITVULKAN_HPP
 

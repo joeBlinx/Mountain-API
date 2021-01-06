@@ -22,6 +22,7 @@ struct vec3{
 struct Vertex{
     vec2 position;
     vec3 color;
+    vec2 tex_coord;
 };
 struct Model{
     glm::mat4 model {1};
@@ -101,16 +102,16 @@ int main() {
 
 
 	std::array vertices{
-            Vertex{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-            Vertex{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-            Vertex{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-            Vertex{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+            Vertex{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+           Vertex {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+            Vertex{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+            Vertex{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}
 	};
-	;
+
     std::vector<buffer::vertex> vertex_buffers;
     vertex_buffers.emplace_back(buffer::vertex(context,
            buffer::vertex_description(0, 0,
-                       CLASS_DESCRIPTION(Vertex, position, color)),
+                       CLASS_DESCRIPTION(Vertex, position, color, tex_coord)),
                                vertices,
                                {0, 1, 2, 2, 3, 0}
             ));
@@ -128,19 +129,20 @@ int main() {
             descriptorset_layout::create_descriptor_uniform(2, vk::ShaderStageFlagBits::eVertex);
 
     vk::DescriptorSetLayoutBinding image_sampler_layout =
-            descriptorset_layout::create_descriptor_image_sampler(0, vk::ShaderStageFlagBits::eFragment);
+            descriptorset_layout::create_descriptor_image_sampler(1, vk::ShaderStageFlagBits::eFragment);
+
     vk::DescriptorSetLayoutBinding ubo_layout_frag_color =
             descriptorset_layout::create_descriptor_uniform(0, vk::ShaderStageFlagBits::eFragment);
 
     vk::DescriptorSetLayout descriptor_layout = descriptorset_layout::create_descriptorset_layout(
-            context, {ubo_binding_layout, ubo_layout_frag_color}
+            context, {ubo_binding_layout, image_sampler_layout}
             );
     vk::DescriptorSetLayout descriptor_layout_frag = descriptorset_layout::create_descriptorset_layout(
             context, {ubo_layout_frag_color}
     );
 
     buffer::image2d statue_image({context, "assets/image/statue.jpg"});
-    sampler sampler(context);
+    image::sampler sampler(context);
     auto const layouts = std::vector{descriptor_layout, descriptor_layout_frag};
     GraphicsPipeline pipeline(context,
                               swap_chain,
@@ -155,9 +157,9 @@ int main() {
 	init.allocate_descriptor_set(layouts);
 	buffer::uniform<VP> uniform_vp(context, swap_chain.get_swap_chain_image_views().size());
     buffer::uniform<float> uniform_color(context, swap_chain.get_swap_chain_image_views().size());
-    init.create_descriptor_set_uniform(0, uniform_vp);
-    init.create_descriptor_set_uniform(1, uniform_color);
-
+    init.update_descriptor_set(0, 2, uniform_vp);
+    init.update_descriptor_set(1, 0, uniform_color);
+    init.update_descriptor_set(0, 1, statue_image, sampler);
     move_rectangle move{init,
                         {vertex_buffers[0], pipeline,
                          {

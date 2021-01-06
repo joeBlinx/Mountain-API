@@ -177,3 +177,41 @@ void InitVulkan::allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> co
             "Failed to allocate descriptor set"
     );
 }
+
+void InitVulkan::update_descriptor_set(int first_descriptor_set_index, int binding, const buffer::image2d &image,
+                                       const image::sampler &sampler) {
+    /*
+   * We use one descriptor set layout by image of the swap chain,
+   * but for using multiple set layout, we store them as follow:
+   * |A|B|A|B|A|B|
+   * where A and B are different descriptor set layout
+   *
+   */
+    std::vector<vk::WriteDescriptorSet> write_sets(_swapChainImageViews.size());
+    std::vector<vk::DescriptorImageInfo> image_infos(_swapChainImageViews.size());
+    auto it_descriptor_set = begin(_descriptor_sets) + first_descriptor_set_index;
+    auto it_write_sets = begin(write_sets);
+    auto it_image_infos = begin(image_infos);
+   for(size_t i = 0; i < _swapChainImageViews.size(); i++){
+       it_image_infos->imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+       it_image_infos->imageView = *image.get_image_view();
+       it_image_infos->sampler = sampler;
+
+        it_write_sets->dstSet = *it_descriptor_set;
+        it_write_sets->dstBinding = binding; //this is a bug
+        it_write_sets->dstArrayElement = 0 ;//that too
+        it_write_sets->descriptorType= vk::DescriptorType ::eCombinedImageSampler;
+        it_write_sets->descriptorCount = 1;
+        it_write_sets->pImageInfo = &*it_image_infos;
+        it_write_sets->pTexelBufferView = nullptr;
+
+        it_write_sets++;
+        it_image_infos++;
+        it_descriptor_set += _nb_descriptor_set_by_image;
+        /*
+         *  |A|B|A|B|A|B| we pass from A to the other A
+         * */
+    }
+    _context.get_device().updateDescriptorSets(write_sets.size(),
+                                               write_sets.data(), 0, nullptr);
+}

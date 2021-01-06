@@ -14,7 +14,8 @@ namespace buffer {
     struct image2d {
 
         image2d(Context const &context, fs::path const &image_path);
-
+        vk::UniqueImage const& get_image()const{return _image;}
+        vk::UniqueImageView const& get_image_view()const{return _image_view;}
     private:
         vk::UniqueImage _image;
         vk::UniqueDeviceMemory _image_memory;

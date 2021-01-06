@@ -4,7 +4,7 @@
 
 #include <sampler.h>
 
-sampler::sampler(const Context &context) {
+image::sampler::sampler(const Context &context) {
     //TODO: basic sampler but i need to find a way to be more flexible
     // Linear filter and repeat image
     vk::SamplerCreateInfo sampler_info{};
