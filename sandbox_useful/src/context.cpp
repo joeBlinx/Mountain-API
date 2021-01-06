@@ -117,6 +117,7 @@ void Context::createInstance(std::string_view title)
 {
 	if (!checkValidationLayerSupport() && _enableValidationLayer) {
 		utils::printFatalError("validation layer requested but not available");
+
 	}
 
 	vk::ApplicationInfo info{};
@@ -135,10 +136,17 @@ void Context::createInstance(std::string_view title)
 
 	instanceinfo.enabledLayerCount = 0;
 
+    VkValidationFeatureEnableEXT enables[] = {VK_VALIDATION_FEATURE_ENABLE_BEST_PRACTICES_EXT};
+    VkValidationFeaturesEXT features = {};
+    features.sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT;
+    features.enabledValidationFeatureCount = 1;
+    features.pEnabledValidationFeatures = enables;
+
 	if constexpr(_enableValidationLayer) {
 		instanceinfo.enabledLayerCount = static_cast<uint32_t>(_validationLayers.size());
 		instanceinfo.ppEnabledLayerNames = _validationLayers.data();
-	}
+        instanceinfo.pNext = &features;
+    }
 	_instance = vk::createInstance(instanceinfo); 
 	uint32_t extensionCount = 0;
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
