@@ -92,9 +92,9 @@ void SwapChain::create_swap_chain(VkSurfaceKHR surface, Context::QueueFamilyIndi
 	createInfo.presentMode = presentMode;
 	createInfo.clipped = VK_TRUE; // don't care about color pixel in other window
 	//createInfo.oldSwapchain ; // no old swap chain..for now
-    _swap_chain = _device.createSwapchainKHR(createInfo);
+    _swap_chain = _context->createSwapchainKHR(createInfo);
 
-	_swap_chain_images = _device.getSwapchainImagesKHR(_swap_chain);
+	_swap_chain_images = _context->getSwapchainImagesKHR(_swap_chain);
 	_swap_chain_image_format = surfaceFormat.format;
 
 }
@@ -117,19 +117,17 @@ void SwapChain::create_image_views() {
 		createInfo.subresourceRange.levelCount = 1;
 		createInfo.subresourceRange.baseArrayLayer = 0;
 		createInfo.subresourceRange.layerCount = 1;
-		_swap_chain_image_views[i] = _device.createImageView(createInfo);
+		_swap_chain_image_views[i] = _context.create_2d_image_views(_swap_chain_images[i],
+                                                                    _swap_chain_image_format);
+
 	}
 }
 
 SwapChain::~SwapChain() {
-
-	for (auto& imageView : _swap_chain_image_views) {
-		_device.destroy(imageView);
-	}
-	_device.destroy(_swap_chain);
+	_context->destroy(_swap_chain);
 }
 
-SwapChain::SwapChain(Context const &context, vk::ImageUsageFlags image_usage, int width, int height) : _device(context.get_device()) {
+SwapChain::SwapChain(Context const &context, vk::ImageUsageFlags image_usage, int width, int height) : _context(context) {
 	create_swap_chain( context.get_vk_surface(), context.get_queue_family_indice(), context.get_swap_chain_details(), image_usage, width, height);
 	create_image_views();
 
@@ -139,7 +137,7 @@ vk::SwapchainKHR SwapChain::get_swap_chain() const {
 	return _swap_chain;
 }
 
-const std::vector<vk::ImageView> &SwapChain::get_swap_chain_image_views() const {
+const std::vector<vk::UniqueImageView> & SwapChain::get_swap_chain_image_views() const {
 	return _swap_chain_image_views;
 }
 

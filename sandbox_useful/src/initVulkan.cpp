@@ -94,7 +94,7 @@ void InitVulkan::createFrameBuffers()
 	for (size_t i = 0; i < _swapChainImageViews.size(); i++)
 	{
 		vk::ImageView attachments[] = {
-			_swapChainImageViews[i]
+			*_swapChainImageViews[i]
 		};
 
 		vk::FramebufferCreateInfo framebufferInfo;

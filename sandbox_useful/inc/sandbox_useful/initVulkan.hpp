@@ -46,7 +46,7 @@ private:
 #endif
 	vk::SwapchainKHR _swapchain;
 
-	std::vector<vk::ImageView> const& _swapChainImageViews;
+	std::vector<vk::UniqueImageView> const& _swapChainImageViews;
 	vk::Extent2D _swapChainExtent;
 	Context const& _context;
     std::vector<vk::Framebuffer> _swapchainFrameBuffer;

@@ -6,6 +6,8 @@
 #include <vector>
 #include <sandbox_useful/buffer/uniform.h>
 #include <chrono>
+#include <sandbox_useful/buffer/image2d.h>
+#include <sandbox_useful/sampler.h>
 #include "sandbox_useful/buffer/vertex.hpp"
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
@@ -134,6 +136,9 @@ int main() {
     vk::DescriptorSetLayout descriptor_layout_frag = descriptorset_layout::create_descriptorset_layout(
             context, {ubo_layout_frag_color}
     );
+
+    buffer::image2d statue_image({context, "assets/image/statue.jpg"});
+    sampler sampler(context);
     auto const layouts = std::vector{descriptor_layout, descriptor_layout_frag};
     GraphicsPipeline pipeline(context,
                               swap_chain,

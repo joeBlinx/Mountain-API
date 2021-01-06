@@ -19,17 +19,17 @@ struct SwapChain {
 
 	vk::SwapchainKHR get_swap_chain() const;
 
-	const std::vector<vk::ImageView> &get_swap_chain_image_views() const;
+	const std::vector<vk::UniqueImageView> & get_swap_chain_image_views() const;
 
 	vk::Format get_swap_chain_image_format() const;
 
 	const vk::Extent2D &get_swap_chain_extent() const;
 
 private:
-	vk::Device const& _device;
+	Context const& _context;
 	vk::SwapchainKHR _swap_chain;
 	std::vector<vk::Image> _swap_chain_images;
-	std::vector<vk::ImageView> _swap_chain_image_views;
+	std::vector<vk::UniqueImageView> _swap_chain_image_views;
 	vk::Format _swap_chain_image_format{};
 
 

@@ -3,6 +3,7 @@
 //
 
 #include "buffer/image2d.h"
+#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #include <context.hpp>
 #include <uniform.h>
@@ -114,14 +115,17 @@ buffer::image2d::transition_image_layout(Context const &context, [[maybe_unused]
         throw std::invalid_argument("unsuported layout transition");
     }
 
-
-
     command->pipelineBarrier(
             source_stage, destination_stage,
             static_cast<vk::DependencyFlagBits>(0),
             0, nullptr,
             0, nullptr,
             1, &barrier);
+    create_image_views(context);
 
+}
+
+void buffer::image2d::create_image_views(Context const &context) {
+    _image_view = context.create_2d_image_views(*_image, vk::Format::eR8G8B8A8Srgb);
 }
 

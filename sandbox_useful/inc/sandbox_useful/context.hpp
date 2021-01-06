@@ -47,6 +47,8 @@ struct Context
 	void copy_buffer(vk::UniqueBuffer& destination, vk::UniqueBuffer const& source, vk::DeviceSize const& size) const;
     void copy_buffer_to_image(vk::Buffer buffer, vk::Image image, uint32_t width, uint32_t height)const;
 
+    vk::UniqueImageView create_2d_image_views(vk::Image image, vk::Format const& format)const;
+
 private:
 	 std::vector<const char*> const _validationLayers = {
 			"VK_LAYER_LUNARG_standard_validation"

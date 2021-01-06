@@ -29,7 +29,7 @@ target_sources(sample
 set_common_properties(sample)
 
 add_custom_target(build_shader ALL
-		chmod +x ${PROJECT_SOURCE_DIR}/compile.sh
+		chmod +x ${PROJECT_SOURCE_DIR}/compile.sh && cp -rf ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}
 		COMMAND ${PROJECT_SOURCE_DIR}/compile.sh
 		${PROJECT_SOURCE_DIR}/assets/shader ${${PROJECT_NAME}_BINARY_DIR} ${${PROJECT_NAME}_BINARY_DIR})
 

@@ -32,6 +32,7 @@ set_sources(_srcs
 					buffer/uniform.cpp
 					buffer/image2d.cpp
 					descriptor_setlayout_binding/descriptorset_layout.cpp
+					sampler.cpp
 			)
 set_sources(_srcs_buffer
 			FOLDER src/buffer
@@ -53,6 +54,7 @@ set_sources(_headers
 					swapChain.hpp
 					initVulkan.hpp
 					graphics_pipeline.hpp
+					sampler.h
 				)
 target_compile_definitions(SandBox_utils PUBLIC -DGLFW_INCLUDE_VULKAN)
 target_compile_options(SandBox_utils PUBLIC -fconcepts)

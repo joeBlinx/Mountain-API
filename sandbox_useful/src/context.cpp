@@ -219,7 +219,9 @@ bool is_device_suitable(vk::PhysicalDevice const& device, vk::QueueFlagBits queu
 		Context::SwapChainSupportDetails swapChainSupport = query_swap_chain_support(device, surface);
 		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 	}
-	return indices.isComplete() && extensionSupported && swapChainAdequate;
+	vk::PhysicalDeviceFeatures supported_features;
+	device.getFeatures(&supported_features);
+	return indices.isComplete() && extensionSupported && swapChainAdequate && supported_features.samplerAnisotropy;
 }
 
 int get_point_to_device_type(vk::PhysicalDeviceType device_type){
@@ -386,4 +388,18 @@ void Context::copy_buffer_to_image(vk::Buffer buffer, vk::Image image, uint32_t 
             vk::ImageLayout::eTransferDstOptimal,
             1, &region
             );
+}
+
+vk::UniqueImageView Context::create_2d_image_views(vk::Image image, const vk::Format &format) const{
+    vk::ImageViewCreateInfo view_info{};
+    view_info.image = image;
+    view_info.viewType = vk::ImageViewType::e2D;
+    view_info.format = format;
+    view_info.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+    view_info.subresourceRange.baseMipLevel = 0;
+    view_info.subresourceRange.levelCount = 1;
+    view_info.subresourceRange.baseArrayLayer = 0;
+    view_info.subresourceRange.layerCount = 1;
+
+    return _device.createImageViewUnique(view_info);
 }

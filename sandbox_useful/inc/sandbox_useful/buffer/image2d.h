@@ -6,7 +6,7 @@
 #define SANDBOX_IMAGE2D_H
 #include <vulkan/vulkan.hpp>
 #include <filesystem>
-#include <context.hpp>
+#include "sandbox_useful/context.hpp"
 
 namespace buffer {
     namespace fs = std::filesystem;
@@ -18,9 +18,11 @@ namespace buffer {
     private:
         vk::UniqueImage _image;
         vk::UniqueDeviceMemory _image_memory;
+        vk::UniqueImageView  _image_view;
 
         void transition_image_layout(Context const &context, vk::Format format, vk::ImageLayout old_layout,
                                      vk::ImageLayout new_layout);
+        void create_image_views(Context const &context);
 
     };
 }
