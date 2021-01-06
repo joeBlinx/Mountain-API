@@ -18,6 +18,7 @@ target_link_libraries(SandBox_utils PRIVATE
 									PUBLIC
 										utils::utils
 										window
+										CONAN_PKG::stb
 											)
 set_common_properties(SandBox_utils)
 set_sources(_srcs
@@ -29,6 +30,7 @@ set_sources(_srcs
 					initVulkan.cpp
 					graphics_pipeline.cpp
 					buffer/uniform.cpp
+					buffer/image2d.cpp
 					descriptor_setlayout_binding/descriptorset_layout.cpp
 			)
 set_sources(_srcs_buffer
@@ -41,6 +43,7 @@ set_sources(_headers_buffer
 				vertex.hpp
 				vertex.tpp
 				uniform.h
+				image2d.h
 )			
 set_sources(_headers 
 				FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/inc/sandbox_useful

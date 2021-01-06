@@ -31,11 +31,7 @@ struct Uniform{
    Model model;
    Color new_color{0.5};
 };
-struct object{
-    buffer::vertex const& vertices;
-    GraphicsPipeline const& graphics_pipeline;
-    std::vector<Uniform> values;
-};
+
 struct move_rectangle{
     InitVulkan& init;
     PipelineData<Uniform> obj;

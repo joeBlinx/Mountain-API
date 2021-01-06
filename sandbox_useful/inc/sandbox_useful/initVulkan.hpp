@@ -35,10 +35,6 @@ struct InitVulkan {
     template<class T>
     void create_descriptor_set_uniform(int first_descriptor_set_index, buffer::uniform<T> const& uniform_buffer);
 
-    template<class ...Ts>
-    void create_descriptor_sets_uniforms(
-            std::vector<vk::DescriptorSetLayout> const& descriptor_set_layouts,
-            buffer::uniform<Ts> const& ... uniform_buffers);
     void drawFrame(std::vector<buffer::uniform_updater> &&updaters);
     ~InitVulkan();
 
@@ -80,58 +76,6 @@ private:
 
 };
 
-
-template<class ...Ts>
-void InitVulkan::create_descriptor_sets_uniforms(
-        std::vector<vk::DescriptorSetLayout> const& descriptor_set_layouts,
-        buffer::uniform<Ts> const& ... uniform_buffers) {
-
-    allocate_descriptor_set(descriptor_set_layouts);
-    /*
-     * the following function can be enhance
-     */
-    for (auto it = begin(_descriptor_sets); it != end(_descriptor_sets);){
-        auto configure_descriptor_set = [this, &it]<class T>(buffer::uniform<T>const & uniform_buffer)mutable{
-            std::vector<vk::WriteDescriptorSet> write_sets(uniform_buffer.size());
-            std::vector<vk::DescriptorBufferInfo> buffer_infos(uniform_buffer.size());
-
-            auto it_write_sets = begin(write_sets);
-            auto it_buffers_infos = begin(buffer_infos);
-            for(auto& uniform: uniform_buffer){
-                it_buffers_infos->buffer = *uniform;
-                it_buffers_infos->offset = 0;
-                it_buffers_infos->range = sizeof(T);
-
-                it_write_sets->dstSet = *it;
-                it_write_sets->dstBinding = 0; //this is a bug
-                it_write_sets->dstArrayElement = 0 ;//that too
-                it_write_sets->descriptorType= vk::DescriptorType ::eUniformBuffer;
-                it_write_sets->descriptorCount = 1;
-                it_write_sets->pBufferInfo = &*it_buffers_infos;
-                it_write_sets->pImageInfo = nullptr;
-                it_write_sets->pTexelBufferView = nullptr;
-
-                it++;
-                it_write_sets++;
-                it_buffers_infos++;
-            }
-            _context.get_device().updateDescriptorSets(write_sets.size(),
-                                                       write_sets.data(), 0, nullptr);
-        };
-        (configure_descriptor_set(uniform_buffers), ...);
-    }
-
-    decltype(_descriptor_sets) tmp;
-    tmp.reserve(_descriptor_sets.size());
-    auto const nb_image_swap_chain = _swapChainImageViews.size();
-    for(size_t j = 0; j < nb_image_swap_chain; j++){
-        for (size_t i = j; i < _descriptor_sets.size(); i+=nb_image_swap_chain){
-            tmp.emplace_back(_descriptor_sets[i]);
-        }
-    }
-
-
-}
 
 template <class T>
 void InitVulkan::createCommandBuffers(PipelineData<T> const& pipeline_data)

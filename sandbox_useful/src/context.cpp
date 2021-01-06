@@ -6,6 +6,8 @@
 #include <cstring>
 #include <string_view>
 #include <set>
+#include <uniform.h>
+
 Context::SwapChainSupportDetails query_swap_chain_support(vk::PhysicalDevice const& device, VkSurfaceKHR surface);
 Context::QueueFamilyIndices find_queue_families(vk::PhysicalDevice const& device, VkSurfaceKHR surface, vk::QueueFlagBits queue_flag);
 
@@ -349,29 +351,39 @@ vk::UniqueDeviceMemory Context::create_device_memory(vk::MemoryRequirements cons
 }
 
 void Context::copy_buffer(vk::UniqueBuffer& destination, vk::UniqueBuffer const& source, vk::DeviceSize const& size) const{
-	vk::CommandBufferAllocateInfo alloc_info{
-		_command_pool,
-		vk::CommandBufferLevel::ePrimary,
-		1
-	};
-	auto command_buffers = _device.allocateCommandBuffersUnique(alloc_info);
-	vk::CommandBufferBeginInfo begin_info{
-		vk::CommandBufferUsageFlagBits::eOneTimeSubmit
-	};
-	auto command_buffer = std::move(command_buffers[0]);
-	command_buffer->begin(begin_info);
+
+	utils::raii_helper::OneTimeCommands commands(*this);
 	vk::BufferCopy buffer_copy{
 	    0,
 	    0,
 	    size
 	};
-	command_buffer->copyBuffer(*source, *destination, 1, &buffer_copy);
-	command_buffer->end();
+    commands->copyBuffer(*source, *destination, 1, &buffer_copy);
+}
 
-	vk::SubmitInfo submit_info;
-	submit_info.commandBufferCount = 1;
-	submit_info.pCommandBuffers = &command_buffer.get();
-	_graphics_queue.submit(1, &submit_info, {});
-	_graphics_queue.waitIdle();
+void Context::copy_buffer_to_image(vk::Buffer buffer, vk::Image image, uint32_t width, uint32_t height) const {
 
+    utils::raii_helper::OneTimeCommands command(*this);
+    vk::BufferImageCopy region{};
+    region.bufferOffset = 0;
+    region.bufferRowLength = 0;
+    region.bufferImageHeight = 0;
+
+    region.imageSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+    region.imageSubresource.mipLevel = 0;
+    region.imageSubresource.baseArrayLayer = 0;
+    region.imageSubresource.layerCount = 1;
+
+    region.imageOffset = vk::Offset3D{0, 0, 0};
+    region.imageExtent = vk::Extent3D{
+            width,
+            height,
+            1
+    };
+
+    command->copyBufferToImage(
+            buffer, image,
+            vk::ImageLayout::eTransferDstOptimal,
+            1, &region
+            );
 }
