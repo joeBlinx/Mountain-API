@@ -45,6 +45,7 @@ buffer::image2d::image2d(Context const &context, fs::path const &image_path) {
     image_info.arrayLayers = 1;
     image_info.format = vk::Format::eR8G8B8A8Srgb;
     image_info.tiling = vk::ImageTiling::eOptimal;
+    image_info.initialLayout = vk::ImageLayout::eUndefined;
     image_info.usage = vk::ImageUsageFlagBits::eTransferDst
             | vk::ImageUsageFlagBits::eSampled;
     image_info.sharingMode = vk::SharingMode::eExclusive;

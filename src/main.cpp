@@ -171,6 +171,8 @@ int main() {
     };
 
     glfwSetKeyCallback(context.get_window().get_window(), key_callback);
+
+
     glfwSetWindowUserPointer(context.get_window().get_window(), &move);
 
 
