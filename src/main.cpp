@@ -20,7 +20,7 @@ struct vec3{
     float a, b, c;
 };
 struct Vertex{
-    vec2 position;
+    vec3 position;
     vec3 color;
     vec2 tex_coord;
 };
@@ -102,11 +102,13 @@ int main() {
 
 
 	std::array vertices{
-            Vertex{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-           Vertex {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-            Vertex{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-            Vertex{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}
+            Vertex{{-0.5f, -0.5f, 0.f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+           Vertex {{0.5f, -0.5f, 0.f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+            Vertex{{0.5f, 0.5f, 0.f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+            Vertex{{-0.5f, 0.5f, 0.f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}
+
 	};
+
 
     std::vector<buffer::vertex> vertex_buffers;
     vertex_buffers.emplace_back(buffer::vertex(context,
@@ -164,8 +166,8 @@ int main() {
                         {vertex_buffers[0], pipeline,
                          {
                             {
-                {glm::scale(glm::mat4{1.}, glm::vec3{1.})}}
-
+                {glm::scale(glm::mat4{1.}, glm::vec3{1.})}},
+                            {{glm::translate(glm::mat4{1.}, glm::vec3{0., -0.5, 0.})}}
                          }
                         }
     };

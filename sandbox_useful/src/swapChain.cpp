@@ -118,7 +118,7 @@ void SwapChain::create_image_views() {
 		createInfo.subresourceRange.baseArrayLayer = 0;
 		createInfo.subresourceRange.layerCount = 1;
 		_swap_chain_image_views[i] = _context.create_2d_image_views(_swap_chain_images[i],
-                                                                    _swap_chain_image_format);
+                                                                    _swap_chain_image_format, vk::ImageAspectFlagBits::eColor);
 
 	}
 }
@@ -147,4 +147,10 @@ vk::Format SwapChain::get_swap_chain_image_format() const {
 
 const vk::Extent2D &SwapChain::get_swap_chain_extent() const {
 	return _swap_chain_extent;
+}
+
+void SwapChain::create_depth_resources() {
+    vk::Format depth_format = vk::Format::eD32Sfloat;
+
+    //_context.create_2d_image_views(, <#initializer#>, vk::ImageAspectFlags())
 }

@@ -30,11 +30,14 @@ private:
 	vk::SwapchainKHR _swap_chain;
 	std::vector<vk::Image> _swap_chain_images;
 	std::vector<vk::UniqueImageView> _swap_chain_image_views;
+	vk::UniqueImage _depth_image;
+	vk::UniqueImageView _depth_image_view;
+	vk::UniqueDeviceMemory _depth_image_memory;
+
 	vk::Format _swap_chain_image_format{};
-
-
 	vk::Extent2D _swap_chain_extent{};
 
+	void create_depth_resources();
 	void create_swap_chain(VkSurfaceKHR surface, const Context::QueueFamilyIndices &indices,
                            const Context::SwapChainSupportDetails &swap_chain_support,
                            vk::ImageUsageFlags image_usage, int width, int height); // there are some parameter

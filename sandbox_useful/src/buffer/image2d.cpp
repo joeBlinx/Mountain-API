@@ -36,30 +36,12 @@ buffer::image2d::image2d(Context const &context, fs::path const &image_path) {
         std::memcpy(data, pixels.get(), image_size);
     }
 
-    vk::ImageCreateInfo image_info;
-    image_info.imageType = vk::ImageType::e2D;
-    image_info.extent.width = tex_width;
-    image_info.extent .height = tex_height;
-    image_info.extent .depth = 1;
-    image_info.mipLevels = 1;
-    image_info.arrayLayers = 1;
-    image_info.format = vk::Format::eR8G8B8A8Srgb;
-    image_info.tiling = vk::ImageTiling::eOptimal;
-    image_info.initialLayout = vk::ImageLayout::eUndefined;
-    image_info.usage = vk::ImageUsageFlagBits::eTransferDst
-            | vk::ImageUsageFlagBits::eSampled;
-    image_info.sharingMode = vk::SharingMode::eExclusive;
-    image_info.samples = vk::SampleCountFlagBits::e1; // TODO: for multisampling
-
-    _image = context.get_device().createImageUnique(image_info);
-
-    vk::MemoryRequirements requirements;
-    context->getImageMemoryRequirements(*_image, &requirements);
-   _image_memory = context.create_device_memory(
-           requirements, vk::MemoryPropertyFlagBits::eDeviceLocal);
-
-   context->bindImageMemory(*_image, *_image_memory, 0);
-
+   std::tie(_image, _image_memory) = context.create_image(tex_width, tex_height,
+                                                       vk::Format::eR8G8B8A8Srgb,
+                                                       vk::ImageTiling::eOptimal,
+                                                       vk::ImageUsageFlagBits::eTransferDst
+                                                       | vk::ImageUsageFlagBits::eSampled,
+                                                       vk::MemoryPropertyFlagBits::eDeviceLocal);
    transition_image_layout(
             context,
             vk::Format::eR8G8B8A8Srgb,
@@ -127,6 +109,6 @@ buffer::image2d::transition_image_layout(Context const &context, [[maybe_unused]
 }
 
 void buffer::image2d::create_image_views(Context const &context) {
-    _image_view = context.create_2d_image_views(*_image, vk::Format::eR8G8B8A8Srgb);
+    _image_view = context.create_2d_image_views(*_image, vk::Format::eR8G8B8A8Srgb, vk::ImageAspectFlagBits::eColor);
 }
 

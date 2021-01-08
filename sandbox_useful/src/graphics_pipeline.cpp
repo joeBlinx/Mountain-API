@@ -63,6 +63,7 @@ private:
 
 void GraphicsPipeline::init(const SwapChain &swap_chain, const RenderPass &render_pass,
                             const std::vector<buffer::vertex> &buffers) {
+    //TODO: we need to be able to change the shader file
     std::vector<char> vertex = utils::readFile("trianglevert.spv");
     std::vector<char> fragment = utils::readFile("trianglefrag.spv");
 

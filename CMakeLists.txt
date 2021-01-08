@@ -35,7 +35,10 @@ add_custom_target(build_shader ALL
 
 add_dependencies(sample build_shader)
 
-
+target_compile_definitions(sample PRIVATE
+		GLM_FORCE_RADIANS
+		GLM_FORCE_DEPTH_ZERO_TO_ONE
+		)
 target_include_directories(sample PRIVATE include)
 
 target_link_libraries(sample PRIVATE

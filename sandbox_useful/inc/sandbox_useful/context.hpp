@@ -47,7 +47,12 @@ struct Context
 	void copy_buffer(vk::UniqueBuffer& destination, vk::UniqueBuffer const& source, vk::DeviceSize const& size) const;
     void copy_buffer_to_image(vk::Buffer buffer, vk::Image image, uint32_t width, uint32_t height)const;
 
-    vk::UniqueImageView create_2d_image_views(vk::Image image, vk::Format const& format)const;
+    vk::UniqueImageView
+    create_2d_image_views(vk::Image image, const vk::Format &format, vk::ImageAspectFlags aspectFlags) const;
+
+    std::pair<vk::UniqueImage,vk::UniqueDeviceMemory>
+    create_image(uint32_t width, uint32_t height, vk::Format format, vk::ImageTiling tiling, const vk::ImageUsageFlags &usage,
+                 vk::MemoryPropertyFlagBits)const;
 
 private:
 	 std::vector<const char*> const _validationLayers = {
