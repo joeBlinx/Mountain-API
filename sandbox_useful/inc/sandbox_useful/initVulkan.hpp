@@ -32,7 +32,7 @@ struct InitVulkan {
     template <class T>
     void createCommandBuffers(PipelineData<T> const& pipeline_data);
 
-    void allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> const &descriptor_set_layouts);
+    void allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> &&descriptor_set_layouts);
 
     template<class T>
     void update_descriptor_set(int first_descriptor_set_index, int binding,
@@ -58,8 +58,9 @@ private:
 	vk::CommandPool const& _commandPool;
 	std::vector<vk::CommandBuffer> _commandBuffers;
 
-	vk::DescriptorPool _descriptor_pool;
+    vk::UniqueDescriptorPool _descriptor_pool;
 	std::vector<vk::DescriptorSet> _descriptor_sets;
+	std::vector<vk::DescriptorSetLayout> _descriptor_set_layouts;
     int _nb_descriptor_set_by_image{};
 
 	vk::Queue  _graphicsQueue;

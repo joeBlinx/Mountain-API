@@ -321,8 +321,8 @@ void Context::create_command_pool(){
 	_command_pool = _device.createCommandPool(pool_info);
 }
 
-std::pair<vk::UniqueBuffer,
-		vk::UniqueDeviceMemory> Context::create_buffer_and_memory(vk::DeviceSize const& size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties) const{
+std::pair<vk::UniqueDeviceMemory, vk::UniqueBuffer>
+Context::create_buffer_and_memory(vk::DeviceSize const& size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties) const{
 	vk::BufferCreateInfo buffer_info{
 		{},
 		size, 
@@ -334,11 +334,11 @@ std::pair<vk::UniqueBuffer,
 	vk::MemoryRequirements mem_requirement;
 	_device.getBufferMemoryRequirements(*buffer, &mem_requirement);
 	auto device_memory = create_device_memory(mem_requirement, properties);
-	_device.bindBufferMemory(*buffer, *device_memory, 0);
-	return {
-		std::move(buffer), 
-		std::move(device_memory)
-		};
+    _device.bindBufferMemory(*buffer, *device_memory, 0);
+    return {
+            std::move(device_memory),
+            std::move(buffer)
+    };
 }
 vk::UniqueDeviceMemory Context::create_device_memory(vk::MemoryRequirements const& mem_requirements, vk::MemoryPropertyFlags properties) const{
 	auto mem_properties = _physical_device.getMemoryProperties();

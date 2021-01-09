@@ -21,7 +21,7 @@ buffer::image2d::image2d(Context const &context, fs::path const &image_path) {
         throw std::runtime_error("failed to load texture image!");
     }
 
-    auto[staging_buffer, staging_buffer_memory]
+    auto[staging_buffer_memory, staging_buffer]
     = context.create_buffer_and_memory(
             image_size,
             vk::BufferUsageFlagBits::eTransferSrc,

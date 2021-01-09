@@ -70,7 +70,9 @@ void InitVulkan::drawFrame(std::vector<buffer::uniform_updater> &&updaters)
 	presentInfo.pSwapchains = swapChains;
 	presentInfo.pImageIndices = &imageIndex;
 	presentInfo.pResults = nullptr; // Optional
-	_presentQueue.presentKHR(presentInfo);
+	checkError(_presentQueue.presentKHR(presentInfo),
+            "unable to present frame buffer"
+            );
 	_presentQueue.waitIdle();
 
 }
@@ -83,6 +85,10 @@ InitVulkan::~InitVulkan() {
 
 	for (auto &framebuffer : _swapchainFrameBuffer) {
 		_context.get_device().destroy(framebuffer);
+	}
+
+	for(auto &descriptor_set_layout: _descriptor_set_layouts){
+	    _context->destroy(descriptor_set_layout);
 	}
 
 }
@@ -130,23 +136,23 @@ void InitVulkan::allocate_command_buffer() {
 void InitVulkan::create_descriptor_pool(int nb_uniform) {
     std::array<vk::DescriptorPoolSize,2> pool_size;
     pool_size[0].type = vk::DescriptorType::eUniformBuffer;
-    pool_size[0].descriptorCount = _swapChainImageViews.size();
+    pool_size[0].descriptorCount = _swapChainImageViews.size()*nb_uniform;
 
     pool_size[1].type = vk::DescriptorType::eCombinedImageSampler;
-    pool_size[1].descriptorCount = _swapChainImageViews.size();
+    pool_size[1].descriptorCount = _swapChainImageViews.size()*nb_uniform;
 
     vk::DescriptorPoolCreateInfo _pool_info;
     _pool_info.poolSizeCount = pool_size.size();
     _pool_info.pPoolSizes = pool_size.data();
     _pool_info.maxSets = _swapChainImageViews.size()*nb_uniform;
 
-    checkError(
-            _context.get_device().createDescriptorPool(&_pool_info, nullptr, &_descriptor_pool)
-            , "Failed to create descriptor pool");
+
+    _descriptor_pool = _context.get_device().createDescriptorPoolUnique(_pool_info);
+
 
 }
 
-void InitVulkan::allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> const &descriptor_set_layouts) {
+void InitVulkan::allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> &&descriptor_set_layouts) {
     /*
      * We use one descriptor set layout by image of the swap chain,
      * but for using multiple set layout, we store them as follow:
@@ -154,19 +160,20 @@ void InitVulkan::allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> co
      * where A and B are different descriptor set layout
      * We order descriptor set this way to be able to use vkcmdBindDescriptorset with arrays
      */
+    _descriptor_set_layouts = std::move(descriptor_set_layouts);
     size_t const nb_image_swap_chain = _swapChainImageViews.size();
-    _nb_descriptor_set_by_image = descriptor_set_layouts.size();
+    _nb_descriptor_set_by_image = _descriptor_set_layouts.size();
     std::vector<vk::DescriptorSetLayout> layouts;
     layouts.resize(nb_image_swap_chain * _nb_descriptor_set_by_image);
 
-    for(auto it_set_layouts = begin(descriptor_set_layouts); it_set_layouts != end(descriptor_set_layouts); it_set_layouts++){
-        size_t index = it_set_layouts - begin(descriptor_set_layouts);
+    for(auto it_set_layouts = begin(_descriptor_set_layouts); it_set_layouts != end(_descriptor_set_layouts); it_set_layouts++){
+        size_t index = it_set_layouts - begin(_descriptor_set_layouts);
         for(size_t i = 0; i < layouts.size(); i += _nb_descriptor_set_by_image){
             layouts[i + index] = *it_set_layouts; // We pass from the first A to the second A
         }
     }
     vk::DescriptorSetAllocateInfo allo_info{};
-    allo_info.descriptorPool = _descriptor_pool;
+    allo_info.descriptorPool = *_descriptor_pool;
     allo_info.descriptorSetCount = layouts.size();
     allo_info.pSetLayouts = layouts.data();
 

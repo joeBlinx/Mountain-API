@@ -41,8 +41,8 @@ struct Context
 	SwapChainSupportDetails const& get_swap_chain_details() const { return _swap_chain_details; }
 	vk::CommandPool const& get_command_pool() const{ return _command_pool; }
 	vk::UniqueDeviceMemory create_device_memory(vk::MemoryRequirements const& mem_requirements, vk::MemoryPropertyFlags type_filter) const;
-	std::pair<vk::UniqueBuffer,
-		vk::UniqueDeviceMemory> create_buffer_and_memory(vk::DeviceSize const& size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties) const;
+	std::pair<vk::UniqueDeviceMemory, vk::UniqueBuffer>
+    create_buffer_and_memory(vk::DeviceSize const& size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties) const;
 
 	void copy_buffer(vk::UniqueBuffer& destination, vk::UniqueBuffer const& source, vk::DeviceSize const& size) const;
     void copy_buffer_to_image(vk::Buffer buffer, vk::Image image, uint32_t width, uint32_t height)const;

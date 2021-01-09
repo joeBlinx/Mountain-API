@@ -149,7 +149,7 @@ int main() {
 
     buffer::image2d statue_image({context, "assets/image/statue.jpg"});
     image::sampler sampler(context);
-    auto const layouts = std::vector{descriptor_layout, descriptor_layout_frag};
+    auto layouts = std::vector{descriptor_layout, descriptor_layout_frag};
     GraphicsPipeline pipeline(context,
                               swap_chain,
                               render_pass,
@@ -160,7 +160,7 @@ int main() {
             context,
             swap_chain,
             render_pass, 2);
-	init.allocate_descriptor_set(layouts);
+	init.allocate_descriptor_set(std::move(layouts));
 	buffer::uniform<VP> uniform_vp(context, swap_chain.get_swap_chain_image_views().size());
     buffer::uniform<float> uniform_color(context, swap_chain.get_swap_chain_image_views().size());
     init.update_descriptor_set(0, 2, uniform_vp);

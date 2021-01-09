@@ -15,7 +15,7 @@ image::sampler::sampler(const Context &context) {
     sampler_info.addressModeV = vk::SamplerAddressMode::eRepeat;
     sampler_info.addressModeW = vk::SamplerAddressMode::eRepeat;
 
-    sampler_info.anisotropyEnable = VK_TRUE;
+    sampler_info.anisotropyEnable = VK_FALSE;
 
     vk::PhysicalDeviceProperties properties{};
     context.get_physical_device().getProperties(&properties);

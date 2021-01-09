@@ -41,7 +41,7 @@ vk::AttachmentDescription fill_color(SubPass const& subpass, vk::Format const& c
     color_attachment.stencilLoadOp =vk::AttachmentLoadOp::eDontCare;
     color_attachment.stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
     color_attachment.initialLayout = vk::ImageLayout::eUndefined;
-    color_attachment.finalLayout = vk::ImageLayout::eColorAttachmentOptimal;
+    color_attachment.finalLayout = vk::ImageLayout::ePresentSrcKHR;
 
     return color_attachment;
 }

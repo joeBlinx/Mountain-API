@@ -3,7 +3,7 @@
 //
 #include <context.hpp>
 #include "descriptor_setlayout_binding/descriptorset_layout.h"
-
+#include "utils/log.hpp"
 namespace descriptorset_layout {
     vk::DescriptorSetLayoutBinding create_descriptor_image_sampler(int binding, vk::ShaderStageFlags const &shader){
         vk::DescriptorSetLayoutBinding image_layout{};
@@ -30,9 +30,10 @@ namespace descriptorset_layout {
         descriptorSetLayoutCreateInfo.pBindings = set_layout_bindings.data();
 
         vk::DescriptorSetLayout descriptor_layout;
-        context.get_device().createDescriptorSetLayout(&descriptorSetLayoutCreateInfo,
+        checkError(context.get_device().createDescriptorSetLayout(&descriptorSetLayoutCreateInfo,
                                                        nullptr,
-                                                       &descriptor_layout);
+                                                       &descriptor_layout),
+                   "unable to create Descriptor Set Layouts");
         return descriptor_layout;
     }
 

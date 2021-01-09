@@ -71,8 +71,8 @@ namespace buffer{
     private:
         void create_buffer(Container auto const& container, vk::BufferUsageFlags buffer_usage, vk::UniqueBuffer& buffer, vk::UniqueDeviceMemory& buffer_memory);
         Context const& _device;
-        vk::UniqueBuffer _buffer;
         vk::UniqueDeviceMemory _buffer_memory;
+        vk::UniqueBuffer _buffer;
 
         uint32_t _indices_count;
         vertex_description _description;

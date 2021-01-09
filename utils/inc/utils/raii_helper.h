@@ -1,11 +1,13 @@
 #pragma once
 #include <vulkan/vulkan.hpp>
+#include "utils/log.hpp"
 namespace utils::raii_helper{
     struct MapMemory{
 
         MapMemory(vk::Device const& device, vk::UniqueDeviceMemory& device_memory, uint32_t offset, uint32_t size, void**data):_device(device),
         _device_memory(device_memory){
-            _device.mapMemory(*_device_memory, offset, size, vk::MemoryMapFlags(), data);
+            checkError(_device.mapMemory(*_device_memory, offset, size, vk::MemoryMapFlags(), data),
+                       "unable to map memory");
         }
         
         ~MapMemory(){
@@ -39,7 +41,8 @@ namespace utils::raii_helper{
             vk::SubmitInfo submit_info{};
             submit_info.commandBufferCount = 1;
             submit_info.pCommandBuffers = &*_command_buffer;
-            _context.get_graphics_queue().submit(1, &submit_info, nullptr);
+            checkError(_context.get_graphics_queue().submit(1, &submit_info, nullptr),
+                       "unable to submit commands");
             _context.get_graphics_queue().waitIdle();
 
         }

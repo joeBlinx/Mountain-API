@@ -17,8 +17,8 @@ namespace buffer {
         vk::UniqueImage const& get_image()const{return _image;}
         vk::UniqueImageView const& get_image_view()const{return _image_view;}
     private:
-        vk::UniqueImage _image;
         vk::UniqueDeviceMemory _image_memory;
+        vk::UniqueImage _image;
         vk::UniqueImageView  _image_view;
 
         void transition_image_layout(Context const &context, vk::Format format, vk::ImageLayout old_layout,

@@ -30,11 +30,11 @@ struct SwapChain {
 private:
 	Context const& _context;
 	vk::SwapchainKHR _swap_chain;
-	std::vector<vk::Image> _swap_chain_images;
-	std::vector<vk::UniqueImageView> _swap_chain_image_views;
-	vk::UniqueImage _depth_image;
-	vk::UniqueImageView _depth_image_view;
-	vk::UniqueDeviceMemory _depth_image_memory;
+    std::vector<vk::UniqueImageView> _swap_chain_image_views;
+    std::vector<vk::Image> _swap_chain_images;
+    vk::UniqueImageView _depth_image_view;
+    vk::UniqueDeviceMemory _depth_image_memory;
+    vk::UniqueImage _depth_image;
     std::vector<vk::UniqueFramebuffer> _swapchain_frame_buffers;
 
 	vk::Format _swap_chain_image_format{};
