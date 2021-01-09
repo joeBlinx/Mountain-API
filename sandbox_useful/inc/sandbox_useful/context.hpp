@@ -30,21 +30,35 @@ struct Context
 	vk::Instance const& get_vk_instance() const{return _instance;}
 	VkSurfaceKHR get_vk_surface() const{return _surface;}
 	Window const& get_window() const {return _window;}
-		vk::Device const& get_device() const{ return _device; }
-	const vk::Queue & get_graphics_queue() const {return _graphics_queue;}
+	vk::Device const& get_device() const{ return _device; }
+    vk::Device const& operator*() const{ return get_device();}
+    vk::Device const* operator->() const{ return &get_device();}
+
+    const vk::Queue & get_graphics_queue() const {return _graphics_queue;}
 	const vk::Queue & get_present_queue() const{return _present_queue;}
 	vk::PhysicalDevice const& get_physical_device() const{ return _physical_device;}
 	QueueFamilyIndices const& get_queue_family_indice() const { return _indices; }
 	SwapChainSupportDetails const& get_swap_chain_details() const { return _swap_chain_details; }
 	vk::CommandPool const& get_command_pool() const{ return _command_pool; }
 	vk::UniqueDeviceMemory create_device_memory(vk::MemoryRequirements const& mem_requirements, vk::MemoryPropertyFlags type_filter) const;
-	std::pair<vk::UniqueBuffer,
-		vk::UniqueDeviceMemory> create_buffer_and_memory(vk::DeviceSize const& size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties) const;
+	std::pair<vk::UniqueDeviceMemory, vk::UniqueBuffer>
+    create_buffer_and_memory(vk::DeviceSize const& size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties) const;
 
 	void copy_buffer(vk::UniqueBuffer& destination, vk::UniqueBuffer const& source, vk::DeviceSize const& size) const;
+    void copy_buffer_to_image(vk::Buffer buffer, vk::Image image, uint32_t width, uint32_t height)const;
+
+    vk::UniqueImageView
+    create_2d_image_views(vk::Image image, const vk::Format &format, vk::ImageAspectFlags aspectFlags) const;
+
+    std::pair<vk::UniqueImage,vk::UniqueDeviceMemory>
+    create_image(uint32_t width, uint32_t height, vk::Format format, vk::ImageTiling tiling, const vk::ImageUsageFlags &usage,
+                 vk::MemoryPropertyFlagBits)const;
+
+    vk::SurfaceFormatKHR chooseSwapSurfaceFormat() const;
+
 private:
 	 std::vector<const char*> const _validationLayers = {
-			"VK_LAYER_LUNARG_standard_validation"
+			"VK_LAYER_KHRONOS_validation"
 	};
 #ifdef NDEBUG
 	 static bool constexpr _enableValidationLayer = false;

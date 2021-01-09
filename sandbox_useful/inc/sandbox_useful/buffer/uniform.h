@@ -38,8 +38,8 @@ namespace buffer{
         }
 
     private:
-        std::vector<vk::UniqueBuffer> _buffers;
         std::vector<vk::UniqueDeviceMemory> _buffer_memories;
+        std::vector<vk::UniqueBuffer> _buffers;
         Context const& _device;
         vk::DeviceSize _buffer_size;
     };
@@ -51,7 +51,7 @@ namespace buffer{
         _buffer_memories.reserve(swap_chain_nb_images);
 
         for (size_t i = 0; i < swap_chain_nb_images; i++) {
-            auto[buffer, buffer_memory] =
+            auto[buffer_memory, buffer] =
                     context.create_buffer_and_memory(_buffer_size,
                                                     vk::BufferUsageFlagBits::eUniformBuffer,
                                                     vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);

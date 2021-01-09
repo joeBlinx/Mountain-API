@@ -6,6 +6,8 @@
 #include <vector>
 #include <sandbox_useful/buffer/uniform.h>
 #include <chrono>
+#include <sandbox_useful/buffer/image2d.h>
+#include <sandbox_useful/sampler.h>
 #include "sandbox_useful/buffer/vertex.hpp"
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
@@ -18,8 +20,9 @@ struct vec3{
     float a, b, c;
 };
 struct Vertex{
-    vec2 position;
+    vec3 position;
     vec3 color;
+    vec2 tex_coord;
 };
 struct Model{
     glm::mat4 model {1};
@@ -31,11 +34,7 @@ struct Uniform{
    Model model;
    Color new_color{0.5};
 };
-struct object{
-    buffer::vertex const& vertices;
-    GraphicsPipeline const& graphics_pipeline;
-    std::vector<Uniform> values;
-};
+
 struct move_rectangle{
     InitVulkan& init;
     PipelineData<Uniform> obj;
@@ -87,32 +86,38 @@ int main() {
 	int constexpr width = 1366;
 	int constexpr height = 768;
 
-	Context context{width,
+    Context context{width,
                  height,
                  "Vulkan Window",
                  devicesExtension};
-	SwapChain swap_chain{
+
+    RenderPass render_pass{
+        context,
+        SubPass{subpass_attachment::COLOR}
+    };
+
+    SwapChain swap_chain{
             context,
+            render_pass,
             vk::ImageUsageFlagBits::eColorAttachment,
             width,
             height
     };
 
-	RenderPass render_pass = RenderPass::create<SubPass{subpass_attachment::COLOR}>(
-			context.get_device(), swap_chain.get_swap_chain_image_format());
 
+    std::array vertices{
+            Vertex{{-0.5f, -0.5f, 0.f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+           Vertex {{0.5f, -0.5f, 0.f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+            Vertex{{0.5f, 0.5f, 0.f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+            Vertex{{-0.5f, 0.5f, 0.f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}
 
-	std::array vertices{
-            Vertex{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-            Vertex{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-            Vertex{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-            Vertex{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
 	};
-	;
+
+
     std::vector<buffer::vertex> vertex_buffers;
     vertex_buffers.emplace_back(buffer::vertex(context,
            buffer::vertex_description(0, 0,
-                       CLASS_DESCRIPTION(Vertex, position, color)),
+                       CLASS_DESCRIPTION(Vertex, position, color, tex_coord)),
                                vertices,
                                {0, 1, 2, 2, 3, 0}
             ));
@@ -129,16 +134,22 @@ int main() {
     vk::DescriptorSetLayoutBinding ubo_binding_layout =
             descriptorset_layout::create_descriptor_uniform(2, vk::ShaderStageFlagBits::eVertex);
 
+    vk::DescriptorSetLayoutBinding image_sampler_layout =
+            descriptorset_layout::create_descriptor_image_sampler(1, vk::ShaderStageFlagBits::eFragment);
+
     vk::DescriptorSetLayoutBinding ubo_layout_frag_color =
             descriptorset_layout::create_descriptor_uniform(0, vk::ShaderStageFlagBits::eFragment);
 
     vk::DescriptorSetLayout descriptor_layout = descriptorset_layout::create_descriptorset_layout(
-            context, {ubo_binding_layout}
+            context, {ubo_binding_layout, image_sampler_layout}
             );
     vk::DescriptorSetLayout descriptor_layout_frag = descriptorset_layout::create_descriptorset_layout(
             context, {ubo_layout_frag_color}
     );
-    auto const layouts = std::vector{descriptor_layout, descriptor_layout_frag};
+
+    buffer::image2d statue_image({context, "assets/image/statue.jpg"});
+    image::sampler sampler(context);
+    auto layouts = std::vector{descriptor_layout, descriptor_layout_frag};
     GraphicsPipeline pipeline(context,
                               swap_chain,
                               render_pass,
@@ -149,23 +160,25 @@ int main() {
             context,
             swap_chain,
             render_pass, 2);
-	init.allocate_descriptor_set(layouts);
+	init.allocate_descriptor_set(std::move(layouts));
 	buffer::uniform<VP> uniform_vp(context, swap_chain.get_swap_chain_image_views().size());
     buffer::uniform<float> uniform_color(context, swap_chain.get_swap_chain_image_views().size());
-    init.create_descriptor_set_uniform(0, uniform_vp);
-    init.create_descriptor_set_uniform(1, uniform_color);
-
+    init.update_descriptor_set(0, 2, uniform_vp);
+    init.update_descriptor_set(1, 0, uniform_color);
+    init.update_descriptor_set(0, 1, statue_image, sampler);
     move_rectangle move{init,
                         {vertex_buffers[0], pipeline,
                          {
                             {
-                {glm::scale(glm::mat4{1.}, glm::vec3{1.})}}
-
+                {glm::scale(glm::mat4{1.}, glm::vec3{1.})}},
+                            {{glm::translate(glm::mat4{1.}, glm::vec3{0., -0.5, 0.})}}
                          }
                         }
     };
 
     glfwSetKeyCallback(context.get_window().get_window(), key_callback);
+
+
     glfwSetWindowUserPointer(context.get_window().get_window(), &move);
 
 

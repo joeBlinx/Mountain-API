@@ -70,7 +70,9 @@ void InitVulkan::drawFrame(std::vector<buffer::uniform_updater> &&updaters)
 	presentInfo.pSwapchains = swapChains;
 	presentInfo.pImageIndices = &imageIndex;
 	presentInfo.pResults = nullptr; // Optional
-	_presentQueue.presentKHR(presentInfo);
+	checkError(_presentQueue.presentKHR(presentInfo),
+            "unable to present frame buffer"
+            );
 	_presentQueue.waitIdle();
 
 }
@@ -85,6 +87,10 @@ InitVulkan::~InitVulkan() {
 		_context.get_device().destroy(framebuffer);
 	}
 
+	for(auto &descriptor_set_layout: _descriptor_set_layouts){
+	    _context->destroy(descriptor_set_layout);
+	}
+
 }
 
 //need parameter
@@ -94,7 +100,7 @@ void InitVulkan::createFrameBuffers()
 	for (size_t i = 0; i < _swapChainImageViews.size(); i++)
 	{
 		vk::ImageView attachments[] = {
-			_swapChainImageViews[i]
+			*_swapChainImageViews[i]
 		};
 
 		vk::FramebufferCreateInfo framebufferInfo;
@@ -105,8 +111,7 @@ void InitVulkan::createFrameBuffers()
 		framebufferInfo.height = _swapChainExtent.height;
 		framebufferInfo.layers = 1;
 		_swapchainFrameBuffer[i] = _context.get_device().createFramebuffer(framebufferInfo);
-		
-	
+
 	}
 
 }
@@ -129,22 +134,25 @@ void InitVulkan::allocate_command_buffer() {
 }
 
 void InitVulkan::create_descriptor_pool(int nb_uniform) {
-    vk::DescriptorPoolSize pool_size;
-    pool_size.type = vk::DescriptorType::eUniformBuffer;
-    pool_size.descriptorCount = _swapChainImageViews.size();
+    std::array<vk::DescriptorPoolSize,2> pool_size;
+    pool_size[0].type = vk::DescriptorType::eUniformBuffer;
+    pool_size[0].descriptorCount = _swapChainImageViews.size()*nb_uniform;
+
+    pool_size[1].type = vk::DescriptorType::eCombinedImageSampler;
+    pool_size[1].descriptorCount = _swapChainImageViews.size()*nb_uniform;
 
     vk::DescriptorPoolCreateInfo _pool_info;
-    _pool_info.poolSizeCount = 1;
-    _pool_info.pPoolSizes = &pool_size;
+    _pool_info.poolSizeCount = pool_size.size();
+    _pool_info.pPoolSizes = pool_size.data();
     _pool_info.maxSets = _swapChainImageViews.size()*nb_uniform;
 
-    checkError(
-            _context.get_device().createDescriptorPool(&_pool_info, nullptr, &_descriptor_pool)
-            , "Failed to create descriptor pool");
+
+    _descriptor_pool = _context.get_device().createDescriptorPoolUnique(_pool_info);
+
 
 }
 
-void InitVulkan::allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> const &descriptor_set_layouts) {
+void InitVulkan::allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> &&descriptor_set_layouts) {
     /*
      * We use one descriptor set layout by image of the swap chain,
      * but for using multiple set layout, we store them as follow:
@@ -152,19 +160,20 @@ void InitVulkan::allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> co
      * where A and B are different descriptor set layout
      * We order descriptor set this way to be able to use vkcmdBindDescriptorset with arrays
      */
+    _descriptor_set_layouts = std::move(descriptor_set_layouts);
     size_t const nb_image_swap_chain = _swapChainImageViews.size();
-    _nb_descriptor_set_by_image = descriptor_set_layouts.size();
+    _nb_descriptor_set_by_image = _descriptor_set_layouts.size();
     std::vector<vk::DescriptorSetLayout> layouts;
     layouts.resize(nb_image_swap_chain * _nb_descriptor_set_by_image);
 
-    for(auto it_set_layouts = begin(descriptor_set_layouts); it_set_layouts != end(descriptor_set_layouts); it_set_layouts++){
-        size_t index = it_set_layouts - begin(descriptor_set_layouts);
+    for(auto it_set_layouts = begin(_descriptor_set_layouts); it_set_layouts != end(_descriptor_set_layouts); it_set_layouts++){
+        size_t index = it_set_layouts - begin(_descriptor_set_layouts);
         for(size_t i = 0; i < layouts.size(); i += _nb_descriptor_set_by_image){
             layouts[i + index] = *it_set_layouts; // We pass from the first A to the second A
         }
     }
     vk::DescriptorSetAllocateInfo allo_info{};
-    allo_info.descriptorPool = _descriptor_pool;
+    allo_info.descriptorPool = *_descriptor_pool;
     allo_info.descriptorSetCount = layouts.size();
     allo_info.pSetLayouts = layouts.data();
 
@@ -173,4 +182,42 @@ void InitVulkan::allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> co
             _context.get_device().allocateDescriptorSets(&allo_info, _descriptor_sets.data()),
             "Failed to allocate descriptor set"
     );
+}
+
+void InitVulkan::update_descriptor_set(int first_descriptor_set_index, int binding, const buffer::image2d &image,
+                                       const image::sampler &sampler) {
+    /*
+   * We use one descriptor set layout by image of the swap chain,
+   * but for using multiple set layout, we store them as follow:
+   * |A|B|A|B|A|B|
+   * where A and B are different descriptor set layout
+   *
+   */
+    std::vector<vk::WriteDescriptorSet> write_sets(_swapChainImageViews.size());
+    std::vector<vk::DescriptorImageInfo> image_infos(_swapChainImageViews.size());
+    auto it_descriptor_set = begin(_descriptor_sets) + first_descriptor_set_index;
+    auto it_write_sets = begin(write_sets);
+    auto it_image_infos = begin(image_infos);
+   for(size_t i = 0; i < _swapChainImageViews.size(); i++){
+       it_image_infos->imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+       it_image_infos->imageView = *image.get_image_view();
+       it_image_infos->sampler = sampler;
+
+        it_write_sets->dstSet = *it_descriptor_set;
+        it_write_sets->dstBinding = binding; //this is a bug
+        it_write_sets->dstArrayElement = 0 ;//that too
+        it_write_sets->descriptorType= vk::DescriptorType ::eCombinedImageSampler;
+        it_write_sets->descriptorCount = 1;
+        it_write_sets->pImageInfo = &*it_image_infos;
+        it_write_sets->pTexelBufferView = nullptr;
+
+        it_write_sets++;
+        it_image_infos++;
+        it_descriptor_set += _nb_descriptor_set_by_image;
+        /*
+         *  |A|B|A|B|A|B| we pass from A to the other A
+         * */
+    }
+    _context.get_device().updateDescriptorSets(write_sets.size(),
+                                               write_sets.data(), 0, nullptr);
 }

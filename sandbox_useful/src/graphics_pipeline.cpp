@@ -63,6 +63,7 @@ private:
 
 void GraphicsPipeline::init(const SwapChain &swap_chain, const RenderPass &render_pass,
                             const std::vector<buffer::vertex> &buffers) {
+    //TODO: we need to be able to change the shader file
     std::vector<char> vertex = utils::readFile("trianglevert.spv");
     std::vector<char> fragment = utils::readFile("trianglefrag.spv");
 
@@ -87,6 +88,11 @@ void GraphicsPipeline::init(const SwapChain &swap_chain, const RenderPass &rende
     auto multisampling = createMultisampling();
 
     // DEPTH AND STENCIL
+    vk::PipelineDepthStencilStateCreateInfo depth_stencil;
+    depth_stencil.depthTestEnable = VK_TRUE;
+    depth_stencil.depthWriteEnable = VK_TRUE;
+    depth_stencil.depthCompareOp = vk::CompareOp::eLess;
+    depth_stencil.stencilTestEnable = VK_FALSE;
 
     // COLOR_RENDERING
     auto colorBlendAttachement = createColorBlendAttachement();

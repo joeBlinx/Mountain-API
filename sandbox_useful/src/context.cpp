@@ -6,6 +6,8 @@
 #include <cstring>
 #include <string_view>
 #include <set>
+#include <uniform.h>
+
 Context::SwapChainSupportDetails query_swap_chain_support(vk::PhysicalDevice const& device, VkSurfaceKHR surface);
 Context::QueueFamilyIndices find_queue_families(vk::PhysicalDevice const& device, VkSurfaceKHR surface, vk::QueueFlagBits queue_flag);
 
@@ -115,6 +117,7 @@ void Context::createInstance(std::string_view title)
 {
 	if (!checkValidationLayerSupport() && _enableValidationLayer) {
 		utils::printFatalError("validation layer requested but not available");
+
 	}
 
 	vk::ApplicationInfo info{};
@@ -133,10 +136,17 @@ void Context::createInstance(std::string_view title)
 
 	instanceinfo.enabledLayerCount = 0;
 
+    VkValidationFeatureEnableEXT enables[] = {VK_VALIDATION_FEATURE_ENABLE_BEST_PRACTICES_EXT};
+    VkValidationFeaturesEXT features = {};
+    features.sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT;
+    features.enabledValidationFeatureCount = 1;
+    features.pEnabledValidationFeatures = enables;
+
 	if constexpr(_enableValidationLayer) {
 		instanceinfo.enabledLayerCount = static_cast<uint32_t>(_validationLayers.size());
 		instanceinfo.ppEnabledLayerNames = _validationLayers.data();
-	}
+        instanceinfo.pNext = &features;
+    }
 	_instance = vk::createInstance(instanceinfo); 
 	uint32_t extensionCount = 0;
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
@@ -217,7 +227,9 @@ bool is_device_suitable(vk::PhysicalDevice const& device, vk::QueueFlagBits queu
 		Context::SwapChainSupportDetails swapChainSupport = query_swap_chain_support(device, surface);
 		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 	}
-	return indices.isComplete() && extensionSupported && swapChainAdequate;
+	vk::PhysicalDeviceFeatures supported_features;
+	device.getFeatures(&supported_features);
+	return indices.isComplete() && extensionSupported && swapChainAdequate && supported_features.samplerAnisotropy;
 }
 
 int get_point_to_device_type(vk::PhysicalDeviceType device_type){
@@ -309,8 +321,8 @@ void Context::create_command_pool(){
 	_command_pool = _device.createCommandPool(pool_info);
 }
 
-std::pair<vk::UniqueBuffer,
-		vk::UniqueDeviceMemory> Context::create_buffer_and_memory(vk::DeviceSize const& size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties) const{
+std::pair<vk::UniqueDeviceMemory, vk::UniqueBuffer>
+Context::create_buffer_and_memory(vk::DeviceSize const& size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties) const{
 	vk::BufferCreateInfo buffer_info{
 		{},
 		size, 
@@ -322,11 +334,11 @@ std::pair<vk::UniqueBuffer,
 	vk::MemoryRequirements mem_requirement;
 	_device.getBufferMemoryRequirements(*buffer, &mem_requirement);
 	auto device_memory = create_device_memory(mem_requirement, properties);
-	_device.bindBufferMemory(*buffer, *device_memory, 0);
-	return {
-		std::move(buffer), 
-		std::move(device_memory)
-		};
+    _device.bindBufferMemory(*buffer, *device_memory, 0);
+    return {
+            std::move(device_memory),
+            std::move(buffer)
+    };
 }
 vk::UniqueDeviceMemory Context::create_device_memory(vk::MemoryRequirements const& mem_requirements, vk::MemoryPropertyFlags properties) const{
 	auto mem_properties = _physical_device.getMemoryProperties();
@@ -349,29 +361,100 @@ vk::UniqueDeviceMemory Context::create_device_memory(vk::MemoryRequirements cons
 }
 
 void Context::copy_buffer(vk::UniqueBuffer& destination, vk::UniqueBuffer const& source, vk::DeviceSize const& size) const{
-	vk::CommandBufferAllocateInfo alloc_info{
-		_command_pool,
-		vk::CommandBufferLevel::ePrimary,
-		1
-	};
-	auto command_buffers = _device.allocateCommandBuffersUnique(alloc_info);
-	vk::CommandBufferBeginInfo begin_info{
-		vk::CommandBufferUsageFlagBits::eOneTimeSubmit
-	};
-	auto command_buffer = std::move(command_buffers[0]);
-	command_buffer->begin(begin_info);
+
+	utils::raii_helper::OneTimeCommands commands(*this);
 	vk::BufferCopy buffer_copy{
 	    0,
 	    0,
 	    size
 	};
-	command_buffer->copyBuffer(*source, *destination, 1, &buffer_copy);
-	command_buffer->end();
+    commands->copyBuffer(*source, *destination, 1, &buffer_copy);
+}
 
-	vk::SubmitInfo submit_info;
-	submit_info.commandBufferCount = 1;
-	submit_info.pCommandBuffers = &command_buffer.get();
-	_graphics_queue.submit(1, &submit_info, {});
-	_graphics_queue.waitIdle();
+void Context::copy_buffer_to_image(vk::Buffer buffer, vk::Image image, uint32_t width, uint32_t height) const {
 
+    utils::raii_helper::OneTimeCommands command(*this);
+    vk::BufferImageCopy region{};
+    region.bufferOffset = 0;
+    region.bufferRowLength = 0;
+    region.bufferImageHeight = 0;
+
+    region.imageSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+    region.imageSubresource.mipLevel = 0;
+    region.imageSubresource.baseArrayLayer = 0;
+    region.imageSubresource.layerCount = 1;
+
+    region.imageOffset = vk::Offset3D{0, 0, 0};
+    region.imageExtent = vk::Extent3D{
+            width,
+            height,
+            1
+    };
+
+    command->copyBufferToImage(
+            buffer, image,
+            vk::ImageLayout::eTransferDstOptimal,
+            1, &region
+            );
+}
+
+vk::UniqueImageView
+Context::create_2d_image_views(vk::Image image, const vk::Format &format, vk::ImageAspectFlags aspectFlags) const{
+    vk::ImageViewCreateInfo view_info{};
+    view_info.image = image;
+    view_info.viewType = vk::ImageViewType::e2D;
+    view_info.format = format;
+    view_info.subresourceRange.aspectMask = aspectFlags;
+    view_info.subresourceRange.baseMipLevel = 0;
+    view_info.subresourceRange.levelCount = 1;
+    view_info.subresourceRange.baseArrayLayer = 0;
+    view_info.subresourceRange.layerCount = 1;
+
+    return _device.createImageViewUnique(view_info);
+}
+
+std::pair<vk::UniqueImage, vk::UniqueDeviceMemory>
+Context::create_image(uint32_t width, uint32_t height, vk::Format format, vk::ImageTiling tiling,
+					  const vk::ImageUsageFlags &usage, vk::MemoryPropertyFlagBits) const{
+    vk::UniqueImage image;
+    vk::UniqueDeviceMemory image_memory;
+    vk::ImageCreateInfo image_info;
+    image_info.imageType = vk::ImageType::e2D;
+    image_info.extent.width = width;
+    image_info.extent .height = height;
+    image_info.extent .depth = 1;
+    image_info.mipLevels = 1;
+    image_info.arrayLayers = 1;
+    image_info.format = format;
+    image_info.tiling = tiling;
+    image_info.initialLayout = vk::ImageLayout::eUndefined;
+    image_info.usage = usage;
+    image_info.sharingMode = vk::SharingMode::eExclusive;
+    image_info.samples = vk::SampleCountFlagBits::e1; // TODO: for multisampling
+
+    image = get_device().createImageUnique(image_info);
+
+    vk::MemoryRequirements requirements;
+    get_device().getImageMemoryRequirements(*image, &requirements);
+    image_memory = create_device_memory(
+            requirements, vk::MemoryPropertyFlagBits::eDeviceLocal);
+
+    get_device().bindImageMemory(*image, *image_memory, 0);
+    return {std::move(image), std::move(image_memory)};
+}
+
+vk::SurfaceFormatKHR Context::chooseSwapSurfaceFormat() const
+{
+    auto const& available_formats = _swap_chain_details.formats;
+    if (available_formats.size() == 1 && available_formats[0].format == vk::Format::eUndefined) {
+        return { vk::Format::eB8G8R8A8Unorm, vk::ColorSpaceKHR::eSrgbNonlinear };
+    }
+
+    for (const auto& availableFormat : available_formats) {
+        if (availableFormat.format == vk::Format::eB8G8R8A8Srgb && availableFormat.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear) {
+            return availableFormat;
+        }
+    }
+
+    return available_formats[0];
 }
