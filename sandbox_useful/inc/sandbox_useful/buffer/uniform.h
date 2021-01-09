@@ -38,8 +38,8 @@ namespace buffer{
         }
 
     private:
-        std::vector<vk::UniqueBuffer> _buffers;
         std::vector<vk::UniqueDeviceMemory> _buffer_memories;
+        std::vector<vk::UniqueBuffer> _buffers;
         Context const& _device;
         vk::DeviceSize _buffer_size;
     };
