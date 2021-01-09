@@ -7,7 +7,7 @@
 #include "renderPass.hpp"
 
 
-RenderPass::RenderPass(vk::Device device, VkRenderPassCreateInfo RenderPass_info) :
+RenderPass::RenderPass(vk::Device device, VkRenderPassCreateInfo) :
 		_device(device) {
 
 
@@ -31,7 +31,7 @@ vk::AttachmentDescription fill_depth_stencil(SubPass const& subpass, vk::Format 
     depth_attachment.finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
     return depth_attachment;
 }
-vk::AttachmentDescription fill_color(SubPass const& subpass, vk::Format const& color){
+vk::AttachmentDescription fill_color(vk::Format const& color){
     vk::AttachmentDescription color_attachment{};
 
     color_attachment.format = color;
@@ -64,7 +64,7 @@ RenderPass::RenderPass(const Context &context, const SubPass &sub_pass) :_device
         colorAttachmentRef.layout = vk::ImageLayout::eColorAttachmentOptimal;
         subpass.colorAttachmentCount = 1;
         subpass.pColorAttachments = &colorAttachmentRef;
-        attachments_desc.emplace_back(fill_color(sub_pass, swap_chain_image_format));
+        attachments_desc.emplace_back(fill_color(swap_chain_image_format));
     }
 
     if(sub_pass.attachment_depth_stencil& subpass_attachment::DEPTH
