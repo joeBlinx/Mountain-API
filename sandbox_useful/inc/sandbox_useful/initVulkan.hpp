@@ -102,9 +102,12 @@ void InitVulkan::createCommandBuffers(PipelineData<T> const& pipeline_data)
         renderPassInfo.renderArea.offset = { 0, 0 };
         renderPassInfo.renderArea.extent = _swapChainExtent;
 
-        VkClearValue clearColor = { 0.5f, 0.5f, 0.5f, 1.0f };
-        renderPassInfo.clearValueCount = 1;
-        renderPassInfo.pClearValues = &clearColor;
+        VkClearValue clearColor [] = {
+                { .color{0.5f, 0.5f, 0.5f, 1.0f} },
+                {.depthStencil {1.f, 0}}
+        };
+        renderPassInfo.clearValueCount = std::size(clearColor);
+        renderPassInfo.pClearValues = clearColor;
 
         vkCmdBeginRenderPass(_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         vkCmdBindPipeline(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_data.graphics_pipeline.get_pipeline()); // bind the pipeline

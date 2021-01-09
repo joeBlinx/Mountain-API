@@ -404,7 +404,7 @@ Context::create_2d_image_views(vk::Image image, const vk::Format &format, vk::Im
     view_info.image = image;
     view_info.viewType = vk::ImageViewType::e2D;
     view_info.format = format;
-    view_info.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+    view_info.subresourceRange.aspectMask = aspectFlags;
     view_info.subresourceRange.baseMipLevel = 0;
     view_info.subresourceRange.levelCount = 1;
     view_info.subresourceRange.baseArrayLayer = 0;
@@ -441,4 +441,20 @@ Context::create_image(uint32_t width, uint32_t height, vk::Format format, vk::Im
 
     get_device().bindImageMemory(*image, *image_memory, 0);
     return {std::move(image), std::move(image_memory)};
+}
+
+vk::SurfaceFormatKHR Context::chooseSwapSurfaceFormat() const
+{
+    auto const& available_formats = _swap_chain_details.formats;
+    if (available_formats.size() == 1 && available_formats[0].format == vk::Format::eUndefined) {
+        return { vk::Format::eB8G8R8A8Unorm, vk::ColorSpaceKHR::eSrgbNonlinear };
+    }
+
+    for (const auto& availableFormat : available_formats) {
+        if (availableFormat.format == vk::Format::eB8G8R8A8Srgb && availableFormat.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear) {
+            return availableFormat;
+        }
+    }
+
+    return available_formats[0];
 }

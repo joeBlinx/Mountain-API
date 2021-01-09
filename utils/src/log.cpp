@@ -35,9 +35,6 @@ std::map<int, std::string> VkResultStr{
    {enumToStr(VK_ERROR_INVALID_SHADER_NV ) },
    {enumToStr(VK_ERROR_OUT_OF_POOL_MEMORY_KHR ) },
    {enumToStr(VK_ERROR_INVALID_EXTERNAL_HANDLE_KHR ) },
-   {enumToStr(VK_RESULT_BEGIN_RANGE ) },
-   {enumToStr(VK_RESULT_END_RANGE ) },
-   {enumToStr(VK_RESULT_RANGE_SIZE ) },
    {enumToStr(VK_RESULT_MAX_ENUM ) }
 };
 void checkError(VkResult result, const std::string& log){

@@ -5,20 +5,8 @@
 
 #include "swapChain.hpp"
 #include  <algorithm>
-vk::SurfaceFormatKHR chooseSwapSurfaceFormat(std::vector<vk::SurfaceFormatKHR> const & available_formats)
-{
-	if (available_formats.size() == 1 && available_formats[0].format == vk::Format::eUndefined) {
-		return { vk::Format::eB8G8R8A8Unorm, vk::ColorSpaceKHR::eSrgbNonlinear };
-	}
+#include <renderPass.hpp>
 
-	for (const auto& availableFormat : available_formats) {
-		if (availableFormat.format == vk::Format::eB8G8R8A8Srgb && availableFormat.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear) {
-			return availableFormat;
-		}
-	}
-
-	return available_formats[0];
-}
 
 vk::PresentModeKHR chooseSwapPresentMode(std::vector<vk::PresentModeKHR> const & available_present_modes)
 {
@@ -49,12 +37,10 @@ vk::Extent2D chooseSwapExtent(VkSurfaceCapabilitiesKHR const &capabilities, int 
 		return actualExtent;
 	}
 }
-void SwapChain::create_swap_chain(VkSurfaceKHR surface, Context::QueueFamilyIndices const& indices,
-                                  const Context::SwapChainSupportDetails &swap_chain_support,
-                                  vk::ImageUsageFlags image_usage, int width, int height) {
+void SwapChain::create_swap_chain(Context const &context, vk::ImageUsageFlags image_usage, int width, int height) {
 
-
-	vk::SurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swap_chain_support.formats);
+    Context::SwapChainSupportDetails const& swap_chain_support = context.get_swap_chain_details();
+	vk::SurfaceFormatKHR surfaceFormat = context.chooseSwapSurfaceFormat();
 	vk::PresentModeKHR presentMode = chooseSwapPresentMode(swap_chain_support.presentModes);
 	_swap_chain_extent = chooseSwapExtent(swap_chain_support.capabilities, width, height);
 
@@ -65,7 +51,7 @@ void SwapChain::create_swap_chain(VkSurfaceKHR surface, Context::QueueFamilyIndi
 	}
 
 	vk::SwapchainCreateInfoKHR createInfo = {};
-	createInfo.surface = surface;
+	createInfo.surface = context.get_vk_surface();
 	createInfo.minImageCount = imageCount;
 	createInfo.imageFormat = surfaceFormat.format;
 	createInfo.imageColorSpace = surfaceFormat.colorSpace;
@@ -73,7 +59,7 @@ void SwapChain::create_swap_chain(VkSurfaceKHR surface, Context::QueueFamilyIndi
 	createInfo.imageArrayLayers = 1;
 	createInfo.imageUsage = image_usage; // can change
 
-
+    auto const& indices = context.get_queue_family_indice();
 	uint32_t queueFamilyIndices[] = { static_cast<uint32_t>(indices.graphics_family),
 									  static_cast<uint32_t>(indices.present_family) };
 
@@ -127,10 +113,12 @@ SwapChain::~SwapChain() {
 	_context->destroy(_swap_chain);
 }
 
-SwapChain::SwapChain(Context const &context, vk::ImageUsageFlags image_usage, int width, int height) : _context(context) {
-	create_swap_chain( context.get_vk_surface(), context.get_queue_family_indice(), context.get_swap_chain_details(), image_usage, width, height);
+SwapChain::SwapChain(Context const &context, RenderPass const &render_pass, vk::ImageUsageFlags image_usage, int width,
+                     int height) : _context(context) {
+    create_swap_chain(context, image_usage, width, height);
 	create_image_views();
-
+    create_depth_resources();
+    create_frame_buffer(render_pass);
 }
 
 vk::SwapchainKHR SwapChain::get_swap_chain() const {
@@ -150,7 +138,39 @@ const vk::Extent2D &SwapChain::get_swap_chain_extent() const {
 }
 
 void SwapChain::create_depth_resources() {
-    vk::Format depth_format = vk::Format::eD32Sfloat;
+    vk::Format depth_format = vk::Format::eD32SfloatS8Uint;
 
-    //_context.create_2d_image_views(, <#initializer#>, vk::ImageAspectFlags())
+    std::tie(_depth_image, _depth_image_memory) =  _context.create_image(
+            _swap_chain_extent.width,
+            _swap_chain_extent.height,
+            depth_format,
+            vk::ImageTiling::eOptimal,
+            vk::ImageUsageFlagBits::eDepthStencilAttachment,
+            vk::MemoryPropertyFlagBits::eDeviceLocal
+            );
+
+    _depth_image_view = _context.create_2d_image_views(*_depth_image, depth_format, vk::ImageAspectFlagBits::eDepth);
+
+
+}
+
+void SwapChain::create_frame_buffer(const RenderPass &render_pass) {
+    _swapchain_frame_buffers.resize(_swap_chain_image_views.size());
+    for (size_t i = 0; i < _swap_chain_image_views.size(); i++)
+    {
+        vk::ImageView attachments[] = {
+                *_swap_chain_image_views[i]
+        };
+
+        vk::FramebufferCreateInfo framebufferInfo;
+        framebufferInfo.renderPass = render_pass.get_renderpass();
+        framebufferInfo.attachmentCount = 1;
+        framebufferInfo.pAttachments = attachments;
+        framebufferInfo.width = _swap_chain_extent.width;
+        framebufferInfo.height = _swap_chain_extent.height;
+        framebufferInfo.layers = 1;
+        _swapchain_frame_buffers[i] = _context.get_device().createFramebufferUnique(framebufferInfo);
+
+    }
+
 }

@@ -105,8 +105,7 @@ void InitVulkan::createFrameBuffers()
 		framebufferInfo.height = _swapChainExtent.height;
 		framebufferInfo.layers = 1;
 		_swapchainFrameBuffer[i] = _context.get_device().createFramebuffer(framebufferInfo);
-		
-	
+
 	}
 
 }

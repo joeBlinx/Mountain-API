@@ -91,8 +91,6 @@ int main() {
                  "Vulkan Window",
                  devicesExtension};
 
-//    RenderPass render_pass = RenderPass::create<SubPass{subpass_attachment::COLOR, subpass_attachment::DEPTH}>(
-//            context.get_device(), context.chooseSwapSurfaceFormat().format);
     RenderPass render_pass{
         context,
         SubPass{subpass_attachment::COLOR}

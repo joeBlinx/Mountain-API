@@ -54,9 +54,11 @@ struct Context
     create_image(uint32_t width, uint32_t height, vk::Format format, vk::ImageTiling tiling, const vk::ImageUsageFlags &usage,
                  vk::MemoryPropertyFlagBits)const;
 
+    vk::SurfaceFormatKHR chooseSwapSurfaceFormat() const;
+
 private:
 	 std::vector<const char*> const _validationLayers = {
-			"VK_LAYER_LUNARG_standard_validation"
+			"VK_LAYER_KHRONOS_validation"
 	};
 #ifdef NDEBUG
 	 static bool constexpr _enableValidationLayer = false;

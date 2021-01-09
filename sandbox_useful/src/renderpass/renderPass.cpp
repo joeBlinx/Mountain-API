@@ -46,7 +46,7 @@ vk::AttachmentDescription fill_color(SubPass const& subpass, vk::Format const& c
     return color_attachment;
 }
 
-RenderPass::RenderPass(const Context &context, const SubPass &sub_pass) {
+RenderPass::RenderPass(const Context &context, const SubPass &sub_pass) :_device(context.get_device()){
 
     auto const& swap_chain_image_format = context.chooseSwapSurfaceFormat().format;
     auto const depth_format = vk::Format::eD32SfloatS8Uint;
