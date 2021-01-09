@@ -86,22 +86,28 @@ int main() {
 	int constexpr width = 1366;
 	int constexpr height = 768;
 
-	Context context{width,
+    Context context{width,
                  height,
                  "Vulkan Window",
                  devicesExtension};
-	SwapChain swap_chain{
+
+//    RenderPass render_pass = RenderPass::create<SubPass{subpass_attachment::COLOR, subpass_attachment::DEPTH}>(
+//            context.get_device(), context.chooseSwapSurfaceFormat().format);
+    RenderPass render_pass{
+        context,
+        SubPass{subpass_attachment::COLOR}
+    };
+
+    SwapChain swap_chain{
             context,
+            render_pass,
             vk::ImageUsageFlagBits::eColorAttachment,
             width,
             height
     };
 
-	RenderPass render_pass = RenderPass::create<SubPass{subpass_attachment::COLOR}>(
-			context.get_device(), swap_chain.get_swap_chain_image_format());
 
-
-	std::array vertices{
+    std::array vertices{
             Vertex{{-0.5f, -0.5f, 0.f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
            Vertex {{0.5f, -0.5f, 0.f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
             Vertex{{0.5f, 0.5f, 0.f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},

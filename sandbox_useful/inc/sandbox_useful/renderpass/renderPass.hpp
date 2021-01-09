@@ -10,6 +10,7 @@
 #include <array>
 #include "utils/log.hpp"
 #include <utility>
+struct Context;
 enum subpass_attachment: unsigned {
 	COLOR = 1u,
 	DEPTH = 1u << 2u,
@@ -28,12 +29,14 @@ struct RenderPass {
 
 	template<SubPass ...attachment>
 	static RenderPass create(vk::Device device, vk::Format const &swap_chain_image_format);
-	vk::RenderPass get_renderpass() const {return _renderpass ;}
+	vk::RenderPass const& get_renderpass() const {return _renderpass ;}
+	RenderPass(Context const& context, const SubPass &sub_pass);
 private:
 
 	vk::Device _device = nullptr;
 	RenderPass(vk::Device device, VkRenderPassCreateInfo renderpass_info);
-	VkRenderPass _renderpass = nullptr;
+	vk::RenderPass _renderpass;
+	unsigned color_depth_stencil = 0;
 };
 
 
@@ -136,25 +139,13 @@ std::array<std::pair<vk::AttachmentDescription, vk::AttachmentDescription> , siz
 			vk::ImageLayout::eUndefined
 	};
 
-
-
 	return {apply_for_all_case<attachment, wrapper>(attachment_desc, color, depth)...};
 }
 template<SubPass... attachment>
 RenderPass RenderPass::create(vk::Device device, vk::Format const &swap_chain_image_format) {
 
-	//constexpr auto all_attachment_ref = pack<attachment.attachment...>();
-    auto attachments_desc = fill_attachments<attachment...>(swap_chain_image_format, swap_chain_image_format);
 
-//	vk::AttachmentDescription colorAttachment = {};
-//	colorAttachment.format = swap_chain_image_format;
-//	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-//	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-//	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-//	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-//	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-//	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-//	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    auto attachments_desc = fill_attachments<attachment...>(swap_chain_image_format, swap_chain_image_format);
 
 	VkAttachmentReference colorAttachmentRef = {};
 	colorAttachmentRef.attachment = 0;
