@@ -83,10 +83,6 @@ InitVulkan::~InitVulkan() {
 
     _context.get_device().free(_commandPool, _commandBuffers);
 
-	for (auto &framebuffer : _swapchainFrameBuffer) {
-		_context.get_device().destroy(framebuffer);
-	}
-
 	for(auto &descriptor_set_layout: _descriptor_set_layouts){
 	    _context->destroy(descriptor_set_layout);
 	}
