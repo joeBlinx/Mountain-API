@@ -93,7 +93,7 @@ int main() {
 
     RenderPass render_pass{
         context,
-        SubPass{subpass_attachment::COLOR}
+        SubPass{subpass_attachment::COLOR, subpass_attachment::DEPTH}
     };
 
     SwapChain swap_chain{
