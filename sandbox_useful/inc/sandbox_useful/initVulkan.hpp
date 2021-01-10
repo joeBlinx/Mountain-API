@@ -116,7 +116,7 @@ void InitVulkan::createCommandBuffers(PipelineData<T> const& pipeline_data)
         auto& vertex_buffer = pipeline_data.vertices;
 //        for(auto const& vertex_buffer : buffers){
             _commandBuffers[i].bindVertexBuffers(0, 1, &vertex_buffer.get_buffer(), std::vector<vk::DeviceSize>{0}.data());
-            _commandBuffers[i].bindIndexBuffer(vertex_buffer.get_buffer(), vertex_buffer.get_indices_offset(), vk::IndexType::eUint16);
+            _commandBuffers[i].bindIndexBuffer(vertex_buffer.get_buffer(), vertex_buffer.get_indices_offset(), vk::IndexType::eUint32);
             if(! _descriptor_sets.empty()) {
                 _commandBuffers[i].bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
                                                       pipeline_data.graphics_pipeline.get_pipeline_layout(),

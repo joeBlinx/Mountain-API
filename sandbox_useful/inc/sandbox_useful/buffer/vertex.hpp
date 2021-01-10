@@ -58,7 +58,7 @@ namespace buffer{
         {a.data()};
     };
     struct vertex{
-        vertex(Context const& device, vertex_description&& description,  Container auto && vertices, std::vector<uint16_t>&& indices);
+        vertex(Context const& device, vertex_description&& description, Container auto && vertices, std::vector<uint32_t> &&indices);
 
         vk::Buffer const &get_buffer() const {return *_buffer;}
         uint32_t get_indices_count() const {return _indices_count;}
