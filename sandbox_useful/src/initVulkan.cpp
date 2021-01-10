@@ -28,7 +28,7 @@ InitVulkan::InitVulkan(const Context &context, const SwapChain &swap_chain, Rend
         _commandPool(context.get_command_pool()),
         _graphicsQueue(context.get_graphics_queue()),
         _presentQueue(context.get_present_queue()),
-        _renderpass(renderpass.get_renderpass()){
+        _renderpass(renderpass){
 
     allocate_command_buffer();
     create_descriptor_pool(nb_uniform);

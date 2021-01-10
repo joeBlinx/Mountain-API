@@ -112,7 +112,8 @@ void GraphicsPipeline::init(const SwapChain &swap_chain, const RenderPass &rende
     pipelineInfo.pViewportState = &viewportState.viewport_info;
     pipelineInfo.pRasterizationState = &rasterizer;
     pipelineInfo.pMultisampleState = &multisampling;
-    pipelineInfo.pDepthStencilState = &depth_stencil; // Optional nostencil for now
+    pipelineInfo.pDepthStencilState =
+            render_pass.has_depth()?&depth_stencil:nullptr; // Optional nostencil for now
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = nullptr; // Optional
     pipelineInfo.layout = *_pipeline_layout;

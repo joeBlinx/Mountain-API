@@ -65,7 +65,7 @@ private:
 
 	vk::Queue  _graphicsQueue;
 	vk::Queue  _presentQueue;
-	vk::RenderPass _renderpass;
+	RenderPass const& _renderpass;
 
 	vk::Semaphore _imageAvailableSemaphore;
 	vk::Semaphore _renderFinishedSemaphore;
@@ -95,18 +95,21 @@ void InitVulkan::createCommandBuffers(PipelineData<T> const& pipeline_data)
         /* may be can be put into a function */
         VkRenderPassBeginInfo renderPassInfo {};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassInfo.renderPass = _renderpass;
+        renderPassInfo.renderPass = _renderpass.get_renderpass();
         renderPassInfo.framebuffer = _swapchainFrameBuffer[i];
 
         renderPassInfo.renderArea.offset = { 0, 0 };
         renderPassInfo.renderArea.extent = _swapChainExtent;
 
-        VkClearValue clearColor [] = {
-                { .color{0.5f, 0.5f, 0.5f, 1.0f} },
-                {.depthStencil {1.f, 0}}
+        std::vector<VkClearValue> clear_color{
+                { .color{0.5f, 0.5f, 0.5f, 1.0f} }
         };
-        renderPassInfo.clearValueCount = std::size(clearColor);
-        renderPassInfo.pClearValues = clearColor;
+        if(_renderpass.has_depth()){
+            clear_color.emplace_back(
+                    VkClearValue{.depthStencil {1.f, 0}});
+        }
+        renderPassInfo.clearValueCount = std::size(clear_color);
+        renderPassInfo.pClearValues = clear_color.data();
 
         vkCmdBeginRenderPass(_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         vkCmdBindPipeline(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_data.graphics_pipeline.get_pipeline()); // bind the pipeline

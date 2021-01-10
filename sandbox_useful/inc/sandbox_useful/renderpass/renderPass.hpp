@@ -29,6 +29,7 @@ struct RenderPass {
 
 	template<SubPass ...attachment>
 	static RenderPass create(vk::Device device, vk::Format const &swap_chain_image_format);
+    bool has_depth() const {return subpass_attachment::DEPTH & _color_depth_stencil;}
 	vk::RenderPass const& get_renderpass() const {return _renderpass ;}
 	RenderPass(Context const& context, const SubPass &sub_pass);
 private:
@@ -36,7 +37,7 @@ private:
 	vk::Device _device = nullptr;
 	RenderPass(vk::Device device, VkRenderPassCreateInfo renderpass_info);
 	vk::RenderPass _renderpass;
-	unsigned color_depth_stencil = 0;
+	unsigned _color_depth_stencil = 0;
 };
 
 

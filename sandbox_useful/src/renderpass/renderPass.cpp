@@ -46,7 +46,8 @@ vk::AttachmentDescription fill_color(vk::Format const& color){
     return color_attachment;
 }
 
-RenderPass::RenderPass(const Context &context, const SubPass &sub_pass) :_device(context.get_device()){
+RenderPass::RenderPass(const Context &context, const SubPass &sub_pass) :_device(context.get_device()),
+_color_depth_stencil(sub_pass.attachment_color | sub_pass.attachment_depth_stencil){
 
     auto const& swap_chain_image_format = context.chooseSwapSurfaceFormat().format;
     auto const depth_format = vk::Format::eD32SfloatS8Uint;

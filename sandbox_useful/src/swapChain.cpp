@@ -104,7 +104,9 @@ SwapChain::SwapChain(Context const &context, RenderPass const &render_pass, vk::
                      int height) : _context(context) {
     create_swap_chain(context, image_usage, width, height);
 	create_image_views();
-    create_depth_resources();
+	if(render_pass.has_depth()) {
+        create_depth_resources();
+    }
     create_frame_buffer(render_pass);
 }
 
@@ -145,15 +147,17 @@ void SwapChain::create_frame_buffer(const RenderPass &render_pass) {
     _swapchain_frame_buffers.resize(_swap_chain_image_views.size());
     for (size_t i = 0; i < _swap_chain_image_views.size(); i++)
     {
-        vk::ImageView attachments[] = {
-                *_swap_chain_image_views[i],
-                *_depth_image_view
+        std::vector<vk::ImageView> attachments{
+            *_swap_chain_image_views[i]
         };
+        if(render_pass.has_depth()){
+            attachments.emplace_back(*_depth_image_view);
+        }
 
         vk::FramebufferCreateInfo framebufferInfo;
         framebufferInfo.renderPass = render_pass.get_renderpass();
         framebufferInfo.attachmentCount = std::size(attachments);
-        framebufferInfo.pAttachments = attachments;
+        framebufferInfo.pAttachments = attachments.data();
         framebufferInfo.width = _swap_chain_extent.width;
         framebufferInfo.height = _swap_chain_extent.height;
         framebufferInfo.layers = 1;
