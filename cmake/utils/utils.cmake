@@ -39,15 +39,7 @@ endfunction()
 function(download_dependencies)
 	list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/module)
 	if(${USE_GLFW})
-		include(FetchContent)
-		FetchContent_Declare(
-				glfw_content
-				GIT_REPOSITORY https://github.com/glfw/glfw.git
-				GIT_TAG        3.3
-		)
-
-		message(STATUS "DOWNLOAD : GLFW3")
-		FetchContent_MakeAvailable(glfw_content)
+		set(_window_managment_lib glfw/3.3.2)
 
 	else(${USE_SDL2})
 		find_package(SDL2 REQUIRED)
@@ -63,7 +55,9 @@ function(download_dependencies)
 
 	include(${CMAKE_BINARY_DIR}/conan.cmake)
 
-	conan_cmake_run(REQUIRES glm/0.9.9.8
+	conan_cmake_run(REQUIRES
+			${_window_managment_lib}
+			glm/0.9.9.8
 			stb/20200203
 			BASIC_SETUP CMAKE_TARGETS
 			BUILD missing)

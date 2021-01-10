@@ -17,7 +17,7 @@ if(${USE_GLFW})
             PRIVATE
             glfw/window.cpp
             glfw/window.h)
-    target_link_libraries(window PUBLIC glfw)
+    target_link_libraries(window PUBLIC CONAN_PKG::glfw)
 elseif(${USE_SDL2})
     target_compile_definitions(window
             PUBLIC
