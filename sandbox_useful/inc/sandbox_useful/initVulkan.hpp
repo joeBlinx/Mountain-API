@@ -73,8 +73,6 @@ private:
 
 	void createSemaphores();
 
-	void createFrameBuffers();
-
     void allocate_command_buffer();
 
     void create_descriptor_pool(int nb_uniform);

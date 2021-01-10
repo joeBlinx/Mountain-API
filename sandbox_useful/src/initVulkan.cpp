@@ -24,11 +24,11 @@ InitVulkan::InitVulkan(const Context &context, const SwapChain &swap_chain, Rend
         _swapChainImageViews(swap_chain.get_swap_chain_image_views()),
         _swapChainExtent(swap_chain.get_swap_chain_extent()),
         _context(context),
+        _swapchainFrameBuffer(swap_chain.get_framebuffers()),
         _commandPool(context.get_command_pool()),
         _graphicsQueue(context.get_graphics_queue()),
         _presentQueue(context.get_present_queue()),
         _renderpass(renderpass.get_renderpass()){
-    createFrameBuffers();
 
     allocate_command_buffer();
     create_descriptor_pool(nb_uniform);
@@ -93,28 +93,6 @@ InitVulkan::~InitVulkan() {
 
 }
 
-//need parameter
-void InitVulkan::createFrameBuffers()
-{
-	_swapchainFrameBuffer.resize(_swapChainImageViews.size());
-	for (size_t i = 0; i < _swapChainImageViews.size(); i++)
-	{
-		vk::ImageView attachments[] = {
-			*_swapChainImageViews[i]
-		};
-
-		vk::FramebufferCreateInfo framebufferInfo;
-		framebufferInfo.renderPass = _renderpass;
-		framebufferInfo.attachmentCount = 1;
-		framebufferInfo.pAttachments = attachments;
-		framebufferInfo.width = _swapChainExtent.width;
-		framebufferInfo.height = _swapChainExtent.height;
-		framebufferInfo.layers = 1;
-		_swapchainFrameBuffer[i] = _context.get_device().createFramebuffer(framebufferInfo);
-
-	}
-
-}
 //unique by software
 
 void InitVulkan::createSemaphores()

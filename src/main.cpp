@@ -93,7 +93,8 @@ int main() {
 
     RenderPass render_pass{
         context,
-        SubPass{subpass_attachment::COLOR}
+        SubPass{subpass_attachment::COLOR,
+                subpass_attachment::DEPTH}
     };
 
     SwapChain swap_chain{
@@ -171,7 +172,7 @@ int main() {
                          {
                             {
                 {glm::scale(glm::mat4{1.}, glm::vec3{1.})}},
-                            {{glm::translate(glm::mat4{1.}, glm::vec3{0., -0.5, 0.})}}
+                            {{glm::translate(glm::mat4{1.}, glm::vec3{0., 0., -0.5})}}
                          }
                         }
     };

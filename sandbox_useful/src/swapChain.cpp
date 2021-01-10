@@ -90,19 +90,6 @@ void SwapChain::create_image_views() {
 	_swap_chain_image_views.resize(_swap_chain_images.size());
 	for (size_t i = 0; i < _swap_chain_image_views.size(); i++)
 	{
-		vk::ImageViewCreateInfo createInfo;
-		createInfo.image = _swap_chain_images[i];
-		createInfo.viewType = vk::ImageViewType::e2D;
-		createInfo.format = _swap_chain_image_format;
-		createInfo.components.r = vk::ComponentSwizzle::eIdentity;
-		createInfo.components.g = vk::ComponentSwizzle::eIdentity;
-		createInfo.components.b = vk::ComponentSwizzle::eIdentity;
-		createInfo.components.a = vk::ComponentSwizzle::eIdentity;
-		createInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
-		createInfo.subresourceRange.baseMipLevel = 0;
-		createInfo.subresourceRange.levelCount = 1;
-		createInfo.subresourceRange.baseArrayLayer = 0;
-		createInfo.subresourceRange.layerCount = 1;
 		_swap_chain_image_views[i] = _context.create_2d_image_views(_swap_chain_images[i],
                                                                     _swap_chain_image_format, vk::ImageAspectFlagBits::eColor);
 
@@ -159,12 +146,13 @@ void SwapChain::create_frame_buffer(const RenderPass &render_pass) {
     for (size_t i = 0; i < _swap_chain_image_views.size(); i++)
     {
         vk::ImageView attachments[] = {
-                *_swap_chain_image_views[i]
+                *_swap_chain_image_views[i],
+                *_depth_image_view
         };
 
         vk::FramebufferCreateInfo framebufferInfo;
         framebufferInfo.renderPass = render_pass.get_renderpass();
-        framebufferInfo.attachmentCount = 1;
+        framebufferInfo.attachmentCount = std::size(attachments);
         framebufferInfo.pAttachments = attachments;
         framebufferInfo.width = _swap_chain_extent.width;
         framebufferInfo.height = _swap_chain_extent.height;
@@ -173,4 +161,13 @@ void SwapChain::create_frame_buffer(const RenderPass &render_pass) {
 
     }
 
+}
+
+std::vector<vk::Framebuffer> SwapChain::get_framebuffers() const {
+    std::vector<vk::Framebuffer> framebuffers(_swapchain_frame_buffers.size());
+    std::ranges::transform(_swapchain_frame_buffers, begin(framebuffers),
+                           [](auto const& uniqueframebuffers){
+       return *uniqueframebuffers;
+    });
+    return framebuffers;
 }
