@@ -59,6 +59,7 @@ function(download_dependencies)
 			${_window_managment_lib}
 			glm/0.9.9.8
 			stb/20200203
+			tinyobjloader/1.0.6
 			BASIC_SETUP CMAKE_TARGETS
 			BUILD missing)
 

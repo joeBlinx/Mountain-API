@@ -12,6 +12,7 @@
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
 #include "sandbox_useful/descriptor_setlayout_binding/descriptorset_layout.h"
+#include "sandbox_useful/load_model.h"
 struct vec2{
     float a;
     float b;
@@ -20,9 +21,9 @@ struct vec3{
     float a, b, c;
 };
 struct Vertex{
-    vec3 position;
-    vec3 color;
-    vec2 tex_coord;
+    glm::vec3 position;
+    glm::vec3 color;
+    glm::vec2 tex_coord;
 };
 struct Model{
     glm::mat4 model {1};
@@ -112,14 +113,14 @@ int main() {
             Vertex{{-0.5f, 0.5f, 0.f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}
 
 	};
-
-
+    std::vector<uint32_t> indices {0, 1, 2, 2, 3, 0};
+    auto [vertices_3d, indices_3d] = model::load_obj(std::filesystem::path("assets/Crate/Crate1.obj"));
     std::vector<buffer::vertex> vertex_buffers;
     vertex_buffers.emplace_back(buffer::vertex(context,
            buffer::vertex_description(0, 0,
-                       CLASS_DESCRIPTION(Vertex, position, color, tex_coord)),
-                               vertices,
-                               {0, 1, 2, 2, 3, 0}
+                       model::Vertex::get_format_offset()),
+                               vertices_3d,
+                               std::move(indices_3d)
             ));
 
 
@@ -148,6 +149,7 @@ int main() {
     );
 
     buffer::image2d statue_image({context, "assets/image/statue.jpg"});
+    buffer::image2d viking_image({context, "assets/image/viking_room.png"});
     image::sampler sampler(context);
     auto layouts = std::vector{descriptor_layout, descriptor_layout_frag};
     GraphicsPipeline pipeline(context,
@@ -165,13 +167,12 @@ int main() {
     buffer::uniform<float> uniform_color(context, swap_chain.get_swap_chain_image_views().size());
     init.update_descriptor_set(0, 2, uniform_vp);
     init.update_descriptor_set(1, 0, uniform_color);
-    init.update_descriptor_set(0, 1, statue_image, sampler);
+    init.update_descriptor_set(0, 1, viking_image, sampler);
     move_rectangle move{init,
                         {vertex_buffers[0], pipeline,
                          {
                             {
-                {glm::scale(glm::mat4{1.}, glm::vec3{1.})}},
-                            {{glm::translate(glm::mat4{1.}, glm::vec3{0., 0., -0.5})}}
+                {}}
                          }
                         }
     };
