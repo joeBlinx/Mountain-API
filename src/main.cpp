@@ -106,14 +106,6 @@ int main() {
     };
 
 
-    std::array vertices{
-            Vertex{{-0.5f, -0.5f, 0.f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-           Vertex {{0.5f, -0.5f, 0.f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-            Vertex{{0.5f, 0.5f, 0.f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-            Vertex{{-0.5f, 0.5f, 0.f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}
-
-	};
-    std::vector<uint32_t> indices {0, 1, 2, 2, 3, 0};
     auto [vertices_3d, indices_3d] = model::load_obj(std::filesystem::path("assets/model/viking_room.obj"));
     std::vector<buffer::vertex> vertex_buffers;
     vertex_buffers.emplace_back(buffer::vertex(context,
@@ -122,7 +114,6 @@ int main() {
                                vertices_3d,
                                std::move(indices_3d)
             ));
-
 
 
 	PushConstant<Model> push_vertex{

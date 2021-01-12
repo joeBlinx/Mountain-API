@@ -6,7 +6,7 @@
 #include "load_model.h"
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
-
+#include <unordered_map>
 namespace model{
     std::pair<std::vector<Vertex>, std::vector<uint32_t>> load_obj(fs::path const& model_path){
         tinyobj::attrib_t attrib;
@@ -19,21 +19,28 @@ namespace model{
         if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, model_path.c_str())) {
             throw std::runtime_error(err);
         }
+        std::unordered_map<Vertex, uint32_t> unique_vertices;
         for(auto& shape: shapes){
             for(auto &index : shape.mesh.indices){
-                indices.push_back(indices.size());
-                vertices.emplace_back(Vertex{
-                    .pos{
-                            attrib.vertices[3 * index.vertex_index + 0],
-                            attrib.vertices[3 * index.vertex_index + 1],
-                            attrib.vertices[3 * index.vertex_index + 2]
-                    },
-                    .color{1.0f, 1.0f, 1.0f},
-                    .tex_coord{
-                            attrib.texcoords[2 * index.texcoord_index + 0],
-                            1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
-                    }
-                });
+                Vertex vertex{
+                        .pos{
+                                attrib.vertices[3 * index.vertex_index + 0],
+                                attrib.vertices[3 * index.vertex_index + 1],
+                                attrib.vertices[3 * index.vertex_index + 2]
+                        },
+                        .color{1.0f, 1.0f, 1.0f},
+                        .tex_coord{
+                                attrib.texcoords[2 * index.texcoord_index + 0],
+                                1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+                        }
+                };
+                if (unique_vertices.count(vertex) == 0) {
+                    unique_vertices[vertex] = static_cast<uint32_t>(vertices.size());
+                    vertices.push_back(vertex);
+                }
+
+                indices.push_back(unique_vertices[vertex]);
+
             }
         }
 
