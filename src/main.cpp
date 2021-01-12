@@ -114,7 +114,7 @@ int main() {
 
 	};
     std::vector<uint32_t> indices {0, 1, 2, 2, 3, 0};
-    auto [vertices_3d, indices_3d] = model::load_obj(std::filesystem::path("assets/Crate/Crate1.obj"));
+    auto [vertices_3d, indices_3d] = model::load_obj(std::filesystem::path("assets/model/viking_room.obj"));
     std::vector<buffer::vertex> vertex_buffers;
     vertex_buffers.emplace_back(buffer::vertex(context,
            buffer::vertex_description(0, 0,

@@ -76,7 +76,7 @@ namespace buffer{
 
         uint32_t _indices_count;
         vertex_description _description;
-        uint8_t _indices_offset;
+        uint32_t _indices_offset;
     };
 
 #include "sandbox_useful/buffer/vertex.tpp"

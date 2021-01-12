@@ -8,44 +8,6 @@
 #include "tiny_obj_loader.h"
 
 namespace model{
-    static const std::vector<glm::vec3> g_vertex_buffer_data {
-            {-1.0f,-1.0f,-1.0f}, // triangle 1 : begi}n
-             {-1.0f,-1.0f, 1.0f},
-              {-1.0f, 1.0f, 1.0f}, // triangle 1 : en}d
-               {1.0f, 1.0f,-1.0f}, // triangle 2 : begi}n
-                {-1.0f,-1.0f,-1.0f},
-                 {-1.0f, 1.0f,-1.0f}, // triangle 2 : en}d
-                  {1.0f,-1.0f, 1.0f},
-                   {-1.0f,-1.0f,-1.0f},
-                    {1.0f,-1.0f,-1.0f},
-                     {1.0f, 1.0f,-1.0f},
-                      {1.0f,-1.0f,-1.0f},
-                       {-1.0f,-1.0f,-1.0f},
-                        {-1.0f,-1.0f,-1.0f},
-                         {-1.0f, 1.0f, 1.0f},
-                          {-1.0f, 1.0f,-1.0f},
-                           {1.0f,-1.0f, 1.0f},
-                            {-1.0f,-1.0f, 1.0f},
-                             {-1.0f,-1.0f,-1.0f},
-                              {-1.0f, 1.0f, 1.0f},
-                               {-1.0f,-1.0f, 1.0f},
-                                {1.0f,-1.0f, 1.0f},
-                                 {1.0f, 1.0f, 1.0f},
-                                  {1.0f,-1.0f,-1.0f},
-                                   {1.0f, 1.0f,-1.0f},
-                                    {1.0f,-1.0f,-1.0f},
-                                     {1.0f, 1.0f, 1.0f},
-                                      {1.0f,-1.0f, 1.0f},
-                                       {1.0f, 1.0f, 1.0f},
-                                        {1.0f, 1.0f,-1.0f},
-                                         {-1.0f, 1.0f,-1.0f},
-                                          {1.0f, 1.0f, 1.0f},
-                                           {-1.0f, 1.0f,-1.0f},
-                                            {-1.0f, 1.0f, 1.0f},
-                                             {1.0f, 1.0f, 1.0f},
-                                              {-1.0f, 1.0f, 1.0f},
-                                               {1.0f,-1.0f, 1.0f}
-    };
     std::pair<std::vector<Vertex>, std::vector<uint32_t>> load_obj(fs::path const& model_path){
         tinyobj::attrib_t attrib;
         std::vector<tinyobj::shape_t> shapes;
@@ -72,22 +34,6 @@ namespace model{
                             attrib.texcoords[2 * index.texcoord_index + 1]
                     }
                 });
-            }
-        }
-        vertices.clear();
-        indices.clear();
-        int i = 0;
-        for(auto &vertex : g_vertex_buffer_data){
-            indices.emplace_back(indices.size());
-            vertices.emplace_back(
-                    Vertex{
-                        .pos = vertex,
-                        .color {1.0f, 1.0f, 1.0f},
-                        .tex_coord{1.0f, 1.0f}
-                    }
-                    );
-            if(i++ >=11){
-                break;
             }
         }
 

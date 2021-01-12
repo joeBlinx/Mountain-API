@@ -36,7 +36,8 @@ vertex::vertex(Context const &device, vertex_description&& description, Containe
     vk::DeviceSize indices_buffer_size = indices.size() * sizeof(indices[0]);
     auto[staging_memory, staging_buffer] = _device.create_buffer_and_memory(buffer_size + indices_buffer_size,
                                                                             vk::BufferUsageFlagBits::eTransferSrc,
-                                                                            vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+                                                                            vk::MemoryPropertyFlagBits::eHostVisible
+                                                                            | vk::MemoryPropertyFlagBits::eHostCoherent);
     {
         void* data{};
         utils::raii_helper::MapMemory raii_mapping(vk_device, staging_memory, 0, buffer_size + indices_buffer_size, &data);
