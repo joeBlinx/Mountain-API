@@ -13,6 +13,8 @@ apt install spirv-tools -y && \
 apt install libx11-dev xorg-dev libglu1-mesa-dev -y &&\
 apt install glslang-tools -y &&\
 apt install -y vulkan-sdk
+RUN apt-get install -y --no-install-recommends libx11-xcb-dev libxcb-dri3-dev libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-render-util0-dev libxcb-render0-dev libxcb-shape0-dev libxcb-sync-dev libxcb-util-dev libxcb-xfixes0-dev libxcb-xinerama0-dev libxcb-xkb-dev
+#the line above is for glfw
 RUN apt install -y rsync gdb
 RUN apt install -y python3-pip && \
 python3 -m pip install ninja &&\
