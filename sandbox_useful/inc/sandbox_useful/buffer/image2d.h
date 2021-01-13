@@ -22,9 +22,11 @@ namespace buffer {
         vk::UniqueImage _image;
         vk::UniqueImageView  _image_view;
 
-        void transition_image_layout(Context const &context, vk::ImageLayout old_layout, vk::ImageLayout new_layout,
-                                     uint32_t mipmap_levels);
+        void transition_image_layout(Context const &context, vk::ImageLayout old_layout,
+                                     vk::ImageLayout new_layout);
         void create_image_views(Context const &context);
+
+        void generate_mip_map(Context const &context, uint32_t tex_width, uint32_t tex_height);
 
     };
 }
