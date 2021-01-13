@@ -146,6 +146,10 @@ int main() {
     GraphicsPipeline pipeline(context,
                               swap_chain,
                               render_pass,
+                              std::array{
+                                  shader{"trianglevert.spv", vk::ShaderStageFlagBits::eVertex},
+                                  shader{"trianglefrag.spv", vk::ShaderStageFlagBits::eFragment}
+                              },
                               vertex_buffers,
                               layouts,
                               push_vertex, push_frag);

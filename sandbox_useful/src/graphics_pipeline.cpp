@@ -7,7 +7,7 @@
 #include "context.hpp"
 #include "swapChain.hpp"
 #include "renderPass.hpp"
-vk::PipelineShaderStageCreateInfo createShaderInfo(vk::ShaderModule & module, vk::ShaderStageFlagBits type);
+
 vk::PipelineInputAssemblyStateCreateInfo createAssembly(vk::PrimitiveTopology topology);
 //need parameter in further modification
 vk::PipelineRasterizationStateCreateInfo createRasterizer();
@@ -62,20 +62,8 @@ private:
 
 
 void GraphicsPipeline::init(const SwapChain &swap_chain, const RenderPass &render_pass,
-                            const std::vector<buffer::vertex> &buffers) {
-    //TODO: we need to be able to change the shader file
-    std::vector<char> vertex = utils::readFile("trianglevert.spv");
-    std::vector<char> fragment = utils::readFile("trianglefrag.spv");
-
-    auto vertexModule = createShaderModule(vertex);
-    auto fragmentModule = createShaderModule(fragment);
-
-    auto pipelineVertex = createShaderInfo(vertexModule,
-                                           vk::ShaderStageFlagBits::eVertex);
-    auto pipelineFrag = createShaderInfo(fragmentModule,
-                                         vk::ShaderStageFlagBits::eFragment);
-
-    std::vector<vk::PipelineShaderStageCreateInfo> shaderStage{pipelineVertex, pipelineFrag};
+                            const std::vector<buffer::vertex> &buffers,
+                            std::vector<vk::PipelineShaderStageCreateInfo> &&shaders_stages) {
 
     VertexInfo vertex_info(buffers);
 
@@ -98,14 +86,13 @@ void GraphicsPipeline::init(const SwapChain &swap_chain, const RenderPass &rende
     auto colorBlendAttachement = createColorBlendAttachement();
     auto colorBlending = createColorBlendState(colorBlendAttachement);
 
-    std::array shaderStages{ pipelineVertex, pipelineFrag };
 
     /**can be factorised in function
     */
 
     vk::GraphicsPipelineCreateInfo pipelineInfo  {};
-    pipelineInfo.stageCount = shaderStages.size();
-    pipelineInfo.pStages = shaderStages.data();
+    pipelineInfo.stageCount = shaders_stages.size();
+    pipelineInfo.pStages = shaders_stages.data();
 
     pipelineInfo.pVertexInputState = &vertex_info.create_info;
     pipelineInfo.pInputAssemblyState = &inputAssembly;
@@ -128,8 +115,13 @@ void GraphicsPipeline::init(const SwapChain &swap_chain, const RenderPass &rende
         return temp_pipeline;
     };
     _pipeline = create_pipeline();
-    vkDestroyShaderModule(_device.get_device(), fragmentModule, nullptr);
-    vkDestroyShaderModule(_device.get_device(), vertexModule, nullptr);
+    std::ranges::for_each(
+            shaders_stages,
+            [this](auto const& shader_stage){
+                vkDestroyShaderModule(_device.get_device(), shader_stage.module, nullptr);
+            }
+            );
+
 }
 
 
