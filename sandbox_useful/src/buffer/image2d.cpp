@@ -59,10 +59,6 @@ buffer::image2d::image2d(Context const &context, fs::path const &image_path, uin
                                  tex_width,
                                  tex_height);
 
-//    transition_image_layout(
-//            context,
-//            vk::ImageLayout::eTransferDstOptimal,
-//            vk::ImageLayout::eShaderReadOnlyOptimal, _mipmap_levels);
     generate_mip_map(context, tex_width, tex_height);
 }
 
@@ -184,6 +180,7 @@ void buffer::image2d::generate_mip_map(Context const &context, uint32_t tex_widt
         if (mip_width > 1) mip_width /= 2;
         if (mip_height > 1) mip_height /= 2;
     }
+    // we do a last transition because in the loop we doesn't handle the last mipmap
     barrier.subresourceRange.baseMipLevel = _mipmap_levels - 1;
     barrier.oldLayout = vk::ImageLayout::eTransferDstOptimal;
     barrier.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
