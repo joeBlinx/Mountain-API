@@ -399,14 +399,15 @@ void Context::copy_buffer_to_image(vk::Buffer buffer, vk::Image image, uint32_t 
 }
 
 vk::UniqueImageView
-Context::create_2d_image_views(vk::Image image, const vk::Format &format, vk::ImageAspectFlags aspectFlags) const{
+Context::create_2d_image_views(vk::Image image, const vk::Format &format, vk::ImageAspectFlags aspectFlags,
+                               uint32_t mipmap_levels) const{
     vk::ImageViewCreateInfo view_info{};
     view_info.image = image;
     view_info.viewType = vk::ImageViewType::e2D;
     view_info.format = format;
     view_info.subresourceRange.aspectMask = aspectFlags;
     view_info.subresourceRange.baseMipLevel = 0;
-    view_info.subresourceRange.levelCount = 1;
+    view_info.subresourceRange.levelCount = mipmap_levels;
     view_info.subresourceRange.baseArrayLayer = 0;
     view_info.subresourceRange.layerCount = 1;
 
@@ -415,7 +416,7 @@ Context::create_2d_image_views(vk::Image image, const vk::Format &format, vk::Im
 
 std::pair<vk::UniqueImage, vk::UniqueDeviceMemory>
 Context::create_image(uint32_t width, uint32_t height, vk::Format format, vk::ImageTiling tiling,
-					  const vk::ImageUsageFlags &usage, vk::MemoryPropertyFlagBits) const{
+                      const vk::ImageUsageFlags &usage, vk::MemoryPropertyFlagBits, uint32_t mipmap_levels) const{
     vk::UniqueImage image;
     vk::UniqueDeviceMemory image_memory;
     vk::ImageCreateInfo image_info;
@@ -423,7 +424,7 @@ Context::create_image(uint32_t width, uint32_t height, vk::Format format, vk::Im
     image_info.extent.width = width;
     image_info.extent .height = height;
     image_info.extent .depth = 1;
-    image_info.mipLevels = 1;
+    image_info.mipLevels = mipmap_levels;
     image_info.arrayLayers = 1;
     image_info.format = format;
     image_info.tiling = tiling;

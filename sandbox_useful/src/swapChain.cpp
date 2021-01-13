@@ -91,7 +91,8 @@ void SwapChain::create_image_views() {
 	for (size_t i = 0; i < _swap_chain_image_views.size(); i++)
 	{
 		_swap_chain_image_views[i] = _context.create_2d_image_views(_swap_chain_images[i],
-                                                                    _swap_chain_image_format, vk::ImageAspectFlagBits::eColor);
+                                                                    _swap_chain_image_format,
+                                                                    vk::ImageAspectFlagBits::eColor, 1);
 
 	}
 }
@@ -129,16 +130,15 @@ const vk::Extent2D &SwapChain::get_swap_chain_extent() const {
 void SwapChain::create_depth_resources() {
     vk::Format depth_format = vk::Format::eD32SfloatS8Uint;
 
-    std::tie(_depth_image, _depth_image_memory) =  _context.create_image(
+    std::tie(_depth_image, _depth_image_memory) = _context.create_image(
             _swap_chain_extent.width,
             _swap_chain_extent.height,
             depth_format,
             vk::ImageTiling::eOptimal,
             vk::ImageUsageFlagBits::eDepthStencilAttachment,
-            vk::MemoryPropertyFlagBits::eDeviceLocal
-            );
+            vk::MemoryPropertyFlagBits::eDeviceLocal, 1);
 
-    _depth_image_view = _context.create_2d_image_views(*_depth_image, depth_format, vk::ImageAspectFlagBits::eDepth);
+    _depth_image_view = _context.create_2d_image_views(*_depth_image, depth_format, vk::ImageAspectFlagBits::eDepth, 1);
 
 
 }

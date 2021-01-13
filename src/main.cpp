@@ -139,8 +139,8 @@ int main() {
             context, {ubo_layout_frag_color}
     );
 
-    buffer::image2d statue_image({context, "assets/image/statue.jpg"});
-    buffer::image2d viking_image({context, "assets/image/viking_room.png"});
+    buffer::image2d statue_image{context, "assets/image/statue.jpg", 1};
+    buffer::image2d viking_image{context, "assets/image/viking_room.png", 1};
     image::sampler sampler(context);
     auto layouts = std::vector{descriptor_layout, descriptor_layout_frag};
     GraphicsPipeline pipeline(context,

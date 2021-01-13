@@ -57,6 +57,7 @@ namespace buffer{
         {a.size()};
         {a.data()};
     };
+
     struct vertex{
         vertex(Context const& device, vertex_description&& description, Container auto && vertices, std::vector<uint32_t> &&indices);
 
