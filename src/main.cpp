@@ -140,8 +140,8 @@ int main() {
     );
 
     buffer::image2d statue_image{context, "assets/image/statue.jpg", 1};
-    buffer::image2d viking_image{context, "assets/image/viking_room.png", 1};
-    image::sampler sampler(context);
+    buffer::image2d viking_image{context, "assets/image/viking_room.png", 10};
+    image::sampler sampler(context, viking_image.get_mimap_levels());
     auto layouts = std::vector{descriptor_layout, descriptor_layout_frag};
     GraphicsPipeline pipeline(context,
                               swap_chain,

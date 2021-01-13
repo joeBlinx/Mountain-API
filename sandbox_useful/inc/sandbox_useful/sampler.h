@@ -8,7 +8,7 @@
 #include "context.hpp"
 namespace image {
     struct sampler {
-        sampler(Context const &context);
+        sampler(Context const &context, uint32_t mipmap_levels);
         operator vk::Sampler() const{return *_sampler;}
     private:
         vk::UniqueSampler _sampler;

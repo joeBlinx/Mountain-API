@@ -4,7 +4,7 @@
 
 #include <sampler.h>
 
-image::sampler::sampler(const Context &context) {
+image::sampler::sampler(Context const &context, uint32_t mipmap_levels) {
     //TODO: basic sampler but i need to find a way to be more flexible
     // Linear filter and repeat image
     vk::SamplerCreateInfo sampler_info{};
@@ -30,7 +30,7 @@ image::sampler::sampler(const Context &context) {
     sampler_info.mipmapMode = vk::SamplerMipmapMode::eLinear;
     sampler_info.mipLodBias = 0.f;
     sampler_info.minLod = 0.f;
-    sampler_info.maxLod = 0.f;
+    sampler_info.maxLod = mipmap_levels;
 
     _sampler = context->createSamplerUnique(sampler_info);
 }

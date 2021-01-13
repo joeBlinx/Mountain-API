@@ -15,6 +15,7 @@ namespace buffer {
         image2d(Context const &context, fs::path const &image_path, uint32_t mipmap_level);
         vk::UniqueImage const& get_image()const{return _image;}
         vk::UniqueImageView const& get_image_view()const{return _image_view;}
+        uint32_t get_mimap_levels() const{return _mipmap_levels;}
     private:
 
         uint32_t _mipmap_levels;
