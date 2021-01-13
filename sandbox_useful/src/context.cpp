@@ -297,7 +297,7 @@ void Context::create_logical_device(std::vector<char const *> const &devicesExte
 	}
 	//feature required
 	vk::PhysicalDeviceFeatures features{};
-
+    features.samplerAnisotropy = VK_TRUE;
 	vk::DeviceCreateInfo info{};
 	info.setPQueueCreateInfos(queueInfos.data());
 	info.queueCreateInfoCount = (uint32_t)queueInfos.size();
