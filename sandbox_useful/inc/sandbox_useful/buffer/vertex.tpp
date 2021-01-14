@@ -9,7 +9,7 @@
 #define SANDBOX_VERTEX_H
 template<Container container>
 void vertex::create_buffer(container const& vertices, vk::BufferUsageFlags buffer_usage, vk::UniqueBuffer& buffer, vk::UniqueDeviceMemory& buffer_memory){
-    vk::DeviceSize buffer_size = sizeof(container[0]) * container.size();
+    vk::DeviceSize buffer_size = sizeof(vertices[0]) * vertices.size();
     auto const& vk_device = _device.get_device();
 
     auto[staging_memory, staging_buffer] = _device.create_buffer_and_memory(buffer_size,
@@ -18,7 +18,7 @@ void vertex::create_buffer(container const& vertices, vk::BufferUsageFlags buffe
     {
         void* data{};
         utils::raii_helper::MapMemory raii_mapping(vk_device, staging_memory, 0, buffer_size, &data);
-        memcpy(data, container.data(), static_cast<size_t>(buffer_size));
+        memcpy(data, vertices.data(), static_cast<size_t>(buffer_size));
     }
 
     std::tie(buffer_memory, buffer) = _device.create_buffer_and_memory(buffer_size,

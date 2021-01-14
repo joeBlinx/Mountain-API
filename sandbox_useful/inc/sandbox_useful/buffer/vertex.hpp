@@ -56,6 +56,7 @@ namespace buffer{
     concept Container = requires(T a){
         {a.size()};
         {a.data()};
+        {a.operator[](0)};
     };
 
     struct vertex{
