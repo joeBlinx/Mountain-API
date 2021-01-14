@@ -16,7 +16,7 @@ buffer::image2d::image2d(Context const &context, fs::path const &image_path, uin
             [](auto pixels){
                 stbi_image_free(pixels);
             }
-            )> pixels(stbi_load(image_path.c_str(), &tex_width, &tex_height, &texChannels, STBI_rgb_alpha));
+            )> pixels(stbi_load(image_path.string().c_str(), &tex_width, &tex_height, &texChannels, STBI_rgb_alpha));
     vk::DeviceSize image_size = tex_width * tex_height * 4;
     if (!pixels) {
         throw std::runtime_error("failed to load texture image!");

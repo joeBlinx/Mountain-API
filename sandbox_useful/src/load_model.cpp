@@ -16,7 +16,7 @@ namespace model{
 
         std::vector<Vertex> vertices;
         std::vector<uint32_t> indices;
-        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, model_path.c_str())) {
+        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, model_path.string().c_str())) {
             throw std::runtime_error(err);
         }
         std::unordered_map<Vertex, uint32_t> unique_vertices;

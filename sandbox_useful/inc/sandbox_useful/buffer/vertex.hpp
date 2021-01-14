@@ -59,7 +59,8 @@ namespace buffer{
     };
 
     struct vertex{
-        vertex(Context const& device, vertex_description&& description, Container auto && vertices, std::vector<uint32_t> &&indices);
+        template<Container container>
+        vertex(Context const& device, vertex_description&& description, container && vertices, std::vector<uint32_t> &&indices);
 
         vk::Buffer const &get_buffer() const {return *_buffer;}
         uint32_t get_indices_count() const {return _indices_count;}
@@ -70,7 +71,8 @@ namespace buffer{
         uint32_t get_indices_offset() const{return _indices_offset;}
 
     private:
-        void create_buffer(Container auto const& container, vk::BufferUsageFlags buffer_usage, vk::UniqueBuffer& buffer, vk::UniqueDeviceMemory& buffer_memory);
+        template<Container container>
+        void create_buffer(container const& vertices, vk::BufferUsageFlags buffer_usage, vk::UniqueBuffer& buffer, vk::UniqueDeviceMemory& buffer_memory);
         Context const& _device;
         vk::UniqueDeviceMemory _buffer_memory;
         vk::UniqueBuffer _buffer;
