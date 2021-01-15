@@ -31,6 +31,7 @@ struct Model{
 struct Color{
     float new_color{};
 };
+
 struct Uniform{
    Model model;
    Color new_color{0.5};

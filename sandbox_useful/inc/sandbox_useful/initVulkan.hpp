@@ -28,7 +28,7 @@ struct PipelineData{
 };
 struct InitVulkan {
 
-	InitVulkan(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass, int nb_uniform);
+	InitVulkan(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass, int nb_uniform = 0);
     template <class T>
     void createCommandBuffers(PipelineData<T> const& pipeline_data);
 

@@ -28,7 +28,7 @@ struct GraphicsPipeline{
     template <size_t n, class ...Ts>
     GraphicsPipeline(Context const &device, SwapChain const &swap_chain, RenderPass const &render_pass, std::array<shader, n> const& shaders,
                      const std::vector<buffer::vertex> &buffers,
-                     std::vector<vk::DescriptorSetLayout> const& descriptor_layout,
+                     std::vector<vk::DescriptorSetLayout> const& descriptor_layout={},
                      PushConstant<Ts> const& ...push_constant);
     vk::Pipeline const& get_pipeline() const {return _pipeline;}
     vk::PipelineLayout const& get_pipeline_layout() const{return *_pipeline_layout;}
@@ -79,9 +79,10 @@ void GraphicsPipeline::create_pipeline_layout(std::vector<vk::DescriptorSetLayou
         offset += sizeof(T);
         return range;
     };
-
-    std::vector push_constant_range{create_push_constant_ranges(push_constant)...};
-    std::swap(_push_constant_ranges, push_constant_range);
+    if constexpr (sizeof...(push_constant) > 0) {
+        std::vector push_constant_range{create_push_constant_ranges(push_constant)...};
+        std::swap(_push_constant_ranges, push_constant_range);
+    }
     vk::PipelineLayoutCreateInfo pipelineLayoutInfo = {};
     pipelineLayoutInfo.setLayoutCount = descriptor_layout.size();
     pipelineLayoutInfo.pSetLayouts = descriptor_layout.data();
