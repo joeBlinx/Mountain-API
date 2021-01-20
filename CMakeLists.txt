@@ -21,6 +21,6 @@ add_subdirectory(sandbox_useful)
 add_subdirectory(utils)
 add_subdirectory(window_management)
 
-if(${BUILD_SAMPLE})
+if(${BUILD_SAMPLES})
     add_subdirectory(sample)
 endif()

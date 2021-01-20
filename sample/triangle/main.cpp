@@ -70,7 +70,7 @@ int main(){
     InitVulkan init(
             context,
             swap_chain,
-            render_pass, 0);
+            render_pass);
 
     glfwSetKeyCallback(context.get_window().get_window(), key_callback);
     struct no_uni{};
