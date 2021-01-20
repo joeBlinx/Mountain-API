@@ -10,7 +10,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
 
-namespace model{
+namespace mountain::model{
     namespace fs = std::filesystem;
     struct Vertex{
         glm::vec3 pos{};
@@ -29,8 +29,8 @@ namespace model{
     std::pair<std::vector<Vertex>, std::vector<uint32_t>> load_obj(fs::path const& model_path);
 }
 namespace std {
-    template<> struct hash<model::Vertex> {
-        size_t operator()(model::Vertex const& vertex) const {
+    template<> struct hash<mountain::model::Vertex> {
+        size_t operator()(mountain::model::Vertex const& vertex) const {
             return ((hash<glm::vec3>()(vertex.pos) ^
                      (hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^
                    (hash<glm::vec2>()(vertex.tex_coord) << 1);

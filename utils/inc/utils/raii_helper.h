@@ -19,7 +19,7 @@ namespace utils::raii_helper{
     };
 
     struct OneTimeCommands{
-        OneTimeCommands(Context const& context):_context(context){
+        OneTimeCommands(mountain::Context const& context):_context(context){
             vk::CommandBufferAllocateInfo allocInfo{};
             allocInfo.level = vk::CommandBufferLevel::ePrimary;
             allocInfo.commandPool = _context.get_command_pool();
@@ -48,7 +48,7 @@ namespace utils::raii_helper{
         }
     private:
         vk::UniqueCommandBuffer _command_buffer;
-        Context const& _context;
+        mountain::Context const& _context;
 
 
     };

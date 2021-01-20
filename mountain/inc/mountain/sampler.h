@@ -6,7 +6,7 @@
 #define SANDBOX_SAMPLER_H
 
 #include "context.hpp"
-namespace image {
+namespace mountain::image {
     struct sampler {
         sampler(Context const &context, uint32_t mipmap_levels);
         operator vk::Sampler() const{return *_sampler;}

@@ -23,17 +23,17 @@ int main(){
     int constexpr width = 1366;
     int constexpr height = 768;
 
-    Context context{width,
+    mountain::Context context{width,
                     height,
                     "Vulkan Triangle",
                     devicesExtension};
-
-    RenderPass render_pass{
+    using mountain::subpass_attachment;
+    mountain::RenderPass render_pass{
             context,
-            SubPass{subpass_attachment::COLOR}
+            mountain::SubPass{subpass_attachment::COLOR}
     };
 
-    SwapChain swap_chain{
+    mountain::SwapChain swap_chain{
             context,
             render_pass,
             vk::ImageUsageFlagBits::eColorAttachment,
@@ -49,31 +49,31 @@ int main(){
             Vertex{{0.25f, 0.f}}
     };
     std::vector<uint32_t> indices{0, 1, 2};
-    std::vector<buffer::vertex> buffers;
+    std::vector<mountain::buffer::vertex> buffers;
     buffers.emplace_back(
-        buffer::vertex{context,
-                       buffer::vertex_description(0,
+            mountain::buffer::vertex{context,
+                                     mountain::buffer::vertex_description(0,
                                                   0,
                                                   CLASS_DESCRIPTION(Vertex, pos)),
                       vertices,
                       std::move(indices)}
     );
-    GraphicsPipeline pipeline(context,
+    mountain::GraphicsPipeline pipeline(context,
                               swap_chain,
                               render_pass,
                               std::array{
-                                      shader{SHADER_FOLDER / "trianglevert.spv", vk::ShaderStageFlagBits::eVertex},
-                                      shader{SHADER_FOLDER / "trianglefrag.spv", vk::ShaderStageFlagBits::eFragment}
+                                      mountain::shader{SHADER_FOLDER / "trianglevert.spv", vk::ShaderStageFlagBits::eVertex},
+                                      mountain::shader{SHADER_FOLDER / "trianglefrag.spv", vk::ShaderStageFlagBits::eFragment}
                               },
                               buffers);
-    InitVulkan init(
+    mountain::InitVulkan init(
             context,
             swap_chain,
             render_pass);
 
     glfwSetKeyCallback(context.get_window().get_window(), key_callback);
     struct no_uni{};
-    PipelineData<no_uni> object{
+    mountain::PipelineData<no_uni> object{
         buffers[0], pipeline, {}
     };
     init.createCommandBuffers(object);

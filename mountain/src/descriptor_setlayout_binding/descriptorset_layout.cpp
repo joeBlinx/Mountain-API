@@ -4,7 +4,7 @@
 #include <context.hpp>
 #include "descriptor_setlayout_binding/descriptorset_layout.h"
 #include "utils/log.hpp"
-namespace descriptorset_layout {
+namespace mountain::descriptorset_layout {
     vk::DescriptorSetLayoutBinding create_descriptor_image_sampler(int binding, vk::ShaderStageFlags const &shader){
         vk::DescriptorSetLayoutBinding image_layout{};
         image_layout.binding = binding;

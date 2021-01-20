@@ -5,7 +5,7 @@
 #include <uniform.h>
 #include "swapChain.hpp"
 
-buffer::uniform_updater::uniform_updater(std::vector<vk::UniqueDeviceMemory> &memories, std::byte *data, size_t data_size):
+mountain::buffer::uniform_updater::uniform_updater(std::vector<vk::UniqueDeviceMemory> &memories, std::byte *data, size_t data_size):
 _data(static_cast<std::byte*>(malloc(data_size))),
 _buffer_size(data_size),
 _memories(memories){
@@ -13,7 +13,7 @@ _memories(memories){
     memcpy(_data.get(), data, data_size);
 }
 
-void buffer::uniform_updater::operator()(const Context &context, int current_image) {
+void mountain::buffer::uniform_updater::operator()(const Context &context, int current_image) {
 
     auto vk_device = context.get_device();
     void* data{};

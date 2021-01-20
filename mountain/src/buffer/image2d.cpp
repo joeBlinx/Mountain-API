@@ -9,7 +9,7 @@
 #include <uniform.h>
 #include "utils/utils.hpp"
 #include "utils/log.hpp"
-buffer::image2d::image2d(Context const &context, fs::path const &image_path, uint32_t mipmap_level) {
+mountain::buffer::image2d::image2d(Context const &context, fs::path const &image_path, uint32_t mipmap_level) {
 
     int tex_width, tex_height, texChannels;
     std::unique_ptr<stbi_uc, decltype(
@@ -63,7 +63,7 @@ buffer::image2d::image2d(Context const &context, fs::path const &image_path, uin
 }
 
 void
-buffer::image2d::transition_image_layout(Context const &context, vk::ImageLayout old_layout,
+mountain::buffer::image2d::transition_image_layout(Context const &context, vk::ImageLayout old_layout,
                                          vk::ImageLayout new_layout) {
     utils::raii_helper::OneTimeCommands command(context);
 
@@ -110,11 +110,11 @@ buffer::image2d::transition_image_layout(Context const &context, vk::ImageLayout
 
 }
 
-void buffer::image2d::create_image_views(Context const &context) {
+void mountain::buffer::image2d::create_image_views(Context const &context) {
     _image_view = context.create_2d_image_views(*_image, vk::Format::eR8G8B8A8Srgb, vk::ImageAspectFlagBits::eColor, _mipmap_levels);
 }
 
-void buffer::image2d::generate_mip_map(Context const &context, uint32_t tex_width, uint32_t tex_height) {
+void mountain::buffer::image2d::generate_mip_map(Context const &context, uint32_t tex_width, uint32_t tex_height) {
     utils::raii_helper::OneTimeCommands one_command(context);
 
     vk::ImageMemoryBarrier barrier{};

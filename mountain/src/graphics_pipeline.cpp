@@ -7,210 +7,219 @@
 #include "context.hpp"
 #include "swapChain.hpp"
 #include "renderPass.hpp"
+namespace mountain {
 
-vk::PipelineInputAssemblyStateCreateInfo createAssembly(vk::PrimitiveTopology topology);
+    vk::PipelineInputAssemblyStateCreateInfo createAssembly(vk::PrimitiveTopology topology);
+
 //need parameter in further modification
-vk::PipelineRasterizationStateCreateInfo createRasterizer();
+    vk::PipelineRasterizationStateCreateInfo createRasterizer();
+
 //need parameter in further modification
-vk::PipelineMultisampleStateCreateInfo createMultisampling();
-vk::PipelineColorBlendAttachmentState createColorBlendAttachement();
-vk::PipelineColorBlendStateCreateInfo createColorBlendState(vk::PipelineColorBlendAttachmentState & colorBlend);
+    vk::PipelineMultisampleStateCreateInfo createMultisampling();
 
-struct VertexInfo{
-private:
-    std::vector<vk::VertexInputAttributeDescription> attribute_descriptions;
-    std::vector<vk::VertexInputBindingDescription> bindings_descriptions;
-public:
-    vk::PipelineVertexInputStateCreateInfo create_info;
-    explicit VertexInfo(std::vector<buffer::vertex> const& buffers){
-        std::for_each(begin(buffers), end(buffers), [this](buffer::vertex const& buffer){
-            std::copy(begin(buffer.get_attributes()), end(buffer.get_attributes()), std::back_inserter(attribute_descriptions));
-            bindings_descriptions.emplace_back(buffer.get_bindings());
-        });
+    vk::PipelineColorBlendAttachmentState createColorBlendAttachement();
 
+    vk::PipelineColorBlendStateCreateInfo createColorBlendState(vk::PipelineColorBlendAttachmentState &colorBlend);
 
-        create_info.vertexBindingDescriptionCount = bindings_descriptions.size();
-        create_info.pVertexBindingDescriptions = bindings_descriptions.data();
-        create_info.vertexAttributeDescriptionCount = attribute_descriptions.size();
-        create_info.pVertexAttributeDescriptions = attribute_descriptions.data();
-    }
-};
-struct pipelineViewPortInfo{
-    vk::PipelineViewportStateCreateInfo viewport_info;
-    pipelineViewPortInfo(vk::Extent2D const& swapchainExtent){
+    struct VertexInfo {
+    private:
+        std::vector<vk::VertexInputAttributeDescription> attribute_descriptions;
+        std::vector<vk::VertexInputBindingDescription> bindings_descriptions;
+    public:
+        vk::PipelineVertexInputStateCreateInfo create_info;
 
-        viewport.x = 0.0f;
-        viewport.y = 0.0f;
-        viewport.width = (float)swapchainExtent.width;
-        viewport.height = (float)swapchainExtent.height;
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-        scissor.offset = vk::Offset2D{ 0, 0 };
-        scissor.extent = swapchainExtent;
-
-        viewport_info.viewportCount = 1;
-        viewport_info.pViewports = &viewport;
-        viewport_info.scissorCount = 1;
-        viewport_info.pScissors = &scissor;
-
-    }
-
-private:
-    vk::Viewport viewport;
-    vk::Rect2D scissor;
-};
+        explicit VertexInfo(std::vector<buffer::vertex> const &buffers) {
+            std::for_each(begin(buffers), end(buffers), [this](buffer::vertex const &buffer) {
+                std::copy(begin(buffer.get_attributes()), end(buffer.get_attributes()),
+                          std::back_inserter(attribute_descriptions));
+                bindings_descriptions.emplace_back(buffer.get_bindings());
+            });
 
 
-void GraphicsPipeline::init(const SwapChain &swap_chain, const RenderPass &render_pass,
-                            const std::vector<buffer::vertex> &buffers,
-                            std::vector<vk::PipelineShaderStageCreateInfo> &&shaders_stages) {
-
-    VertexInfo vertex_info(buffers);
-
-    // define the topology the vertices  and what kind of geometry
-    auto inputAssembly = createAssembly(vk::PrimitiveTopology::eTriangleList);
-
-    pipelineViewPortInfo viewportState(swap_chain.get_swap_chain_extent());
-
-    auto rasterizer = createRasterizer();
-    auto multisampling = createMultisampling();
-
-    // DEPTH AND STENCIL
-    vk::PipelineDepthStencilStateCreateInfo depth_stencil;
-    depth_stencil.depthTestEnable = VK_TRUE;
-    depth_stencil.depthWriteEnable = VK_TRUE;
-    depth_stencil.depthCompareOp = vk::CompareOp::eLess;
-    depth_stencil.stencilTestEnable = VK_FALSE;
-
-    // COLOR_RENDERING
-    auto colorBlendAttachement = createColorBlendAttachement();
-    auto colorBlending = createColorBlendState(colorBlendAttachement);
-
-
-    /**can be factorised in function
-    */
-
-    vk::GraphicsPipelineCreateInfo pipelineInfo  {};
-    pipelineInfo.stageCount = shaders_stages.size();
-    pipelineInfo.pStages = shaders_stages.data();
-
-    pipelineInfo.pVertexInputState = &vertex_info.create_info;
-    pipelineInfo.pInputAssemblyState = &inputAssembly;
-    pipelineInfo.pViewportState = &viewportState.viewport_info;
-    pipelineInfo.pRasterizationState = &rasterizer;
-    pipelineInfo.pMultisampleState = &multisampling;
-    pipelineInfo.pDepthStencilState =
-            render_pass.has_depth()?&depth_stencil:nullptr; // Optional nostencil for now
-    pipelineInfo.pColorBlendState = &colorBlending;
-    pipelineInfo.pDynamicState = nullptr; // Optional
-    pipelineInfo.layout = *_pipeline_layout;
-    pipelineInfo.renderPass = render_pass.get_renderpass();
-    pipelineInfo.subpass = 0;
-    // pipelineInfo.basePipelineHandle ; // Optional
-    pipelineInfo.basePipelineIndex = -1; // Optional
-    auto create_pipeline = [&]{ // create pipeline this way because for some reason I cannot use the c++ APi the same way on different computers
-        VkPipeline temp_pipeline{};
-        auto temp = (VkGraphicsPipelineCreateInfo)pipelineInfo;
-        vkCreateGraphicsPipelines(_device.get_device(),nullptr, 1, &temp, nullptr, &temp_pipeline); // for some re
-        return temp_pipeline;
+            create_info.vertexBindingDescriptionCount = bindings_descriptions.size();
+            create_info.pVertexBindingDescriptions = bindings_descriptions.data();
+            create_info.vertexAttributeDescriptionCount = attribute_descriptions.size();
+            create_info.pVertexAttributeDescriptions = attribute_descriptions.data();
+        }
     };
-    _pipeline = create_pipeline();
-    std::ranges::for_each(
-            shaders_stages,
-            [this](auto const& shader_stage){
-                vkDestroyShaderModule(_device.get_device(), shader_stage.module, nullptr);
-            }
-            );
 
-}
+    struct pipelineViewPortInfo {
+        vk::PipelineViewportStateCreateInfo viewport_info;
+
+        pipelineViewPortInfo(vk::Extent2D const &swapchainExtent) {
+
+            viewport.x = 0.0f;
+            viewport.y = 0.0f;
+            viewport.width = (float) swapchainExtent.width;
+            viewport.height = (float) swapchainExtent.height;
+            viewport.minDepth = 0.0f;
+            viewport.maxDepth = 1.0f;
+            scissor.offset = vk::Offset2D{0, 0};
+            scissor.extent = swapchainExtent;
+
+            viewport_info.viewportCount = 1;
+            viewport_info.pViewports = &viewport;
+            viewport_info.scissorCount = 1;
+            viewport_info.pScissors = &scissor;
+
+        }
+
+    private:
+        vk::Viewport viewport;
+        vk::Rect2D scissor;
+    };
 
 
-vk::ShaderModule GraphicsPipeline::createShaderModule(std::vector<char> const & code)
-{ // RAII possible
-    vk::ShaderModuleCreateInfo createInfo{};
-    createInfo.codeSize = code.size();
-    createInfo.pCode = (uint32_t*)code.data();
-    vk::ShaderModule module = _device.get_device().createShaderModule(createInfo);
+    void GraphicsPipeline::init(const SwapChain &swap_chain, const RenderPass &render_pass,
+                                const std::vector<buffer::vertex> &buffers,
+                                std::vector<vk::PipelineShaderStageCreateInfo> &&shaders_stages) {
 
-    return module;
+        VertexInfo vertex_info(buffers);
 
-}
+        // define the topology the vertices  and what kind of geometry
+        auto inputAssembly = createAssembly(vk::PrimitiveTopology::eTriangleList);
 
-GraphicsPipeline::~GraphicsPipeline() {
-    _device.get_device().destroy(_pipeline);
-}
+        pipelineViewPortInfo viewportState(swap_chain.get_swap_chain_extent());
 
-vk::PipelineShaderStageCreateInfo createShaderInfo(vk::ShaderModule & module, vk::ShaderStageFlagBits type)
-{
-    vk::PipelineShaderStageCreateInfo info;
-    info.stage = type;
-    info.module = module;
-    info.pName = "main";
-    return info;
-}
-vk::PipelineInputAssemblyStateCreateInfo createAssembly(vk::PrimitiveTopology topology)
-{	//function needed
-    vk::PipelineInputAssemblyStateCreateInfo inputAssembly;
-    inputAssembly.topology = topology; // 3 vertices, one triangle
-    inputAssembly.primitiveRestartEnable = VK_FALSE;
-    return inputAssembly;
+        auto rasterizer = createRasterizer();
+        auto multisampling = createMultisampling();
 
-}
+        // DEPTH AND STENCIL
+        vk::PipelineDepthStencilStateCreateInfo depth_stencil;
+        depth_stencil.depthTestEnable = VK_TRUE;
+        depth_stencil.depthWriteEnable = VK_TRUE;
+        depth_stencil.depthCompareOp = vk::CompareOp::eLess;
+        depth_stencil.stencilTestEnable = VK_FALSE;
+
+        // COLOR_RENDERING
+        auto colorBlendAttachement = createColorBlendAttachement();
+        auto colorBlending = createColorBlendState(colorBlendAttachement);
+
+
+        /**can be factorised in function
+        */
+
+        vk::GraphicsPipelineCreateInfo pipelineInfo{};
+        pipelineInfo.stageCount = shaders_stages.size();
+        pipelineInfo.pStages = shaders_stages.data();
+
+        pipelineInfo.pVertexInputState = &vertex_info.create_info;
+        pipelineInfo.pInputAssemblyState = &inputAssembly;
+        pipelineInfo.pViewportState = &viewportState.viewport_info;
+        pipelineInfo.pRasterizationState = &rasterizer;
+        pipelineInfo.pMultisampleState = &multisampling;
+        pipelineInfo.pDepthStencilState =
+                render_pass.has_depth() ? &depth_stencil : nullptr; // Optional nostencil for now
+        pipelineInfo.pColorBlendState = &colorBlending;
+        pipelineInfo.pDynamicState = nullptr; // Optional
+        pipelineInfo.layout = *_pipeline_layout;
+        pipelineInfo.renderPass = render_pass.get_renderpass();
+        pipelineInfo.subpass = 0;
+        // pipelineInfo.basePipelineHandle ; // Optional
+        pipelineInfo.basePipelineIndex = -1; // Optional
+        auto create_pipeline = [&] { // create pipeline this way because for some reason I cannot use the c++ APi the same way on different computers
+            VkPipeline temp_pipeline{};
+            auto temp = (VkGraphicsPipelineCreateInfo) pipelineInfo;
+            vkCreateGraphicsPipelines(_device.get_device(), nullptr, 1, &temp, nullptr, &temp_pipeline); // for some re
+            return temp_pipeline;
+        };
+        _pipeline = create_pipeline();
+        std::ranges::for_each(
+                shaders_stages,
+                [this](auto const &shader_stage) {
+                    vkDestroyShaderModule(_device.get_device(), shader_stage.module, nullptr);
+                }
+        );
+
+    }
+
+
+    vk::ShaderModule GraphicsPipeline::createShaderModule(std::vector<char> const &code) { // RAII possible
+        vk::ShaderModuleCreateInfo createInfo{};
+        createInfo.codeSize = code.size();
+        createInfo.pCode = (uint32_t *) code.data();
+        vk::ShaderModule module = _device.get_device().createShaderModule(createInfo);
+
+        return module;
+
+    }
+
+    GraphicsPipeline::~GraphicsPipeline() {
+        _device.get_device().destroy(_pipeline);
+    }
+
+    vk::PipelineShaderStageCreateInfo createShaderInfo(vk::ShaderModule &module, vk::ShaderStageFlagBits type) {
+        vk::PipelineShaderStageCreateInfo info;
+        info.stage = type;
+        info.module = module;
+        info.pName = "main";
+        return info;
+    }
+
+    vk::PipelineInputAssemblyStateCreateInfo createAssembly(vk::PrimitiveTopology topology) {    //function needed
+        vk::PipelineInputAssemblyStateCreateInfo inputAssembly;
+        inputAssembly.topology = topology; // 3 vertices, one triangle
+        inputAssembly.primitiveRestartEnable = VK_FALSE;
+        return inputAssembly;
+
+    }
 
 //need parameter in further modification
-vk::PipelineRasterizationStateCreateInfo createRasterizer()
-{
-    vk::PipelineRasterizationStateCreateInfo rasterizer  {};
-    rasterizer.depthClampEnable = VK_FALSE;
-    rasterizer.rasterizerDiscardEnable = VK_FALSE;
-    rasterizer.polygonMode = vk::PolygonMode::eFill;
-    rasterizer.lineWidth = 1.0f;
-    rasterizer.cullMode = vk::CullModeFlagBits::eBack;
-    rasterizer.frontFace = vk::FrontFace::eCounterClockwise;
-    rasterizer.depthBiasEnable = VK_FALSE;
-    rasterizer.depthBiasConstantFactor = 0.0f; // Optional
-    rasterizer.depthBiasClamp = 0.0f; // Optional
-    rasterizer.depthBiasSlopeFactor = 0.0f; // Optional
+    vk::PipelineRasterizationStateCreateInfo createRasterizer() {
+        vk::PipelineRasterizationStateCreateInfo rasterizer{};
+        rasterizer.depthClampEnable = VK_FALSE;
+        rasterizer.rasterizerDiscardEnable = VK_FALSE;
+        rasterizer.polygonMode = vk::PolygonMode::eFill;
+        rasterizer.lineWidth = 1.0f;
+        rasterizer.cullMode = vk::CullModeFlagBits::eBack;
+        rasterizer.frontFace = vk::FrontFace::eCounterClockwise;
+        rasterizer.depthBiasEnable = VK_FALSE;
+        rasterizer.depthBiasConstantFactor = 0.0f; // Optional
+        rasterizer.depthBiasClamp = 0.0f; // Optional
+        rasterizer.depthBiasSlopeFactor = 0.0f; // Optional
 
-    return rasterizer;
-}
+        return rasterizer;
+    }
+
 //need parameter in further modification
-vk::PipelineMultisampleStateCreateInfo createMultisampling()
-{
-    vk::PipelineMultisampleStateCreateInfo multisampling {};
-    multisampling.sampleShadingEnable = VK_FALSE;
-    multisampling.rasterizationSamples = vk::SampleCountFlagBits::e1;
-    multisampling.minSampleShading = 1.0f; // Optional
-    multisampling.pSampleMask = nullptr; // Optional
-    multisampling.alphaToCoverageEnable = VK_FALSE; // Optional
-    multisampling.alphaToOneEnable = VK_FALSE; // Optional
+    vk::PipelineMultisampleStateCreateInfo createMultisampling() {
+        vk::PipelineMultisampleStateCreateInfo multisampling{};
+        multisampling.sampleShadingEnable = VK_FALSE;
+        multisampling.rasterizationSamples = vk::SampleCountFlagBits::e1;
+        multisampling.minSampleShading = 1.0f; // Optional
+        multisampling.pSampleMask = nullptr; // Optional
+        multisampling.alphaToCoverageEnable = VK_FALSE; // Optional
+        multisampling.alphaToOneEnable = VK_FALSE; // Optional
 
-    return multisampling;
-}
-vk::PipelineColorBlendAttachmentState createColorBlendAttachement()
-{
-    vk::PipelineColorBlendAttachmentState colorBlendAttachment;
-    colorBlendAttachment.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB |vk::ColorComponentFlagBits::eA;
-    colorBlendAttachment.blendEnable = VK_FALSE;
-    colorBlendAttachment.srcColorBlendFactor = vk::BlendFactor::eOne; // Optional
-    colorBlendAttachment.dstColorBlendFactor = vk::BlendFactor::eZero; // Optional
-    colorBlendAttachment.colorBlendOp = vk::BlendOp::eAdd; // Optional
-    colorBlendAttachment.srcAlphaBlendFactor = vk::BlendFactor::eZero; // Optional
-    colorBlendAttachment.dstAlphaBlendFactor = vk::BlendFactor::eZero; // Optional
-    colorBlendAttachment.alphaBlendOp = vk::BlendOp::eAdd; // Optional
-    return colorBlendAttachment;
-}
-vk::PipelineColorBlendStateCreateInfo createColorBlendState(vk::PipelineColorBlendAttachmentState & colorBlend)
-{
-    vk::PipelineColorBlendStateCreateInfo colorBlending = {};
-    colorBlending.logicOpEnable = VK_FALSE;
-    colorBlending.logicOp = vk::LogicOp::eCopy; // Optional
-    colorBlending.attachmentCount = 1;
-    colorBlending.pAttachments = &colorBlend;
-    colorBlending.blendConstants[0] = 0.0f; // Optional
-    colorBlending.blendConstants[1] = 0.0f; // Optional
-    colorBlending.blendConstants[2] = 0.0f; // Optional
-    colorBlending.blendConstants[3] = 0.0f; // Optional
+        return multisampling;
+    }
 
-    return colorBlending;
+    vk::PipelineColorBlendAttachmentState createColorBlendAttachement() {
+        vk::PipelineColorBlendAttachmentState colorBlendAttachment;
+        colorBlendAttachment.colorWriteMask =
+                vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB |
+                vk::ColorComponentFlagBits::eA;
+        colorBlendAttachment.blendEnable = VK_FALSE;
+        colorBlendAttachment.srcColorBlendFactor = vk::BlendFactor::eOne; // Optional
+        colorBlendAttachment.dstColorBlendFactor = vk::BlendFactor::eZero; // Optional
+        colorBlendAttachment.colorBlendOp = vk::BlendOp::eAdd; // Optional
+        colorBlendAttachment.srcAlphaBlendFactor = vk::BlendFactor::eZero; // Optional
+        colorBlendAttachment.dstAlphaBlendFactor = vk::BlendFactor::eZero; // Optional
+        colorBlendAttachment.alphaBlendOp = vk::BlendOp::eAdd; // Optional
+        return colorBlendAttachment;
+    }
+
+    vk::PipelineColorBlendStateCreateInfo createColorBlendState(vk::PipelineColorBlendAttachmentState &colorBlend) {
+        vk::PipelineColorBlendStateCreateInfo colorBlending = {};
+        colorBlending.logicOpEnable = VK_FALSE;
+        colorBlending.logicOp = vk::LogicOp::eCopy; // Optional
+        colorBlending.attachmentCount = 1;
+        colorBlending.pAttachments = &colorBlend;
+        colorBlending.blendConstants[0] = 0.0f; // Optional
+        colorBlending.blendConstants[1] = 0.0f; // Optional
+        colorBlending.blendConstants[2] = 0.0f; // Optional
+        colorBlending.blendConstants[3] = 0.0f; // Optional
+
+        return colorBlending;
+    }
 }

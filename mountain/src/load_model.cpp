@@ -7,7 +7,8 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 #include <unordered_map>
-namespace model{
+
+namespace mountain::model{
     std::pair<std::vector<Vertex>, std::vector<uint32_t>> load_obj(fs::path const& model_path){
         tinyobj::attrib_t attrib;
         std::vector<tinyobj::shape_t> shapes;
