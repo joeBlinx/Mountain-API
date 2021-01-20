@@ -13,6 +13,7 @@
 #include "glm/ext.hpp"
 #include "sandbox_useful/descriptor_setlayout_binding/descriptorset_layout.h"
 #include "sandbox_useful/load_model.h"
+#include "shader_folder.h"
 struct vec2{
     float a;
     float b;
@@ -107,7 +108,7 @@ int main() {
     };
 
 
-    auto [vertices_3d, indices_3d] = model::load_obj(std::filesystem::path("assets/model/viking_room.obj"));
+    auto [vertices_3d, indices_3d] = model::load_obj(std::filesystem::path(ASSETS_FOLDER /                                                                             "model/viking_room.obj"));
     std::vector<buffer::vertex> vertex_buffers;
     vertex_buffers.emplace_back(buffer::vertex(context,
            buffer::vertex_description(0, 0,
@@ -140,16 +141,16 @@ int main() {
             context, {ubo_layout_frag_color}
     );
 
-    buffer::image2d statue_image{context, "assets/image/statue.jpg", 1};
-    buffer::image2d viking_image{context, "assets/image/viking_room.png", 10};
+    buffer::image2d statue_image{context, ASSETS_FOLDER / "image/statue.jpg", 1};
+    buffer::image2d viking_image{context, ASSETS_FOLDER /"image/viking_room.png", 10};
     image::sampler sampler(context, viking_image.get_mimap_levels());
     auto layouts = std::vector{descriptor_layout, descriptor_layout_frag};
     GraphicsPipeline pipeline(context,
                               swap_chain,
                               render_pass,
                               std::array{
-                                  shader{"trianglevert.spv", vk::ShaderStageFlagBits::eVertex},
-                                  shader{"trianglefrag.spv", vk::ShaderStageFlagBits::eFragment}
+                                  shader{SHADER_FOLDER / "trianglevert.spv", vk::ShaderStageFlagBits::eVertex},
+                                  shader{SHADER_FOLDER /"trianglefrag.spv", vk::ShaderStageFlagBits::eFragment}
                               },
                               vertex_buffers,
                               layouts,

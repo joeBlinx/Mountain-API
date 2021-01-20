@@ -45,7 +45,7 @@ int main(){
         glm::vec2 pos;
     };
     std::vector<Vertex> vertices{
-            Vertex{{0.f, 0.5f}},
+            Vertex{{0.f, -0.5f}},
             Vertex{{-0.25f, 0.f}},
             Vertex{{0.25f, 0.f}}
     };
@@ -70,7 +70,7 @@ int main(){
     InitVulkan init(
             context,
             swap_chain,
-            render_pass, 1);
+            render_pass, 0);
 
     glfwSetKeyCallback(context.get_window().get_window(), key_callback);
     struct no_uni{};

@@ -29,12 +29,13 @@ function(compile_shaders target)
         get_filename_component(shader_without_extension ${_shader_path} NAME_WE)
 
         string(REPLACE "." "" shader_extension ${shader_extension}) #remove the dot before extension
-        add_custom_target(build_${shader_name} ALL
+        message("Creating custom target ${target}_build_${shader_name}")
+        add_custom_target(${target}_build_${shader_name} ALL
                 ${spriv_compiler} -V ${_shader_path} #compile shader
                 COMMAND
                 ${CMAKE_COMMAND} -E copy ${shader_extension}.spv ${_output_dir}/${shader_without_extension}${shader_extension}.spv #mv shader to build folder
                 )
-        add_dependencies(${target} build_${shader_name})
+        add_dependencies(${target} ${target}_build_${shader_name})
     endforeach()
 
 endfunction()

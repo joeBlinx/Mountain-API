@@ -31,7 +31,9 @@ InitVulkan::InitVulkan(const Context &context, const SwapChain &swap_chain, Rend
         _renderpass(renderpass){
 
     allocate_command_buffer();
-    create_descriptor_pool(nb_uniform);
+    if(nb_uniform != 0) {
+        create_descriptor_pool(nb_uniform);
+    }
     createSemaphores();
 
 }

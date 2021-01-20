@@ -6,5 +6,5 @@
 #define SANDBOX_SHADER_FOLDER_H
 #include <filesystem>
 #cmakedefine SHADER_FOLDER std::filesystem::path{"@SHADER_FOLDER@"}
-
+#cmakedefine ASSETS_FOLDER std::filesystem::path{"@ASSETS_FOLDER@"}
 #endif //SANDBOX_SHADER_FOLDER_H

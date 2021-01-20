@@ -115,20 +115,20 @@ void InitVulkan::createCommandBuffers(PipelineData<T> const& pipeline_data)
         vkCmdBindPipeline(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_data.graphics_pipeline.get_pipeline()); // bind the pipeline
         auto& vertex_buffer = pipeline_data.vertices;
 //        for(auto const& vertex_buffer : buffers){
-            _commandBuffers[i].bindVertexBuffers(0, 1, &vertex_buffer.get_buffer(), std::vector<vk::DeviceSize>{0}.data());
-            _commandBuffers[i].bindIndexBuffer(vertex_buffer.get_buffer(), vertex_buffer.get_indices_offset(), vk::IndexType::eUint32);
-            if(! _descriptor_sets.empty()) {
-                _commandBuffers[i].bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                                      pipeline_data.graphics_pipeline.get_pipeline_layout(),
-                                                      0, _nb_descriptor_set_by_image, &_descriptor_sets[i*_nb_descriptor_set_by_image], 0, nullptr);
+        _commandBuffers[i].bindVertexBuffers(0, 1, &vertex_buffer.get_buffer(), std::vector<vk::DeviceSize>{0}.data());
+        _commandBuffers[i].bindIndexBuffer(vertex_buffer.get_buffer(), vertex_buffer.get_indices_offset(), vk::IndexType::eUint32);
+        if(! _descriptor_sets.empty()) {
+            _commandBuffers[i].bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                                  pipeline_data.graphics_pipeline.get_pipeline_layout(),
+                                                  0, _nb_descriptor_set_by_image, &_descriptor_sets[i*_nb_descriptor_set_by_image], 0, nullptr);
+        }
+        for (auto const& value: pipeline_data.push_constant_values) {
+            for (auto const &push_constant_range : pipeline_data.graphics_pipeline.get_push_constant_ranges()) {
+                _commandBuffers[i].pushConstants(pipeline_data.graphics_pipeline.get_pipeline_layout(),
+                                                 push_constant_range.stageFlags, push_constant_range.offset,
+                                                 push_constant_range.size, (reinterpret_cast<std::byte const*>(&value)+push_constant_range.offset));
             }
-            for (auto const& value: pipeline_data.push_constant_values) {
-                for (auto const &push_constant_range : pipeline_data.graphics_pipeline.get_push_constant_ranges()) {
-                    _commandBuffers[i].pushConstants(pipeline_data.graphics_pipeline.get_pipeline_layout(),
-                                                     push_constant_range.stageFlags, push_constant_range.offset,
-                                                     push_constant_range.size, (reinterpret_cast<std::byte const*>(&value)+push_constant_range.offset));
-                }
-            }
+        }
         vkCmdDrawIndexed(_commandBuffers[i], vertex_buffer.get_indices_count(), 1, 0, 0, 0); // draw buffer
 //        }
 
