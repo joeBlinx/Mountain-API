@@ -128,8 +128,8 @@ void InitVulkan::createCommandBuffers(PipelineData<T> const& pipeline_data)
                                                      push_constant_range.stageFlags, push_constant_range.offset,
                                                      push_constant_range.size, (reinterpret_cast<std::byte const*>(&value)+push_constant_range.offset));
                 }
-                vkCmdDrawIndexed(_commandBuffers[i], vertex_buffer.get_indices_count(), 1, 0, 0, 0); // draw buffer
             }
+        vkCmdDrawIndexed(_commandBuffers[i], vertex_buffer.get_indices_count(), 1, 0, 0, 0); // draw buffer
 //        }
 
         vkCmdEndRenderPass(_commandBuffers[i]);

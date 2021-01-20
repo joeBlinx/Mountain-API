@@ -8,7 +8,7 @@
 #include <sandbox_useful/buffer/vertex.hpp>
 #include <sandbox_useful/graphics_pipeline.hpp>
 #include <sandbox_useful/initVulkan.hpp>
-
+#include "shader_folder.h"
 void key_callback(GLFWwindow* window, int key, int , int action, int)
 {
     if(key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE){
@@ -63,14 +63,14 @@ int main(){
                               swap_chain,
                               render_pass,
                               std::array{
-                                      shader{"trianglevert.spv", vk::ShaderStageFlagBits::eVertex},
-                                      shader{"trianglefrag.spv", vk::ShaderStageFlagBits::eFragment}
+                                      shader{SHADER_FOLDER / "trianglevert.spv", vk::ShaderStageFlagBits::eVertex},
+                                      shader{SHADER_FOLDER / "trianglefrag.spv", vk::ShaderStageFlagBits::eFragment}
                               },
                               buffers);
     InitVulkan init(
             context,
             swap_chain,
-            render_pass);
+            render_pass, 1);
 
     glfwSetKeyCallback(context.get_window().get_window(), key_callback);
     struct no_uni{};
