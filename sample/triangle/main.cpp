@@ -1,14 +1,13 @@
 
-
 #include <vector>
-#include <sandbox_useful/context.hpp>
-#include <sandbox_useful/renderpass/renderPass.hpp>
-#include <sandbox_useful/swapChain.hpp>
+#include <mountain/context.hpp>
+#include <mountain/renderpass/renderPass.hpp>
+#include <mountain/swapChain.hpp>
 #include <glm/glm.hpp>
-#include <sandbox_useful/buffer/vertex.hpp>
-#include <sandbox_useful/graphics_pipeline.hpp>
-#include <sandbox_useful/initVulkan.hpp>
-#include "shader_folder.h"
+#include <mountain/buffer/vertex.hpp>
+#include <mountain/graphics_pipeline.hpp>
+#include <mountain/initVulkan.hpp>
+#include "ressource_paths.h"
 void key_callback(GLFWwindow* window, int key, int , int action, int)
 {
     if(key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE){

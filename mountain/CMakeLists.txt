@@ -2,18 +2,18 @@ cmake_minimum_required(VERSION 3.10)
 include(CMakeParseArguments)
 
 
-add_library(SandBox_utils STATIC)
-add_library(SandBox::utils ALIAS SandBox_utils)
+add_library(Mountain_API STATIC)
+add_library(Mountain::API ALIAS Mountain_API)
 
-target_include_directories(SandBox_utils 
+target_include_directories(Mountain_API 
 							PUBLIC 
 								inc/ 
-							PRIVATE 
-								inc/sandbox_useful 
-								inc/sandbox_useful/renderpass
-								inc/sandbox_useful/buffer
+							PRIVATE
+		inc/mountain
+		inc/mountain/renderpass
+		inc/mountain/buffer
 								)
-target_link_libraries(SandBox_utils PRIVATE
+target_link_libraries(Mountain_API PRIVATE
 										vulkan::headers
 									PUBLIC
 										utils::utils
@@ -22,7 +22,7 @@ target_link_libraries(SandBox_utils PRIVATE
 										CONAN_PKG::tinyobjloader
 										CONAN_PKG::glm
 											)
-set_common_properties(SandBox_utils)
+set_common_properties(Mountain_API)
 set_sources(_srcs
 				FOLDER src
 				FILES 
@@ -42,7 +42,7 @@ set_sources(_srcs_buffer
 			FILES
 				vertex.cpp)
 set_sources(_headers_buffer
-			FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/inc/sandbox_useful/buffer
+			FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/inc/mountain/buffer
 			FILES 
 				vertex.hpp
 				vertex.tpp
@@ -50,7 +50,7 @@ set_sources(_headers_buffer
 				image2d.h
 )			
 set_sources(_headers 
-				FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/inc/sandbox_useful
+				FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/inc/mountain
 				FILES 
 					context.hpp
 					renderpass/renderPass.hpp
@@ -60,8 +60,8 @@ set_sources(_headers
 					sampler.h
 					load_model.h
 				)
-target_compile_definitions(SandBox_utils PUBLIC -DGLFW_INCLUDE_VULKAN)
-target_compile_options(SandBox_utils PUBLIC -fconcepts)
-target_sources(SandBox_utils PRIVATE ${_srcs} ${_srcs_buffer}
+target_compile_definitions(Mountain_API PUBLIC -DGLFW_INCLUDE_VULKAN)
+target_compile_options(Mountain_API PUBLIC -fconcepts)
+target_sources(Mountain_API PRIVATE ${_srcs} ${_srcs_buffer}
 							INTERFACE ${_headers} ${_headers_buffer})
 							

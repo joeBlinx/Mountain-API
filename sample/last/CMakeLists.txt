@@ -28,7 +28,7 @@ target_compile_definitions(last PRIVATE
 		)
 
 target_link_libraries(last PRIVATE
-									SandBox::utils
+									Mountain::API
 									CONAN_PKG::glm
 											)
 
