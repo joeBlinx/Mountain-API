@@ -1,9 +1,9 @@
 # Mountain-API
 
-# VERSION 0.1
+## VERSION 0.1
 Heavily based on this tutorial [https://vulkan-tutorial.com/](https://vulkan-tutorial.com/)
 
-# Build requirements
+## Build requirements
 To build the Moutain-API you'll need several things
 1. Vulkan SDK [https://vulkan.lunarg.com/](https://vulkan.lunarg.com/)
 2. conan [https://docs.conan.io/en/latest/installation.html](https://docs.conan.io/en/latest/installation.html)
@@ -11,11 +11,11 @@ To build the Moutain-API you'll need several things
 4. a C++20 compliant compiler (gcc-10, MSVC 19.23)
 
 For Linux, you can use the Dockerfile provide in the docker folder.
-# Build
+## Build
 You only have to launch cmake as you usually do with other project
 
 To build the sample you'll need to set `BUILD_SAMPLES` to `ON`
-# API Description
+## API Description
 
 ## Next Features
 - Make a loader of share library, the share library will old all of necessary command 
