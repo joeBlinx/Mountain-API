@@ -43,10 +43,17 @@ int main(){
     struct Vertex{
         glm::vec2 pos;
     };
+    /* This is a triangle that will be shown
+     *                    1 (0., -0.5f) don't forget that the y axis
+     *                   /\ // is from top to bottom
+     *                  /  \
+     *                 /    \
+     * (-0.25, 0)    2 ______ 3 (0.25, 0.)
+     */
     std::vector<Vertex> vertices{
-            Vertex{{0.f, -0.5f}},
-            Vertex{{-0.25f, 0.f}},
-            Vertex{{0.25f, 0.f}}
+            Vertex{{0.f, -0.5f}}, // 1
+            Vertex{{-0.25f, 0.f}},// 2
+            Vertex{{0.25f, 0.f}} // 3
     };
     std::vector<uint32_t> indices{0, 1, 2};
     std::vector<mountain::buffer::vertex> buffers;
