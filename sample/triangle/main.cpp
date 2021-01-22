@@ -61,11 +61,11 @@ int main(){
     std::vector<mountain::buffer::vertex> buffers;
     buffers.emplace_back(
             mountain::buffer::vertex{context,
-                                     mountain::buffer::vertex_description(0,
+                         mountain::buffer::vertex_description(0,
                                                   0,
-                                                  CLASS_DESCRIPTION(Vertex, pos, color)),
-                      vertices,
-                      std::move(indices)}
+                                                  CLASS_DESCRIPTION(Vertex, color, pos)),
+                                  vertices,
+                                  std::move(indices)}
     );
     mountain::GraphicsPipeline pipeline(context,
                               swap_chain,

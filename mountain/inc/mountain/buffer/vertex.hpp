@@ -46,6 +46,9 @@ namespace mountain {
                     bindings(binding,
                              sizeof(T),
                              vk::VertexInputRate::eVertex) {
+                std::ranges::sort(format_offsets, [](auto const& format_offset_a, auto const& format_offset_b){
+                    return format_offset_a.offset < format_offset_b.offset;
+                });
                 attributes.resize(attributes_size);
                 std::generate(std::begin(attributes), std::end(attributes),
                               [form_offset = std::begin(
