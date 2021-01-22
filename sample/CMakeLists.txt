@@ -3,7 +3,7 @@ project(samples)
 include(cmake/compile_shader.cmake)
 
 
-foreach(sample IN ITEMS triangle last)
+foreach(sample IN ITEMS triangle last push_constants)
     set(SHADER_FOLDER ${CMAKE_CURRENT_BINARY_DIR}/${sample})
     set(ASSETS_FOLDER ${CMAKE_SOURCE_DIR}/assets)
     configure_file(ressource_paths.h ${CMAKE_CURRENT_BINARY_DIR}/${sample}/ressource_paths.h @ONLY)
