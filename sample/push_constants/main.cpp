@@ -8,6 +8,7 @@
 #include <mountain/buffer/vertex.hpp>
 #include <mountain/graphics_pipeline.hpp>
 #include <mountain/initVulkan.hpp>
+#include <thread>
 #include "ressource_paths.h"
 void key_callback(GLFWwindow* window, int key, int , int action, int)
 {
@@ -71,7 +72,7 @@ int main(){
 
     struct PushConstant{
         struct VertexPushConstant{
-            glm::mat3 model;
+            glm::mat4 model;
         }vertex_push_constant;
         struct FragmentPushConstant{
             float color;
@@ -101,14 +102,23 @@ int main(){
     mountain::PipelineData<PushConstant> object{
             buffers[0], pipeline, {PushConstant{
                 glm::scale(
-                        glm::vec3{2.0f, 0.f, 0.f}),
+                        glm::vec3{2.0f}),
                        {0.5f}}
             }
     };
     init.createCommandBuffers(object);
+    using namespace std::chrono_literals;
+    int illuminance = 0;
     while (!glfwWindowShouldClose(context.get_window().get_window())) {
         glfwPollEvents();
+        illuminance = (illuminance + 2) % 255;
+        auto &push_constant = object.push_constant_values[0];
+        push_constant.fragment_push_constant.color = static_cast<float>(illuminance / 255.0f);
+        // because we use push constant we have to rebuild the command buffer each time we want
+        // to modify our push constant value
+        init.createCommandBuffers(object);
         init.drawFrame({});
+        std::this_thread::sleep_for(17ms);
     }
     vkDeviceWaitIdle(context.get_device());
 
