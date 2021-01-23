@@ -27,7 +27,7 @@ int main(){
 
     mountain::Context context{width,
                     height,
-                    "Vulkan Triangle",
+                    "Mountain-API Triangle",
                     devicesExtension};
 
     using mountain::subpass_attachment;

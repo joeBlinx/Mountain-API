@@ -27,7 +27,7 @@ int main(){
 
     mountain::Context context{width,
                               height,
-                              "Vulkan Push Constant",
+                              "Mountain-API Push Constant",
                               devicesExtension};
 
     using mountain::subpass_attachment;

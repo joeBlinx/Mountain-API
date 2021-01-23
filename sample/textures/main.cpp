@@ -27,7 +27,7 @@ int main(){
 
     mountain::Context context{width,
                     height,
-                    "Vulkan Triangle",
+                    "Moutain-API Texture Square",
                     devicesExtension};
 
     using mountain::subpass_attachment;
