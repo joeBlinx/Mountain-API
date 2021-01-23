@@ -14,35 +14,18 @@
 #include "mountain/descriptor_setlayout_binding/descriptorset_layout.h"
 #include "mountain/load_model.h"
 #include "ressource_paths.h"
-struct vec2{
-    float a;
-    float b;
-};
-struct vec3{
-    float a, b, c;
-};
-struct Vertex{
-    glm::vec3 position;
-    glm::vec3 color;
-    glm::vec2 tex_coord;
-};
+
 struct Model{
     glm::mat4 model {1};
 };
-struct Color{
-    float new_color{};
-};
-
 struct Uniform{
    Model model;
-   Color new_color{0.5};
 };
 
 struct move_rectangle{
     mountain::InitVulkan& init;
     mountain::PipelineData<Uniform> obj;
     void move(){
-        //obj.values[0].model.dir += +0.2;
         init.createCommandBuffers(obj);
     }
     void rotate(){
@@ -91,7 +74,7 @@ int main() {
 
     mountain::Context context{width,
                  height,
-                 "Vulkan Window",
+                 "Mountain-API load obj sample",
                  devicesExtension};
     using mountain::subpass_attachment;
     mountain::RenderPass render_pass{
@@ -121,9 +104,6 @@ int main() {
     mountain::PushConstant<Model> push_vertex{
 		vk::ShaderStageFlagBits::eVertex
 	};
-    mountain::PushConstant<Color> push_frag{
-            vk::ShaderStageFlagBits::eFragment
-    };
 
     vk::DescriptorSetLayoutBinding ubo_binding_layout =
             mountain::descriptorset_layout::create_descriptor_uniform(2, vk::ShaderStageFlagBits::eVertex);
@@ -131,20 +111,14 @@ int main() {
     vk::DescriptorSetLayoutBinding image_sampler_layout =
             mountain::descriptorset_layout::create_descriptor_image_sampler(1, vk::ShaderStageFlagBits::eFragment);
 
-    vk::DescriptorSetLayoutBinding ubo_layout_frag_color =
-            mountain::descriptorset_layout::create_descriptor_uniform(0, vk::ShaderStageFlagBits::eFragment);
-
     vk::DescriptorSetLayout descriptor_layout = mountain::descriptorset_layout::create_descriptorset_layout(
             context, {ubo_binding_layout, image_sampler_layout}
             );
-    vk::DescriptorSetLayout descriptor_layout_frag = mountain::descriptorset_layout::create_descriptorset_layout(
-            context, {ubo_layout_frag_color}
-    );
 
     mountain::buffer::image2d statue_image{context, ASSETS_FOLDER / "image/statue.jpg", 1};
     mountain::buffer::image2d viking_image{context, ASSETS_FOLDER /"image/viking_room.png", 10};
     mountain::image::sampler sampler(context, viking_image.get_mimap_levels());
-    auto layouts = std::vector{descriptor_layout, descriptor_layout_frag};
+    auto layouts = std::vector{descriptor_layout};
     mountain::GraphicsPipeline pipeline(context,
                               swap_chain,
                               render_pass,
@@ -154,36 +128,30 @@ int main() {
                               },
                               vertex_buffers,
                               layouts,
-                              push_vertex, push_frag);
+                              push_vertex);
     mountain::InitVulkan init(
             context,
             swap_chain,
             render_pass, 2);
 	init.allocate_descriptor_set(std::move(layouts));
     mountain::buffer::uniform<VP> uniform_vp(context, swap_chain.get_swap_chain_image_views().size());
-    mountain::buffer::uniform<float> uniform_color(context, swap_chain.get_swap_chain_image_views().size());
+
     init.update_descriptor_set(0, 2, uniform_vp);
-    init.update_descriptor_set(1, 0, uniform_color);
+
     init.update_descriptor_set(0, 1, viking_image, sampler);
     move_rectangle move{init,
                         {vertex_buffers[0], pipeline,
-                         {
-                            {
-                {}}
-                         }
+                         {{{}}}
                         }
     };
 
     glfwSetKeyCallback(context.get_window().get_window(), key_callback);
 
-
     glfwSetWindowUserPointer(context.get_window().get_window(), &move);
-
 
     init.createCommandBuffers(move.obj);
 
     std::vector<mountain::buffer::uniform_updater> updaters;
-    updaters.emplace_back(uniform_color.get_uniform_updater(2.0f));
     updaters.emplace_back(uniform_vp.get_uniform_updater(create_vp_matrix(width, height)));
     while (!glfwWindowShouldClose(context.get_window().get_window())) {
         glfwPollEvents();
