@@ -22,6 +22,12 @@ target_link_libraries(Mountain_API PRIVATE
 										CONAN_PKG::tinyobjloader
 										CONAN_PKG::glm
 											)
+
+target_compile_definitions(Mountain_API PUBLIC -DGLFW_INCLUDE_VULKAN)
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+	target_compile_options(Mountain_API PRIVATE -fsanitize=address  -fsanitize=undefined)
+	target_link_libraries(Mountain_API PRIVATE -fsanitize=address -fsanitize=undefined)
+endif()
 set_common_properties(Mountain_API)
 set_sources(_srcs
 				FOLDER src
@@ -60,8 +66,7 @@ set_sources(_headers
 					sampler.h
 					load_model.h
 				)
-target_compile_definitions(Mountain_API PUBLIC -DGLFW_INCLUDE_VULKAN)
-target_compile_options(Mountain_API PUBLIC -fconcepts)
+
 target_sources(Mountain_API PRIVATE ${_srcs} ${_srcs_buffer}
 							INTERFACE ${_headers} ${_headers_buffer})
 							
