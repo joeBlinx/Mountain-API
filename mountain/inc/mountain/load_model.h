@@ -19,7 +19,7 @@ namespace mountain::model{
         bool operator==(const Vertex& other) const {
             return pos == other.pos && tex_coord == other.tex_coord;
         }
-        static std::vector<format_offset<Vertex>> get_format_offset(){
+        static decltype(auto) get_format_offset(){
             return CLASS_DESCRIPTION(
                     Vertex, pos, tex_coord
                     );

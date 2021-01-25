@@ -1,6 +1,6 @@
 #pragma once
 #include <vulkan/vulkan.hpp>
-#include <vector>
+#include <array>
 #include <utils/type_trait.hpp>
 #include <algorithm>
 #include "mountain/context.hpp"
@@ -31,7 +31,7 @@ namespace mountain {
 #define CLASS_DESCRIPTION_5(object, attrib1, attrib2, attrib3, attrib4, attrib5)  CLASS_DESCRIPTION_4(object, attrib1,  attrib2, attrib3, attrib4), mountain::format_offset<object>{ mountain::get_format<decltype(object::attrib5)>(), offsetof(object, attrib5) }
 #define CLASS_DESCRIPTION_6(object, attrib1, attrib2, attrib3, attrib4, attrib5, attrib6)  CLASS_DESCRIPTION_5(object, attrib1,  attrib2, attrib3, attrib4, attrib5), mountain::format_offset<object>{ mountain::get_format<decltype(object::attrib6)>(), offsetof(object, attrib6) }
 
-#define CLASS_DESCRIPTION(object, ...) std::vector{ CONC(CLASS_DESCRIPTION_, NARGS(__VA_ARGS__)) (object, __VA_ARGS__) }
+#define CLASS_DESCRIPTION(object, ...) std::array{ CONC(CLASS_DESCRIPTION_, NARGS(__VA_ARGS__)) (object, __VA_ARGS__) }
     struct Device;
     namespace buffer {
         struct vertex_description {
@@ -39,9 +39,9 @@ namespace mountain {
             vk::VertexInputBindingDescription bindings;
             std::vector<vk::VertexInputAttributeDescription> attributes;
 
-            template<class T>
+            template<class T, auto N>
             vertex_description(uint32_t binding, uint32_t location_start_from,
-                               std::vector<format_offset<T>> &&format_offsets):
+                               std::array<format_offset<T>, N> &&format_offsets):
                     attributes_size(format_offsets.size()),
                     bindings(binding,
                              sizeof(T),
