@@ -69,10 +69,16 @@ namespace mountain {
             { a.operator[](0) };
         };
 
+        template <class T>
+        concept Container_uint32_t = requires(T){
+            { std::is_same_v<typename std::remove_cvref_t<T>::value_type, uint32_t> } ;
+            { Container<T> };
+        };
+
         struct vertex {
-            template<Container container>
+            template<Container container, Container_uint32_t indices_container>
             vertex(Context const &device, vertex_description &&description, container &&vertices,
-                   std::vector<uint32_t> &&indices);
+                   indices_container &&indices);
 
             vk::Buffer const &get_buffer() const { return *_buffer; }
 

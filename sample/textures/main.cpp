@@ -16,33 +16,7 @@ void key_callback(GLFWwindow* window, int key, int , int action, int)
         glfwSetWindowShouldClose(window, true);
     }
 }
-int main(){
-
-    std::vector<const char*> const devicesExtension{
-            VK_KHR_SWAPCHAIN_EXTENSION_NAME
-    };
-
-    int constexpr width = 1366;
-    int constexpr height = 768;
-
-    mountain::Context context{width,
-                    height,
-                    "Moutain-API Texture Square",
-                    devicesExtension};
-
-    using mountain::subpass_attachment;
-    mountain::RenderPass render_pass{
-            context,
-            mountain::SubPass{subpass_attachment::COLOR}
-    };
-
-    mountain::SwapChain swap_chain{
-            context,
-            render_pass,
-            vk::ImageUsageFlagBits::eColorAttachment,
-            width,
-            height
-    };
+std::vector<mountain::buffer::vertex> create_buffers(mountain::Context const& context){
     struct Vertex{
         glm::vec2 pos; // location 0
         glm::vec2 uv; // location 1
@@ -55,25 +29,57 @@ int main(){
      *                 |      |
      *               2 |______|3
      */
-    std::vector<Vertex> vertices{
+    std::array constexpr vertices{
             Vertex{{-0.5f, -0.5f}, {0.0f, 0.f}}, // 0
             Vertex{{0.5f, -0.5f}, {1.0f, 0.f}},// 1
             Vertex{{-0.5f, 0.5f}, {0.0f, 1.f}},// 2
             Vertex{{0.5f, 0.5f}, {1.0f, 1.f}} // 3
     };
-    std::vector<uint32_t> indices{0, 1, 2, 1, 2, 3};
+    std::array<uint32_t, 6> constexpr indices{0, 1, 2, 1, 2, 3};
     std::vector<mountain::buffer::vertex> buffers;
     buffers.emplace_back(
             mountain::buffer::vertex{context,
-                         mountain::buffer::vertex_description(0,
-                                                  0,
-                                                  CLASS_DESCRIPTION(Vertex, uv, pos)),
-                                  vertices,
-                                  std::move(indices)}
+                                     mountain::buffer::vertex_description(0,
+                                                                          0,
+                                                                          CLASS_DESCRIPTION(Vertex, uv, pos)),
+                                     vertices,
+                                     indices}
     );
-    auto layout_image = mountain::descriptorset_layout::create_descriptor_image_sampler(0, vk::ShaderStageFlagBits::eFragment);
-    auto descriptor_set = mountain::descriptorset_layout::create_descriptorset_layout(context, {layout_image});
-    mountain::GraphicsPipeline pipeline(context,
+    return buffers;
+}
+int main(){
+
+    std::vector<const char*> const devicesExtension{
+            VK_KHR_SWAPCHAIN_EXTENSION_NAME
+    };
+
+    int constexpr width = 1366;
+    int constexpr height = 768;
+
+    mountain::Context const context{width,
+                    height,
+                    "Mountain-API Texture Square",
+                    devicesExtension};
+
+    using mountain::subpass_attachment;
+    mountain::RenderPass const render_pass{
+            context,
+            mountain::SubPass{subpass_attachment::COLOR}
+    };
+
+    mountain::SwapChain const swap_chain{
+            context,
+            render_pass,
+            vk::ImageUsageFlagBits::eColorAttachment,
+            width,
+            height
+    };
+
+    std::vector<mountain::buffer::vertex> const buffers = create_buffers(context);
+
+    auto const layout_image = mountain::descriptorset_layout::create_descriptor_image_sampler(0, vk::ShaderStageFlagBits::eFragment);
+    auto const descriptor_set = mountain::descriptorset_layout::create_descriptorset_layout(context, {layout_image});
+    mountain::GraphicsPipeline const pipeline(context,
                               swap_chain,
                               render_pass,
                               std::array{
@@ -81,8 +87,8 @@ int main(){
                                       mountain::shader{SHADER_FOLDER / "texturefrag.spv", vk::ShaderStageFlagBits::eFragment}
                               },
                               buffers, {descriptor_set});
-    mountain::buffer::image2d statue_image(context, ASSETS_FOLDER / "image/statue.jpg", 1);
-    mountain::image::sampler sampler(context, 1);
+    mountain::buffer::image2d const statue_image(context, ASSETS_FOLDER / "image/statue.jpg", 1);
+    mountain::image::sampler const sampler(context, 1);
     mountain::InitVulkan init(
             context,
             swap_chain,

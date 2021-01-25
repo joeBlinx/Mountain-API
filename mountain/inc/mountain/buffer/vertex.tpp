@@ -26,8 +26,8 @@ void vertex::create_buffer(container const& vertices, vk::BufferUsageFlags buffe
                                                                        vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
     _device.copy_buffer(buffer, staging_buffer, buffer_size);
 }
-template<Container container>
-vertex::vertex(Context const &device, vertex_description&& description, container &&vertices, std::vector<uint32_t> &&indices)
+template<Container container, Container_uint32_t indices_container>
+vertex::vertex(Context const &device, vertex_description &&description, container &&vertices, indices_container &&indices)
         :_device(device),
         _indices_count(indices.size()),
         _description(std::move(description))

@@ -15,33 +15,7 @@ void key_callback(GLFWwindow* window, int key, int , int action, int)
         glfwSetWindowShouldClose(window, true);
     }
 }
-int main(){
-
-    std::vector<const char*> const devicesExtension{
-            VK_KHR_SWAPCHAIN_EXTENSION_NAME
-    };
-
-    int constexpr width = 1366;
-    int constexpr height = 768;
-
-    mountain::Context context{width,
-                    height,
-                    "Vulkan Triangle",
-                    devicesExtension};
-
-    using mountain::subpass_attachment;
-    mountain::RenderPass render_pass{
-            context,
-            mountain::SubPass{subpass_attachment::COLOR}
-    };
-
-    mountain::SwapChain swap_chain{
-            context,
-            render_pass,
-            vk::ImageUsageFlagBits::eColorAttachment,
-            width,
-            height
-    };
+std::vector<mountain::buffer::vertex> create_vertex(mountain::Context const& context){
     struct Vertex{
         glm::vec2 pos; // location 0
         glm::vec3 color; // location 1
@@ -53,22 +27,54 @@ int main(){
      *                 /    \
      * (-0.25, 0)    2 ______ 3 (0.25, 0.)
      */
-    std::vector<Vertex> vertices{
+    std::array constexpr vertices{
             Vertex{{0.f, -0.5f}, {1.0f, 0.f, 0.f}}, // 1
             Vertex{{-0.25f, 0.f}, {0.0f, 1.f, 0.f}},// 2
             Vertex{{0.25f, 0.f}, {0.0f, 0.f, 1.f}} // 3
     };
-    std::vector<uint32_t> indices{0, 1, 2};
+    std::array<uint32_t, 3> constexpr indices{0, 1, 2};
     std::vector<mountain::buffer::vertex> buffers;
     buffers.emplace_back(
             mountain::buffer::vertex{context,
-                         mountain::buffer::vertex_description(0,
-                                                  0,
-                                                  CLASS_DESCRIPTION(Vertex, color, pos)),
-                                  vertices,
-                                  std::move(indices)}
+                                     mountain::buffer::vertex_description(0,
+                                                                          0,
+                                                                          CLASS_DESCRIPTION(Vertex, color, pos)),
+                                     vertices,
+                                     indices}
     );
-    mountain::GraphicsPipeline pipeline(context,
+    return buffers;
+}
+int main(){
+
+    std::vector<const char*> const devicesExtension{
+            VK_KHR_SWAPCHAIN_EXTENSION_NAME
+    };
+
+    int constexpr width = 1366;
+    int constexpr height = 768;
+
+    mountain::Context const context{width,
+                    height,
+                    "Vulkan Triangle",
+                    devicesExtension};
+
+    using mountain::subpass_attachment;
+    mountain::RenderPass const render_pass{
+            context,
+            mountain::SubPass{subpass_attachment::COLOR}
+    };
+
+    mountain::SwapChain const swap_chain{
+            context,
+            render_pass,
+            vk::ImageUsageFlagBits::eColorAttachment,
+            width,
+            height
+    };
+
+    std::vector<mountain::buffer::vertex> const buffers = create_vertex(context);
+
+    mountain::GraphicsPipeline const pipeline(context,
                               swap_chain,
                               render_pass,
                               std::array{

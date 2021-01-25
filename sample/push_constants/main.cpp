@@ -16,6 +16,35 @@ void key_callback(GLFWwindow* window, int key, int , int action, int)
         glfwSetWindowShouldClose(window, true);
     }
 }
+std::vector<mountain::buffer::vertex> create_buffers(mountain::Context const& context){
+    struct Vertex{
+        glm::vec2 pos; // location 0
+        glm::vec3 color; // location 1
+    };
+    /* This is a triangle that will be shown
+     *                    1 (0., -0.5f) don't forget that the y axis
+     *                   /\ // is from top to bottom
+     *                  /  \
+     *                 /    \
+     * (-0.25, 0)    2 ______ 3 (0.25, 0.)
+     */
+    std::array vertices{
+            Vertex{{0.f, -0.5f}, {1.0f, 0.f, 0.f}}, // 1
+            Vertex{{-0.25f, 0.f}, {0.0f, 1.f, 0.f}},// 2
+            Vertex{{0.25f, 0.f}, {0.0f, 0.f, 1.f}} // 3
+    };
+    std::array indices{0, 1, 2};
+    std::vector<mountain::buffer::vertex> buffers;
+    buffers.emplace_back(
+            mountain::buffer::vertex{context,
+                                     mountain::buffer::vertex_description(0,
+                                                                          0,
+                                                                          CLASS_DESCRIPTION(Vertex, color, pos)),
+                                     vertices,
+                                     indices}
+    );
+    return buffers;
+}
 int main(){
 
     std::vector<const char*> const devicesExtension{
@@ -43,32 +72,8 @@ int main(){
             width,
             height
     };
-    struct Vertex{
-        glm::vec2 pos; // location 0
-        glm::vec3 color; // location 1
-    };
-    /* This is a triangle that will be shown
-     *                    1 (0., -0.5f) don't forget that the y axis
-     *                   /\ // is from top to bottom
-     *                  /  \
-     *                 /    \
-     * (-0.25, 0)    2 ______ 3 (0.25, 0.)
-     */
-    std::vector<Vertex> vertices{
-            Vertex{{0.f, -0.5f}, {1.0f, 0.f, 0.f}}, // 1
-            Vertex{{-0.25f, 0.f}, {0.0f, 1.f, 0.f}},// 2
-            Vertex{{0.25f, 0.f}, {0.0f, 0.f, 1.f}} // 3
-    };
-    std::vector<uint32_t> indices{0, 1, 2};
-    std::vector<mountain::buffer::vertex> buffers;
-    buffers.emplace_back(
-            mountain::buffer::vertex{context,
-                                     mountain::buffer::vertex_description(0,
-                                                                          0,
-                                                                          CLASS_DESCRIPTION(Vertex, color, pos)),
-                                     vertices,
-                                     std::move(indices)}
-    );
+
+    auto const buffers = create_buffers(context);
 
     struct PushConstant{
         struct VertexPushConstant{

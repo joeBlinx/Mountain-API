@@ -51,6 +51,18 @@ void key_callback(GLFWwindow* window, int key, int , int action, int)
         glfwSetWindowShouldClose(window, true);
     }
 }
+std::vector<mountain::buffer::vertex> create_buffers(mountain::Context const& context){
+
+    auto [vertices_3d, indices_3d] = mountain::model::load_obj(std::filesystem::path(ASSETS_FOLDER /                                                                             "model/viking_room.obj"));
+    std::vector<mountain::buffer::vertex> vertex_buffers;
+    vertex_buffers.emplace_back(mountain::buffer::vertex(context,
+                                                         mountain::buffer::vertex_description(0, 0,
+                                                                                              mountain::model::Vertex::get_format_offset()),
+                                                         vertices_3d,
+                                                         std::move(indices_3d)
+    ));
+    return vertex_buffers;
+}
 VP create_vp_matrix(int width, int height){
 
 
@@ -72,17 +84,17 @@ int main() {
 	int constexpr width = 1366;
 	int constexpr height = 768;
 
-    mountain::Context context{width,
+    mountain::Context const context{width,
                  height,
                  "Mountain-API load obj sample",
                  devicesExtension};
     using mountain::subpass_attachment;
-    mountain::RenderPass render_pass{
+    mountain::RenderPass const render_pass{
         context,
         mountain::SubPass{subpass_attachment::COLOR, subpass_attachment::DEPTH}
     };
 
-    mountain::SwapChain swap_chain{
+    mountain::SwapChain const swap_chain{
             context,
             render_pass,
             vk::ImageUsageFlagBits::eColorAttachment,
@@ -91,33 +103,25 @@ int main() {
     };
 
 
-    auto [vertices_3d, indices_3d] = mountain::model::load_obj(std::filesystem::path(ASSETS_FOLDER /                                                                             "model/viking_room.obj"));
-    std::vector<mountain::buffer::vertex> vertex_buffers;
-    vertex_buffers.emplace_back(mountain::buffer::vertex(context,
-         mountain::buffer::vertex_description(0, 0,
-                  mountain::model::Vertex::get_format_offset()),
-                               vertices_3d,
-                               std::move(indices_3d)
-            ));
+    auto const vertex_buffers = create_buffers(context);
 
-
-    mountain::PushConstant<Model> push_vertex{
+    mountain::PushConstant<Model> const push_vertex{
 		vk::ShaderStageFlagBits::eVertex
 	};
 
-    vk::DescriptorSetLayoutBinding ubo_binding_layout =
+    vk::DescriptorSetLayoutBinding const ubo_binding_layout =
             mountain::descriptorset_layout::create_descriptor_uniform(2, vk::ShaderStageFlagBits::eVertex);
 
-    vk::DescriptorSetLayoutBinding image_sampler_layout =
+    vk::DescriptorSetLayoutBinding const image_sampler_layout =
             mountain::descriptorset_layout::create_descriptor_image_sampler(1, vk::ShaderStageFlagBits::eFragment);
 
-    vk::DescriptorSetLayout descriptor_layout = mountain::descriptorset_layout::create_descriptorset_layout(
+    vk::DescriptorSetLayout const descriptor_layout = mountain::descriptorset_layout::create_descriptorset_layout(
             context, {ubo_binding_layout, image_sampler_layout}
             );
 
-    mountain::buffer::image2d statue_image{context, ASSETS_FOLDER / "image/statue.jpg", 1};
-    mountain::buffer::image2d viking_image{context, ASSETS_FOLDER /"image/viking_room.png", 10};
-    mountain::image::sampler sampler(context, viking_image.get_mimap_levels());
+    mountain::buffer::image2d const statue_image{context, ASSETS_FOLDER / "image/statue.jpg", 1};
+    mountain::buffer::image2d const viking_image{context, ASSETS_FOLDER /"image/viking_room.png", 10};
+    mountain::image::sampler const sampler(context, viking_image.get_mimap_levels());
     auto layouts = std::vector{descriptor_layout};
     mountain::GraphicsPipeline pipeline(context,
                               swap_chain,
