@@ -3,9 +3,10 @@ include(cmake/conan.cmake)
 include(cmake/utils/utils.cmake)
 
 check_build_type()
-project(sandBox
+project(MOUNTAIN-API
         LANGUAGES CXX
         )
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
 option(USE_SDL2 "use sdl2 for window managment" OFF)
 option(USE_GLFW "use glfw for window managment" ON)
@@ -20,7 +21,7 @@ add_subdirectory(cmake)
 add_subdirectory(mountain)
 add_subdirectory(utils)
 add_subdirectory(window_management)
-
+add_subdirectory(docs)
 if(${BUILD_SAMPLES})
     add_subdirectory(sample)
 endif()

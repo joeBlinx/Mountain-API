@@ -2,13 +2,13 @@
 // Created by joe on 5/1/19.
 //
 
-#ifndef SANDBOX_SWAPCHAIN_HPP
-#define SANDBOX_SWAPCHAIN_HPP
+#ifndef SANDBOX_SWAPCHAIN_H
+#define SANDBOX_SWAPCHAIN_H
 
 #include <vulkan/vulkan.hpp>
 #include <vector>
-#include "mountain/context.hpp"
-#include "swapChain.hpp"
+#include "mountain/context.h"
+#include "swapChain.h"
 namespace mountain {
 
     struct RenderPass;
@@ -59,4 +59,4 @@ namespace mountain {
     };
 
 }
-#endif //SANDBOX_SWAPCHAIN_HPP
+#endif //SANDBOX_SWAPCHAIN_H

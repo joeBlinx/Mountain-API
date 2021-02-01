@@ -12,6 +12,7 @@ target_include_directories(Mountain_API
 		inc/mountain
 		inc/mountain/renderpass
 		inc/mountain/buffer
+		inc/mountain/descriptor_setlayout_binding
 								)
 target_link_libraries(Mountain_API PRIVATE
 										vulkan::headers
@@ -53,7 +54,7 @@ set_sources(_srcs_buffer
 set_sources(_headers_buffer
 			FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/inc/mountain/buffer
 			FILES 
-				vertex.hpp
+				vertex.h
 				vertex.tpp
 				uniform.h
 				image2d.h
@@ -61,13 +62,14 @@ set_sources(_headers_buffer
 set_sources(_headers 
 				FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/inc/mountain
 				FILES 
-					context.hpp
-					renderpass/renderPass.hpp
-					swapChain.hpp
-					initVulkan.hpp
-					graphics_pipeline.hpp
+					context.h
+					renderpass/renderPass.h
+					swapChain.h
+					initVulkan.h
+					graphics_pipeline.h
 					sampler.h
 					load_model.h
+					no_sanitize.h
 				)
 
 target_sources(Mountain_API PRIVATE ${_srcs} ${_srcs_buffer}

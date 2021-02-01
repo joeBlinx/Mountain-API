@@ -6,7 +6,7 @@
 #define SANDBOX_LOAD_MODEL_H
 
 #include <filesystem>
-#include "buffer/vertex.hpp"
+#include "buffer/vertex.h"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
 

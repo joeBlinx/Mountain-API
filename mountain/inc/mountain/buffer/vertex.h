@@ -3,7 +3,7 @@
 #include <array>
 #include <utils/type_trait.hpp>
 #include <algorithm>
-#include "mountain/context.hpp"
+#include "mountain/context.h"
 #include "utils/raii_helper.h"
 namespace mountain {
 

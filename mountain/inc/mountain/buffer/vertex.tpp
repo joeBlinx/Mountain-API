@@ -1,5 +1,5 @@
 
-#include "vertex.hpp"
+#include "vertex.h"
 
 //
 // Created by stiven on 12/04/2020.

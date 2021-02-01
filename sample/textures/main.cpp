@@ -1,12 +1,12 @@
 
 #include <vector>
-#include <mountain/context.hpp>
-#include <mountain/renderpass/renderPass.hpp>
-#include <mountain/swapChain.hpp>
+#include <mountain/context.h>
+#include <mountain/renderpass/renderPass.h>
+#include <mountain/swapChain.h>
 #include <glm/glm.hpp>
-#include <mountain/buffer/vertex.hpp>
-#include <mountain/graphics_pipeline.hpp>
-#include <mountain/initVulkan.hpp>
+#include <mountain/buffer/vertex.h>
+#include <mountain/graphics_pipeline.h>
+#include <mountain/initVulkan.h>
 #include <thread>
 #include "ressource_paths.h"
 #include "mountain/descriptor_setlayout_binding/descriptorset_layout.h"

@@ -2,9 +2,9 @@
 // Created by joe on 5/10/19.
 //
 
-#include <context.hpp>
+#include <context.h>
 #include "utils/log.hpp"
-#include "renderPass.hpp"
+#include "renderPass.h"
 
 namespace mountain {
 

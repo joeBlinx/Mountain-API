@@ -5,7 +5,7 @@
 #ifndef SANDBOX_UNIFORM_H
 #define SANDBOX_UNIFORM_H
 
-#include "mountain/swapChain.hpp"
+#include "mountain/swapChain.h"
 #include "utils/raii_helper.h"
 #include <memory>
 namespace mountain::buffer {

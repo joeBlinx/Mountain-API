@@ -5,7 +5,7 @@
 #ifndef SANDBOX_SAMPLER_H
 #define SANDBOX_SAMPLER_H
 
-#include "context.hpp"
+#include "context.h"
 namespace mountain::image {
     struct sampler {
         sampler(Context const &context, uint32_t mipmap_levels);

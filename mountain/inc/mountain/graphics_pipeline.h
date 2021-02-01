@@ -8,7 +8,7 @@
 #include <vulkan/vulkan.hpp>
 #include <vector>
 #include <array>
-#include "mountain/buffer/vertex.hpp"
+#include "mountain/buffer/vertex.h"
 #include <filesystem>
 #include "utils/utils.hpp"
 namespace mountain {

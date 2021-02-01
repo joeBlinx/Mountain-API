@@ -1,4 +1,4 @@
-#include "context.hpp"	
+#include "context.h"
 #include "utils/utils.hpp"
 #include <string_view>
 #include "utils/log.hpp"
@@ -7,6 +7,7 @@
 #include <string_view>
 #include <set>
 #include <uniform.h>
+#include "no_sanitize.h"
 namespace mountain {
 
     Context::SwapChainSupportDetails query_swap_chain_support(vk::PhysicalDevice const &device, VkSurfaceKHR surface);
@@ -292,6 +293,7 @@ namespace mountain {
         utils::printFatalError("no suitable GPU found");
     }
 
+    NO_SANITIZE
     void Context::create_logical_device(std::vector<char const *> const &devicesExtension,
                                         std::vector<const char *> const &validationLayers) {
 
@@ -320,8 +322,8 @@ namespace mountain {
             info.ppEnabledLayerNames = validationLayers.data();
         }
 
-        _device = _physical_device.createDevice(info),
-                _graphics_queue = _device.getQueue(_indices.graphics_family, 0);
+        _device = _physical_device.createDevice(info);
+        _graphics_queue = _device.getQueue(_indices.graphics_family, 0);
         _present_queue = _device.getQueue(_indices.present_family, 0);
     }
 

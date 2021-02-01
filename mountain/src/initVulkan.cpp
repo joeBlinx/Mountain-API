@@ -2,7 +2,7 @@
 // Created by joe on 05/08/18.
 //
 
-#include "initVulkan.hpp"
+#include "initVulkan.h"
 #include "utils/log.hpp"
 #include <stdexcept>
 #include <vector>
@@ -12,9 +12,9 @@
 #include <algorithm>
 #include "utils/utils.hpp"
 #include <array>
-#include <mountain/swapChain.hpp>
-#include <mountain/context.hpp>
-#include <mountain/buffer/vertex.hpp>
+#include <mountain/swapChain.h>
+#include <mountain/context.h>
+#include <mountain/buffer/vertex.h>
 #include <uniform.h>
 namespace mountain {
 

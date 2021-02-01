@@ -2,22 +2,25 @@
 // Created by joe on 05/08/18.
 //
 
-#ifndef SANDBOX_INITVULKAN_HPP
-#define SANDBOX_INITVULKAN_HPP
+#ifndef SANDBOX_INITVULKAN_H
+#define SANDBOX_INITVULKAN_H
 
 #include <vulkan/vulkan.hpp>
 #include <vector>
-#include "mountain/swapChain.hpp"
-#include "mountain/context.hpp"
-#include "mountain/renderpass/renderPass.hpp"
+#include "mountain/swapChain.h"
+#include "mountain/context.h"
+#include "mountain/renderpass/renderPass.h"
 #include "utils/utils.hpp"
-#include "mountain/buffer/vertex.hpp"
-#include "mountain/buffer/vertex.hpp"
-#include "mountain/graphics_pipeline.hpp"
+#include "mountain/buffer/vertex.h"
+#include "mountain/buffer/vertex.h"
+#include "mountain/graphics_pipeline.h"
 #include <cstddef>
 #include <mountain/buffer/image2d.h>
 #include "mountain/buffer/uniform.h"
 #include "sampler.h"
+/**
+ *
+ */
 namespace mountain {
 
     struct GraphicsPipeline;
@@ -28,6 +31,9 @@ namespace mountain {
         std::vector<PushConstant> push_constant_values;
     };
 
+    /**
+     *
+     */
     struct InitVulkan {
 
         InitVulkan(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass,
@@ -191,5 +197,5 @@ namespace mountain {
                                                    write_sets.data(), 0, nullptr);
     }
 }
-#endif //SANDBOX_INITVULKAN_HPP
+#endif //SANDBOX_INITVULKAN_H
 
