@@ -15,9 +15,6 @@ steps:
   - name: build
     image: ubuntu_docker
     pull : never
-    volumes:
-      - name : build_folder
-        path : /workspace/build
     commands:
       - mkdir build || exit 0
       - cd build
@@ -29,6 +26,3 @@ volumes:
   - name: build_docker
     host:
       path: /var/run/docker.sock
-  - name: build_folder
-    host:
-      path: /home/.build/sandbox
