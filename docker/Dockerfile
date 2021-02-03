@@ -18,8 +18,12 @@ RUN apt-get install -y --no-install-recommends libx11-xcb-dev libxcb-dri3-dev li
 RUN apt install -y rsync gdb
 RUN apt install -y python3-pip && \
 python3 -m pip install ninja &&\
-python3 -m pip install conan
-RUN apt install -y openssh-server ssh
+python3 -m pip install conan &&\
+python3 -m pip install sphinx_rtd_theme &&\
+python3 -m pip install breathe &&\
+python3 -m pip install Sphinx &&\
+python3 -m pip install recommonmark
+RUN apt install -y openssh-server ssh doxygen
 RUN apt clean
 RUN useradd -m user && yes password | passwd user
 
