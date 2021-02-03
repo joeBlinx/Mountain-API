@@ -32,16 +32,25 @@ namespace mountain {
     };
 
     /**
-     *
+     * Init Vulkan struct need a new name
      */
     struct InitVulkan {
 
         InitVulkan(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass,
                    int nb_uniform = 0);
 
+        /**
+         *
+         * @tparam T
+         * @param pipeline_data
+         */
         template<class T>
         void createCommandBuffers(PipelineData<T> const &pipeline_data);
 
+        /**
+         *
+         * @param descriptor_set_layouts
+         */
         void allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> &&descriptor_set_layouts);
 
         template<class T>
