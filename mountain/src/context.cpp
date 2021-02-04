@@ -14,10 +14,8 @@ namespace mountain {
 
     Context::QueueFamilyIndices
     find_queue_families(vk::PhysicalDevice const &device, VkSurfaceKHR surface, vk::QueueFlagBits queue_flag);
-
-    Context::Context(int width, int height, std::string_view title, std::vector<const char *> const &devicesExtension)
-            : _window(title, width, height) {
-        createInstance(title);
+    Context::Context(const Window &window, std::vector<const char *> const &devicesExtension): _window(window) {
+        createInstance(window.get_title());
         createSurface();
         setUpDebugCallBack();
 
@@ -31,6 +29,10 @@ namespace mountain {
 
         create_logical_device(devicesExtension, _validationLayers);
         create_command_pool();
+    }
+    Context::Context(int width, int height, std::string_view title, std::vector<const char *> const &devicesExtension)
+            : Context(Window(title, width, height), devicesExtension) {
+
     }
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -478,4 +480,6 @@ namespace mountain {
 
         return available_formats[0];
     }
+
+
 }

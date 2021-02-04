@@ -25,6 +25,8 @@ namespace mountain {
             std::vector<vk::PresentModeKHR> presentModes;
         };
 
+        Context(Window const& window, std::vector<const char *> const &devicesExtension);
+
         Context(int width, int height, std::string_view title, std::vector<const char *> const &devicesExtension);
 
         Context(Context const &) = delete;
