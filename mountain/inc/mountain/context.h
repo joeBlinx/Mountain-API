@@ -90,7 +90,7 @@ namespace mountain {
 #else
         static bool constexpr _enableValidationLayer = true;
 #endif
-        Window _window;
+        Window const& _window;
         vk::Instance _instance;
         VkSurfaceKHR _surface;
 
