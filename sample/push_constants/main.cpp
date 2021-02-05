@@ -68,7 +68,6 @@ int main(){
     mountain::SwapChain swap_chain{
             context,
             render_pass,
-            vk::ImageUsageFlagBits::eColorAttachment,
             width,
             height
     };

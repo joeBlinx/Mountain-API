@@ -16,8 +16,7 @@ namespace mountain {
 
     struct SwapChain {
 
-        SwapChain(Context const &context, RenderPass const &render_pass, vk::ImageUsageFlags image_usage, int width,
-                  int height);
+        SwapChain(Context const &context, RenderPass const &render_pass, int width, int height);
 
         SwapChain(SwapChain const &) = delete;
 
@@ -51,8 +50,7 @@ namespace mountain {
 
         void create_depth_resources();
 
-        void create_swap_chain(Context const &context, vk::ImageUsageFlags image_usage, int width,
-                               int height); // there are some parameter
+        void create_swap_chain(Context const &context, int width, int height); // there are some parameter
         void create_image_views();
 
         void create_frame_buffer(const RenderPass &render_pass);
