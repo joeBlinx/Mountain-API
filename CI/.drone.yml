@@ -12,13 +12,20 @@ steps:
     commands :
       - docker build docker/ -t ubuntu_docker
 
+  - name: cmake_generation
+    image: ubuntu_docker
+    pull: never
+    commands:
+      - mkdir build || exit 0
+      - cd build
+      - cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DBUILD_SAMPLES=ON -DBUILD_DOCUMENTATION=ON ..
+
   - name: build
     image: ubuntu_docker
     pull : never
     commands:
       - mkdir build || exit 0
       - cd build
-      - cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DBUILD_SAMPLES=ON -DBUILD_DOCUMENTATION=ON ..
       - cmake --build . -j 10
 
 
