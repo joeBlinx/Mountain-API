@@ -53,7 +53,7 @@ add_custom_command(OUTPUT ${SPHINX_INDEX_FILE}
         COMMENT "Generating documentation with Sphinx")
 
 # Nice named target so we can run the job easily
-add_custom_target(Sphinx ALL DEPENDS ${SPHINX_INDEX_FILE})
+add_custom_target(documentation ALL DEPENDS ${SPHINX_INDEX_FILE})
 
 # Add an install target to install the docs
 include(GNUInstallDirs)

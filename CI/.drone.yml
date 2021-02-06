@@ -20,13 +20,23 @@ steps:
       - cd build
       - cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DBUILD_SAMPLES=ON -DBUILD_DOCUMENTATION=ON ..
 
-  - name: build
+  - name: build_api
     image: ubuntu_docker
     pull : never
     commands:
-      - mkdir build || exit 0
-      - cd build
-      - cmake --build . -j 10
+      - cmake --build build --target MountainAPI
+
+  - name: build_samples
+    image: ubuntu_docker
+    pull : never
+    commands:
+      - cmake --build build --target samples
+
+  - name: build_documentation
+    image: ubuntu_docker
+    pull: never
+    commands:
+      - cmake --build build --target documentation
 
 
 volumes:
