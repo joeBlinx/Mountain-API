@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 #include <mountain/buffer/vertex.h>
 #include <mountain/graphics_pipeline.h>
-#include <mountain/initVulkan.h>
+#include <mountain/command_buffer.h>
 #include <thread>
 #include "ressource_paths.h"
 #include "mountain/descriptor_setlayout_binding/descriptorset_layout.h"
@@ -88,7 +88,7 @@ int main(){
                               buffers, {descriptor_set});
     mountain::buffer::image2d const statue_image(context, ASSETS_FOLDER / "image/statue.jpg", 1);
     mountain::image::sampler const sampler(context, 1);
-    mountain::InitVulkan init(
+    mountain::CommandBuffer init(
             context,
             swap_chain,
             render_pass, 1);
@@ -99,7 +99,7 @@ int main(){
     mountain::PipelineData<no_uni> object{
         buffers[0], pipeline, {}
     };
-    init.createCommandBuffers(object);
+    init.init(object);
     using namespace std::chrono_literals;
     while (!glfwWindowShouldClose(context.get_window().get_window())) {
         glfwPollEvents();

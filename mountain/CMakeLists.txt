@@ -41,7 +41,7 @@ set_sources(_srcs
 					context.cpp
 					renderpass/renderPass.cpp
 					swapChain.cpp
-					initVulkan.cpp
+					command_buffer.cpp
 					graphics_pipeline.cpp
 					buffer/uniform.cpp
 					buffer/image2d.cpp
@@ -67,7 +67,7 @@ set_sources(_headers
 					context.h
 					renderpass/renderPass.h
 					swapChain.h
-					initVulkan.h
+					command_buffer.h
 					graphics_pipeline.h
 					sampler.h
 					load_model.h

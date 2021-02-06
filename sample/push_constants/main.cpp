@@ -7,7 +7,7 @@
 #include <glm/gtx/transform.hpp>
 #include <mountain/buffer/vertex.h>
 #include <mountain/graphics_pipeline.h>
-#include <mountain/initVulkan.h>
+#include <mountain/command_buffer.h>
 #include <thread>
 #include "ressource_paths.h"
 void key_callback(GLFWwindow* window, int key, int , int action, int)
@@ -96,7 +96,7 @@ int main(){
                                                 mountain::shader{SHADER_FOLDER / "push_constantfrag.spv", vk::ShaderStageFlagBits::eFragment}
                                         },
                                         buffers, {}, vertex_push, frag_push);
-    mountain::InitVulkan init(
+    mountain::CommandBuffer init(
             context,
             swap_chain,
             render_pass);
@@ -110,7 +110,7 @@ int main(){
                        {0.5f}}
             }
     };
-    init.createCommandBuffers(object);
+    init.init(object);
     using namespace std::chrono_literals;
     int illuminance = 0;
     while (!glfwWindowShouldClose(context.get_window().get_window())) {
@@ -120,7 +120,7 @@ int main(){
         push_constant.fragment_push_constant.color = static_cast<float>(illuminance / 255.0f);
         // because we use push constant we have to rebuild the command buffer each time we want
         // to modify our push constant value
-        init.createCommandBuffers(object);
+        init.init(object);
         init.drawFrame({});
         std::this_thread::sleep_for(17ms);
     }

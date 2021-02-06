@@ -34,10 +34,10 @@ namespace mountain {
     /**
      * Init Vulkan struct need a new name
      */
-    struct InitVulkan {
+    struct CommandBuffer {
 
-        InitVulkan(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass,
-                   int nb_uniform = 0);
+        CommandBuffer(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass,
+                      int nb_uniform = 0);
 
         /**
          *
@@ -45,7 +45,7 @@ namespace mountain {
          * @param pipeline_data
          */
         template<class T>
-        void createCommandBuffers(PipelineData<T> const &pipeline_data);
+        void init(PipelineData<T> const &pipeline_data);
 
         /**
          *
@@ -62,7 +62,7 @@ namespace mountain {
 
         void drawFrame(std::vector<buffer::uniform_updater> &&updaters);
 
-        ~InitVulkan();
+        ~CommandBuffer();
 
     private:
 #ifdef NDEBUG
@@ -103,7 +103,7 @@ namespace mountain {
 
 
     template<class T>
-    void InitVulkan::createCommandBuffers(PipelineData<T> const &pipeline_data) {
+    void CommandBuffer::init(PipelineData<T> const &pipeline_data) {
         for (size_t i = 0; i < _commandBuffers.size(); i++) {
             VkCommandBufferBeginInfo beginInfo = {};
             beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -167,8 +167,8 @@ namespace mountain {
     }
 
     template<class T>
-    void InitVulkan::update_descriptor_set(int first_descriptor_set_index, int binding,
-                                           const buffer::uniform<T> &uniform_buffer) {
+    void CommandBuffer::update_descriptor_set(int first_descriptor_set_index, int binding,
+                                              const buffer::uniform<T> &uniform_buffer) {
         /*
         * We use one descriptor set layout by image of the swap chain,
         * but for using multiple set layout, we store them as follow:

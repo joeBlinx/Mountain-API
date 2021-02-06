@@ -1,5 +1,5 @@
 #include <iostream>
-#include "mountain/initVulkan.h"
+#include "mountain/command_buffer.h"
 #include "mountain/context.h"
 #include "mountain/swapChain.h"
 #include "mountain/renderpass/renderPass.h"
@@ -23,17 +23,17 @@ struct Uniform{
 };
 
 struct move_rectangle{
-    mountain::InitVulkan& init;
+    mountain::CommandBuffer& init;
     mountain::PipelineData<Uniform> obj;
     void move(){
-        init.createCommandBuffers(obj);
+        init.init(obj);
     }
     void rotate(){
         static auto startTime = std::chrono::high_resolution_clock::now();
         auto currentTime = std::chrono::high_resolution_clock::now();
         float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
         obj.push_constant_values[0].model.model = glm::rotate(glm::mat4{1.}, time*glm::radians<float>(30.), glm::vec3(0., 0., 1.));
-        init.createCommandBuffers(obj);
+        init.init(obj);
 
     }
 };
@@ -132,7 +132,7 @@ int main() {
                               vertex_buffers,
                               layouts,
                               push_vertex);
-    mountain::InitVulkan init(
+    mountain::CommandBuffer init(
             context,
             swap_chain,
             render_pass, 2);
@@ -152,7 +152,7 @@ int main() {
 
     glfwSetWindowUserPointer(context.get_window().get_window(), &move);
 
-    init.createCommandBuffers(move.obj);
+    init.init(move.obj);
 
     std::vector<mountain::buffer::uniform_updater> updaters;
     updaters.emplace_back(uniform_vp.get_uniform_updater(create_vp_matrix(width, height)));

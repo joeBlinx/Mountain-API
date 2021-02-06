@@ -22,5 +22,5 @@ Indices and tables
 
 Reference API
 =============
-.. doxygenstruct:: mountain::InitVulkan
+.. doxygenstruct:: mountain::CommandBuffer
    :members:

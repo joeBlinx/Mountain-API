@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 #include <mountain/buffer/vertex.h>
 #include <mountain/graphics_pipeline.h>
-#include <mountain/initVulkan.h>
+#include <mountain/command_buffer.h>
 #include <thread>
 #include "ressource_paths.h"
 void key_callback(GLFWwindow* window, int key, int , int action, int)
@@ -81,7 +81,7 @@ int main(){
                                       mountain::shader{SHADER_FOLDER / "trianglefrag.spv", vk::ShaderStageFlagBits::eFragment}
                               },
                               buffers);
-    mountain::InitVulkan init(
+    mountain::CommandBuffer command_buffer(
             context,
             swap_chain,
             render_pass);
@@ -91,13 +91,13 @@ int main(){
     mountain::PipelineData<no_uni> object{
         buffers[0], pipeline, {}
     };
-    init.createCommandBuffers(object);
+    command_buffer.init(object);
     using namespace std::chrono_literals;
     while (!glfwWindowShouldClose(context.get_window().get_window())) {
         glfwPollEvents();
-        init.drawFrame({});
+        command_buffer.drawFrame({});
         std::this_thread::sleep_for(17ms);
     }
-    vkDeviceWaitIdle(context.get_device());
+    context->waitIdle();
 
 }
