@@ -30,15 +30,29 @@ namespace mountain {
 #define CLASS_DESCRIPTION_4(object, attrib1, attrib2, attrib3, attrib4)   CLASS_DESCRIPTION_3(object, attrib1,  attrib2, attrib3), mountain::format_offset<object>{ mountain::get_format<decltype(object::attrib4)>(), offsetof(object, attrib4) }
 #define CLASS_DESCRIPTION_5(object, attrib1, attrib2, attrib3, attrib4, attrib5)  CLASS_DESCRIPTION_4(object, attrib1,  attrib2, attrib3, attrib4), mountain::format_offset<object>{ mountain::get_format<decltype(object::attrib5)>(), offsetof(object, attrib5) }
 #define CLASS_DESCRIPTION_6(object, attrib1, attrib2, attrib3, attrib4, attrib5, attrib6)  CLASS_DESCRIPTION_5(object, attrib1,  attrib2, attrib3, attrib4, attrib5), mountain::format_offset<object>{ mountain::get_format<decltype(object::attrib6)>(), offsetof(object, attrib6) }
-
+/**
+ *
+ * @param object: a structure type
+ * @param ...: attribute inside the structure
+ */
 #define CLASS_DESCRIPTION(object, ...) std::array{ CONC(CLASS_DESCRIPTION_, NARGS(__VA_ARGS__)) (object, __VA_ARGS__) }
-    struct Device;
     namespace buffer {
         struct vertex_description {
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
             size_t attributes_size;
             vk::VertexInputBindingDescription bindings;
             std::vector<vk::VertexInputAttributeDescription> attributes;
-
+#endif
+            /**
+             *
+             * @tparam T: Type of the structure use to create vertex buffer
+             * @tparam N: number of attributes in the structure
+             * @param binding: must be unique by pipeline
+             * @param location_start_from: location refer to location in shaders. The first attribute will have
+             * location=location_start_from and then we increment by 1 for every others attribute.
+             * @param format_offsets: contains information about attributes, theirs offset inside the structure.
+             * This is not create by hand and you should use the CLASS_DESCRIPTION macro.
+             */
             template<class T, auto N>
             vertex_description(uint32_t binding, uint32_t location_start_from,
                                std::array<format_offset<T>, N> &&format_offsets):
@@ -74,12 +88,21 @@ namespace mountain {
             { std::is_same_v<typename std::remove_cvref_t<T>::value_type, uint32_t> } ;
             { Container<T> };
         };
-
+        //TODO: change Container into std::span
         struct vertex {
+            /**
+             * Construct a vertex bufer
+             * @tparam container: a container
+             * @tparam indices_container: a container of uint32_t
+             * @param context: vulkan context
+             * @param description: the vertex_description
+             * @param vertices: the vertices to include inside the buffer
+             * @param indices: the corresponding indices
+             */
             template<Container container, Container_uint32_t indices_container>
-            vertex(Context const &device, vertex_description &&description, container &&vertices,
+            vertex(Context const &context, vertex_description &&description, container &&vertices,
                    indices_container &&indices);
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
             vk::Buffer const &get_buffer() const { return *_buffer; }
 
             uint32_t get_indices_count() const { return _indices_count; }
@@ -92,7 +115,7 @@ namespace mountain {
             get_attributes() const { return _description.attributes; }
 
             uint32_t get_indices_offset() const { return _indices_offset; }
-
+#endif
         private:
             template<Container container>
             void create_buffer(container const &vertices, vk::BufferUsageFlags buffer_usage, vk::UniqueBuffer &buffer,

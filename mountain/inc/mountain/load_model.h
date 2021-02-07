@@ -12,6 +12,7 @@
 
 namespace mountain::model{
     namespace fs = std::filesystem;
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     struct Vertex{
         glm::vec3 pos{};
         glm::vec2 tex_coord{};
@@ -25,14 +26,13 @@ namespace mountain::model{
                     );
         }
     };
+#endif
+    /**
+     *
+     * @param model_path: path to the obj to load
+     * @return a vector of vertices and a vector of the corresponding indices
+     */
     std::pair<std::vector<Vertex>, std::vector<uint32_t>> load_obj(fs::path const& model_path);
 }
-namespace std {
-    template<> struct hash<mountain::model::Vertex> {
-        size_t operator()(mountain::model::Vertex const& vertex) const {
-            return (hash<glm::vec3>()(vertex.pos) ^
-                   (hash<glm::vec2>()(vertex.tex_coord) << 1));
-        }
-    };
-}
+
 #endif //SANDBOX_LOAD_MODEL_H
