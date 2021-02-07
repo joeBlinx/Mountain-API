@@ -48,6 +48,12 @@ Mountain::buffer::image2d
 .. doxygenstruct:: mountain::buffer::image2d
     :members:
 
+Mountain::image::sampler
+------------------------
+
+.. doxygenstruct:: mountain::image::sampler
+    :members:
+
 Free Functions
 --------------
 
