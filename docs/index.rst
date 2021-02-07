@@ -12,6 +12,8 @@ Welcome to Mountain-API's documentation!
 
    code/introduction
    code/getting_started
+   code/reference_api
+
 
 Indices and tables
 ==================
@@ -20,7 +22,3 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-Reference API
-=============
-.. doxygenstruct:: mountain::CommandBuffer
-   :members:

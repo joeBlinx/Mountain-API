@@ -41,7 +41,7 @@ namespace mountain {
     void SwapChain::create_swap_chain(Context const &context, int width, int height) {
 
         Context::SwapChainSupportDetails const &swap_chain_support = context.get_swap_chain_details();
-        vk::SurfaceFormatKHR surfaceFormat = context.chooseSwapSurfaceFormat();
+        vk::SurfaceFormatKHR surfaceFormat = context.choose_swap_surface_format();
         vk::PresentModeKHR presentMode = chooseSwapPresentMode(swap_chain_support.presentModes);
         _swap_chain_extent = chooseSwapExtent(swap_chain_support.capabilities, width, height);
 

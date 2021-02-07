@@ -196,7 +196,7 @@ namespace mountain {
             if (queueFamily.queueCount > 0 && presentSupport) {
                 indices.present_family = i;
             }
-            if (indices.isComplete()) {
+            if (indices.is_complete()) {
                 break;
 
             }
@@ -240,7 +240,7 @@ namespace mountain {
         }
         vk::PhysicalDeviceFeatures supported_features;
         device.getFeatures(&supported_features);
-        return indices.isComplete() && extensionSupported && swapChainAdequate && supported_features.samplerAnisotropy;
+        return indices.is_complete() && extensionSupported && swapChainAdequate && supported_features.samplerAnisotropy;
     }
 
     int get_point_to_device_type(vk::PhysicalDeviceType device_type) {
@@ -465,7 +465,7 @@ namespace mountain {
         return {std::move(image), std::move(image_memory)};
     }
 
-    vk::SurfaceFormatKHR Context::chooseSwapSurfaceFormat() const {
+    vk::SurfaceFormatKHR Context::choose_swap_surface_format() const {
         auto const &available_formats = _swap_chain_details.formats;
         if (available_formats.size() == 1 && available_formats[0].format == vk::Format::eUndefined) {
             return {vk::Format::eB8G8R8A8Unorm, vk::ColorSpaceKHR::eSrgbNonlinear};

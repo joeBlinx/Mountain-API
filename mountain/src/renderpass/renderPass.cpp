@@ -57,7 +57,7 @@ namespace mountain {
                                                                                       sub_pass.attachment_color |
                                                                                       sub_pass.attachment_depth_stencil) {
 
-        auto const &swap_chain_image_format = context.chooseSwapSurfaceFormat().format;
+        auto const &swap_chain_image_format = context.choose_swap_surface_format().format;
         auto const depth_format = vk::Format::eD32SfloatS8Uint;
 
 

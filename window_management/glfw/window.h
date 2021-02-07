@@ -11,13 +11,28 @@
 #include <vector>
 namespace mountain {
 
+    /**
+     * Window Wrapper around GLFW
+     */
     struct Window {
+        /**
+         * Window ctor
+         * @param title: Window title
+         * @param width: width of the window
+         * @param height: height of the window
+         */
         Window(std::string_view title, unsigned width, unsigned height);
 
+        /**
+         * @return vector of supported extension by this window
+         */
         std::vector<const char *> get_instance_extension() const;
 
         GLFWwindow *get_window() const;
-
+        /**
+         *
+         * @return window title
+         */
         std::string_view get_title() const { return _title; }
 
         ~Window();
@@ -27,7 +42,7 @@ namespace mountain {
         unsigned _width, _height;
         std::string _title;
     };
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     inline VkResult create_window_surface(VkInstance instance,
                                           Window const &handle,
                                           const VkAllocationCallbacks *allocator,
@@ -36,5 +51,7 @@ namespace mountain {
                                        handle.get_window(), allocator, surface);
 
     }
+
+#endif
 }
 #endif //SANDBOX_GLFWWINDOW_H
