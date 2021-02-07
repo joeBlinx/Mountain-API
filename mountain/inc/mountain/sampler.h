@@ -2,8 +2,8 @@
 // Created by stiven on 1/6/21.
 //
 
-#ifndef SANDBOX_SAMPLER_H
-#define SANDBOX_SAMPLER_H
+#ifndef MOUNTAIN_API_SAMPLER_H
+#define MOUNTAIN_API_SAMPLER_H
 
 #include "context.h"
 namespace mountain::image {
@@ -22,4 +22,4 @@ namespace mountain::image {
         vk::UniqueSampler _sampler;
     };
 }
-#endif //SANDBOX_SAMPLER_H
+#endif //MOUNTAIN_API_SAMPLER_H

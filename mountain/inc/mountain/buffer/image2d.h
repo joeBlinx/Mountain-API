@@ -2,8 +2,8 @@
 // Created by stiven_perso on 1/5/21.
 //
 
-#ifndef SANDBOX_IMAGE2D_H
-#define SANDBOX_IMAGE2D_H
+#ifndef MOUNTAIN_API_IMAGE2D_H
+#define MOUNTAIN_API_IMAGE2D_H
 #include <vulkan/vulkan.hpp>
 #include <filesystem>
 #include "mountain/context.h"
@@ -53,4 +53,4 @@ namespace mountain::buffer {
 
         };
     }
-#endif //SANDBOX_IMAGE2D_H
+#endif //MOUNTAIN_API_IMAGE2D_H

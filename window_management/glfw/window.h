@@ -2,8 +2,8 @@
 // Created by stiven on 12/14/20.
 //
 
-#ifndef SANDBOX_GLFWWINDOW_H
-#define SANDBOX_GLFWWINDOW_H
+#ifndef MOUNTAIN_API_GLFWWINDOW_H
+#define MOUNTAIN_API_GLFWWINDOW_H
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 #include <string_view>
@@ -29,10 +29,7 @@ namespace mountain {
         std::vector<const char *> get_instance_extension() const;
 
         GLFWwindow *get_window() const;
-        /**
-         *
-         * @return window title
-         */
+
         std::string_view get_title() const { return _title; }
 
         ~Window();
@@ -54,4 +51,4 @@ namespace mountain {
 
 #endif
 }
-#endif //SANDBOX_GLFWWINDOW_H
+#endif //MOUNTAIN_API_GLFWWINDOW_H

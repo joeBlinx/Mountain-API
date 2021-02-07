@@ -6,6 +6,7 @@ Mountain::Window
 
 .. doxygenstruct:: mountain::Window
     :members:
+    :undoc-members:
 
 Mountain::Context
 -----------------
@@ -18,6 +19,19 @@ Mountain::RenderPass
 
 .. doxygenstruct:: mountain::RenderPass
     :members:
+
+Mountain::GraphicsPipeline
+--------------------------
+
+.. doxygenstruct:: mountain::PushConstant
+    :members:
+
+.. doxygenstruct:: mountain::shader
+    :members:
+
+.. doxygenstruct:: mountain::GraphicsPipeline
+    :members:
+    :undoc-members:
 
 Mountain::CommandBuffer
 -----------------------

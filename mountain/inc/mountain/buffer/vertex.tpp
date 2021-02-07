@@ -5,8 +5,8 @@
 // Created by stiven on 12/04/2020.
 //
 
-#ifndef SANDBOX_VERTEX_H
-#define SANDBOX_VERTEX_H
+#ifndef MOUNTAIN_API_VERTEX_H
+#define MOUNTAIN_API_VERTEX_H
 template<Container container>
 void vertex::create_buffer(container const& vertices, vk::BufferUsageFlags buffer_usage, vk::UniqueBuffer& buffer, vk::UniqueDeviceMemory& buffer_memory){
     vk::DeviceSize buffer_size = sizeof(vertices[0]) * vertices.size();
@@ -54,4 +54,4 @@ vertex::vertex(Context const &device, vertex_description &&description, containe
 
 }
 
-#endif //SANDBOX_VERTEX_H
+#endif //MOUNTAIN_API_VERTEX_H

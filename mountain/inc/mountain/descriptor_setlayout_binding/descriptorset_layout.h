@@ -2,8 +2,8 @@
 // Created by stiven on 12/23/20.
 //
 
-#ifndef SANDBOX_DESCRIPTORSET_LAYOUT_H
-#define SANDBOX_DESCRIPTORSET_LAYOUT_H
+#ifndef MOUNTAIN_API_DESCRIPTORSET_LAYOUT_H
+#define MOUNTAIN_API_DESCRIPTORSET_LAYOUT_H
 #include <vulkan/vulkan.hpp>
 #include "mountain/context.h"
 namespace mountain::descriptorset_layout {
@@ -30,4 +30,4 @@ namespace mountain::descriptorset_layout {
         vk::DescriptorSetLayout create_descriptorset_layout(Context const &context,
                                                             std::vector<vk::DescriptorSetLayoutBinding> &&set_layout_bindings);
     }
-#endif //SANDBOX_DESCRIPTORSET_LAYOUT_H
+#endif //MOUNTAIN_API_DESCRIPTORSET_LAYOUT_H

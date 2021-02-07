@@ -2,8 +2,8 @@
 // Created by stiven on 12/14/20.
 //
 
-#ifndef SANDBOX_SDL2WINDOW_H
-#define SANDBOX_SDL2WINDOW_H
+#ifndef MOUNTAIN_API_SDL2WINDOW_H
+#define MOUNTAIN_API_SDL2WINDOW_H
 #include <SDL2/SDL.h>
 #include <vulkan/vulkan.h>
 #include <string_view>
@@ -11,7 +11,7 @@
 #include <SDL_vulkan.h>
 #include <string>
 namespace mountain {
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     struct Window {
         Window(std::string_view title, unsigned width, unsigned height);
 
@@ -38,5 +38,6 @@ namespace mountain {
         return result ? VK_SUCCESS : VK_ERROR_UNKNOWN;
 
     }
+#endif
 }
-#endif //SANDBOX_SDL2WINDOW_H
+#endif //MOUNTAIN_API_SDL2WINDOW_H

@@ -2,8 +2,8 @@
 // Created by stiven_perso on 1/10/21.
 //
 
-#ifndef SANDBOX_LOAD_MODEL_H
-#define SANDBOX_LOAD_MODEL_H
+#ifndef MOUNTAIN_API_LOAD_MODEL_H
+#define MOUNTAIN_API_LOAD_MODEL_H
 
 #include <filesystem>
 #include "buffer/vertex.h"
@@ -35,4 +35,4 @@ namespace mountain::model{
     std::pair<std::vector<Vertex>, std::vector<uint32_t>> load_obj(fs::path const& model_path);
 }
 
-#endif //SANDBOX_LOAD_MODEL_H
+#endif //MOUNTAIN_API_LOAD_MODEL_H

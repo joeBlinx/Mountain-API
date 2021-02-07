@@ -2,8 +2,8 @@
 // Created by joe on 5/1/19.
 //
 
-#ifndef SANDBOX_SWAPCHAIN_H
-#define SANDBOX_SWAPCHAIN_H
+#ifndef MOUNTAIN_API_SWAPCHAIN_H
+#define MOUNTAIN_API_SWAPCHAIN_H
 
 #include <vulkan/vulkan.hpp>
 #include <vector>
@@ -22,10 +22,6 @@ namespace mountain {
 
         SwapChain &operator=(SwapChain const &) = delete;
 
-        ~SwapChain();
-
-        vk::SwapchainKHR get_swap_chain() const;
-
         const std::vector<vk::UniqueImageView> &get_swap_chain_image_views()
         const;
 
@@ -34,6 +30,10 @@ namespace mountain {
         vk::Format get_swap_chain_image_format() const;
 
         const vk::Extent2D &get_swap_chain_extent() const;
+
+        vk::SwapchainKHR get_swap_chain() const;
+
+        ~SwapChain();
 
     private:
         Context const &_context;
@@ -57,4 +57,4 @@ namespace mountain {
     };
 
 }
-#endif //SANDBOX_SWAPCHAIN_H
+#endif //MOUNTAIN_API_SWAPCHAIN_H

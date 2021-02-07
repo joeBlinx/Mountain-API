@@ -2,8 +2,8 @@
 // Created by stiven_perso on 12/19/20.
 //
 
-#ifndef SANDBOX_UNIFORM_H
-#define SANDBOX_UNIFORM_H
+#ifndef MOUNTAIN_API_UNIFORM_H
+#define MOUNTAIN_API_UNIFORM_H
 
 #include "mountain/swapChain.h"
 #include "utils/raii_helper.h"
@@ -103,4 +103,4 @@ namespace mountain::buffer {
 }
 
 
-#endif //SANDBOX_UNIFORM_H
+#endif //MOUNTAIN_API_UNIFORM_H

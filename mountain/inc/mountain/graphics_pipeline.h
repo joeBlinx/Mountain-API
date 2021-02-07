@@ -1,9 +1,9 @@
-//width
+//
 // Created by stiven on 13/04/2020.
 //
 
-#ifndef SANDBOX_GRAPHICS_PIPELINE_H
-#define SANDBOX_GRAPHICS_PIPELINE_H
+#ifndef MOUNTAIN_API_GRAPHICS_PIPELINE_H
+#define MOUNTAIN_API_GRAPHICS_PIPELINE_H
 
 #include <vulkan/vulkan.hpp>
 #include <vector>
@@ -18,12 +18,25 @@ namespace mountain {
     template<class T>
     concept PushConstantType = sizeof(T) <= 256 && sizeof(T) % 4 == 0;
 
+    /**
+     * @tparam PushConstantType: type of the value we want to be a push constant
+     */
     template<PushConstantType>
     struct PushConstant {
+        /**
+         * the stage in which the push constant will be use
+         */
         vk::ShaderStageFlagBits shader_stage;
     };
+
     struct shader {
+        /**
+         * path to spir-v file
+         */
         std::filesystem::path path;
+        /**
+         * Type of shader we pass
+         */
         vk::ShaderStageFlagBits type;
     };
 

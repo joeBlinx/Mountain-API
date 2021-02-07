@@ -2,8 +2,8 @@
 // Created by joe on 05/08/18.
 //
 
-#ifndef SANDBOX_INITVULKAN_H
-#define SANDBOX_INITVULKAN_H
+#ifndef MOUNTAIN_API_INITVULKAN_H
+#define MOUNTAIN_API_INITVULKAN_H
 
 #include <vulkan/vulkan.hpp>
 #include <vector>
@@ -232,5 +232,5 @@ namespace mountain {
                                                    write_sets.data(), 0, nullptr);
     }
 }
-#endif //SANDBOX_INITVULKAN_H
+#endif //MOUNTAIN_API_INITVULKAN_H
 

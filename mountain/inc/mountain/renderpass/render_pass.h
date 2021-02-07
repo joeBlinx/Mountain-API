@@ -2,8 +2,8 @@
 // Created by joe on 5/10/19.
 //
 
-#ifndef SANDBOX_RENDERPASS_H
-#define SANDBOX_RENDERPASS_H
+#ifndef MOUNTAIN_API_RENDERPASS_H
+#define MOUNTAIN_API_RENDERPASS_H
 
 
 #include <vulkan/vulkan.hpp>
@@ -213,4 +213,4 @@ namespace mountain {
 
 }
 
-#endif //SANDBOX_RENDERPASS_H
+#endif //MOUNTAIN_API_RENDERPASS_H
