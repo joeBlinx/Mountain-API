@@ -13,6 +13,18 @@ Mountain::Context
 .. doxygenstruct:: mountain::Context
    :members:
 
+Mountain::RenderPass
+--------------------
+
+.. doxygenstruct:: mountain::RenderPass
+    :members:
+
+Mountain::CommandBuffer
+-----------------------
+
+.. doxygenstruct:: mountain::CommandBuffer
+    :members:
+
 Mountain::buffer::uniform
 -------------------------
 
@@ -40,3 +52,6 @@ Free Functions
 --------------
 
 .. doxygenfunction:: mountain::model::load_obj
+.. doxygenfunction:: mountain::descriptorset_layout::create_descriptor_uniform
+.. doxygenfunction:: mountain::descriptorset_layout::create_descriptor_image_sampler
+.. doxygenfunction:: mountain::descriptorset_layout::create_descriptorset_layout

@@ -1,7 +1,7 @@
 
 #include <vector>
 #include <mountain/context.h>
-#include <mountain/renderpass/renderPass.h>
+#include <mountain/renderpass/render_pass.h>
 #include <mountain/swapChain.h>
 #include <glm/glm.hpp>
 #include <mountain/buffer/vertex.h>

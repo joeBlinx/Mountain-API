@@ -17,9 +17,6 @@ All you have to do is to copy the `Mountain-API` directory into your project dir
 
 That's all you have to do to use Mountain-API
 
-.. Use FindPackage
-^^^^^^^^^^^^^
-
 First triangle
 -----------------
 Let's start with the "Hello World" of 3D Graphics, and render a triangle.
@@ -84,7 +81,7 @@ First we have to create our render pass (for now, Mountain-API only one subpass 
 
 .. code-block:: cpp
 
-    #include "mountain/renderpass/renderPass.h"
+    #include "mountain/renderpass/render_pass.h"
     ...
     using mountain::subpass_attachment;
     mountain::RenderPass const render_pass{
@@ -98,7 +95,7 @@ The ``using`` declaration is too avoid typing ``mountain::subpass_attachment::CO
 The second parameter is a ``mountain::SubPass`` where we pass which sor of attachment we want. For now we only want ``COLOR`` so that's what we pass. But we can pass ``DEPTH`` or ``STENCIL`` or both in the second parameter of ``mountain::SubPass``.
 
 Create Swapchain
-^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
 The second object we need is the swap chain
 
 .. code-block:: cpp
@@ -324,7 +321,7 @@ The initialisation is more interesting. The member-function ``init`` take one pa
     command_buffer.init(objects); // init our command buffer.
 
 Let's Draw It
-^^^^^^^^^^^^
+^^^^^^^^^^^^^
 Let's had the draw command in our main loop. It should looks like this.
 
 .. code-block:: cpp

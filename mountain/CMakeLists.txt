@@ -39,7 +39,7 @@ set_sources(_srcs
 				FOLDER src
 				FILES 
 					context.cpp
-					renderpass/renderPass.cpp
+					renderpass/render_pass.cpp
 					swapChain.cpp
 					command_buffer.cpp
 					graphics_pipeline.cpp
@@ -65,7 +65,7 @@ set_sources(_headers
 				FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/inc/mountain
 				FILES 
 					context.h
-					renderpass/renderPass.h
+					renderpass/render_pass.h
 					swapChain.h
 					command_buffer.h
 					graphics_pipeline.h

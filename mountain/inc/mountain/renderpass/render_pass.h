@@ -13,33 +13,57 @@
 namespace mountain {
 
     struct Context;
+    /**
+     * Attachment type for RenderPass
+     */
     enum subpass_attachment : unsigned {
         COLOR = 1u,
         DEPTH = 1u << 2u,
         STENCIL = 1u << 3u
     };
 
+    /**
+     * Define the subpass for RenderPass
+     */
     struct SubPass {
-        bool attachment_color; // must be filled with subpass_attachment
+        bool attachment_color{}; // must be filled with subpass_attachment
         unsigned attachment_depth_stencil = 0; // must be filled with subpass_attachment
     };
-
+    /**
+     * A render pass specify what will be use when we render something.
+     * To be short it define, if we want to use Color, Depth, Stencil
+     */
     struct RenderPass {
-        ~RenderPass();
+        /**
+         * Create a render pass
+         * @param context: Vulkan context
+         * @param sub_pass: Define the subpass we will be using
+         */
+        RenderPass(Context const &context, const SubPass &sub_pass);
 
+        /**
+         * @return true if renderpass will use depth
+         */
+        bool has_depth() const { return subpass_attachment::DEPTH & _color_depth_stencil; }
+
+        /**
+         * Deleted copy operation
+         */
+        RenderPass operator=(RenderPass const &) = delete;
+
+        /**
+         * Deleted copy constructor
+         */
         RenderPass(RenderPass const &) = delete;
 
-        RenderPass operator=(RenderPass const &) = delete;
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+        vk::RenderPass const &get_renderpass() const { return _renderpass; }
 
         template<SubPass ...attachment>
         static RenderPass create(vk::Device device, vk::Format const &swap_chain_image_format);
 
-        bool has_depth() const { return subpass_attachment::DEPTH & _color_depth_stencil; }
-
-        vk::RenderPass const &get_renderpass() const { return _renderpass; }
-
-        RenderPass(Context const &context, const SubPass &sub_pass);
-
+        ~RenderPass();
+#endif
     private:
 
         vk::Device _device = nullptr;

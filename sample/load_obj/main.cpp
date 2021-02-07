@@ -2,7 +2,7 @@
 #include "mountain/command_buffer.h"
 #include "mountain/context.h"
 #include "mountain/swapChain.h"
-#include "mountain/renderpass/renderPass.h"
+#include "mountain/renderpass/render_pass.h"
 #include <vector>
 #include <mountain/buffer/uniform.h>
 #include <chrono>

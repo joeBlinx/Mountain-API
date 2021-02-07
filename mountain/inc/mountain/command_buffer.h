@@ -9,7 +9,7 @@
 #include <vector>
 #include "mountain/swapChain.h"
 #include "mountain/context.h"
-#include "mountain/renderpass/renderPass.h"
+#include "mountain/renderpass/render_pass.h"
 #include "utils/utils.hpp"
 #include "mountain/buffer/vertex.h"
 #include "mountain/buffer/vertex.h"
@@ -18,48 +18,74 @@
 #include <mountain/buffer/image2d.h>
 #include "mountain/buffer/uniform.h"
 #include "sampler.h"
-/**
- *
- */
+
 namespace mountain {
 
     struct GraphicsPipeline;
-    template<class PushConstant>
+    /**
+     * Pipeline Date will define how many entities of the same vertex buffer
+     * will be render. This number is the size of the push_constant_values
+     * @tparam PushConstantType: type of push constant to use in shaders
+     */
+    template<class PushConstantType>
     struct PipelineData {
         buffer::vertex const &vertices;
         GraphicsPipeline const &graphics_pipeline;
-        std::vector<PushConstant> push_constant_values;
+        std::vector<PushConstantType> push_constant_values;
     };
 
-    /**
-     * Init Vulkan struct need a new name
-     */
     struct CommandBuffer {
-
+        /**
+         * Create CommandBuffer object
+         * @param context: Vulkan context
+         * @param swap_chain
+         * @param renderpass
+         * @param nb_uniform: number of uniform we want to use (image sample count as uniform)
+         */
         CommandBuffer(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass,
                       int nb_uniform = 0);
 
         /**
+         * Create vulkan command buffer
          *
-         * @tparam T
-         * @param pipeline_data
+         * @tparam PushConstantType: type of push constant to use in shader
+         * @param pipeline_data: contains data for rendering a vertex buffer
          */
-        template<class T>
-        void init(PipelineData<T> const &pipeline_data);
+        template<class PushConstantType>
+        void init(PipelineData<PushConstantType> const &pipeline_data);
 
         /**
-         *
+         *  Allocate the number of descriptor set layout we need, the size of vector parameter X the number of image in swap chain
          * @param descriptor_set_layouts
          */
         void allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> &&descriptor_set_layouts);
 
+        /**
+         * Update uniform descriptor set
+         * @tparam T: type of value for the uniform
+         * @param first_descriptor_set_index: set value for this descriptor
+         * @param binding: binding value
+         * @param uniform_buffer: uniform buffer to associate with this descriptor
+         */
         template<class T>
         void update_descriptor_set(int first_descriptor_set_index, int binding,
                                    const buffer::uniform<T> &uniform_buffer);
 
+        /**
+         * Update image descriptor set
+
+         * @param first_descriptor_set_index: set value for this descriptor
+         * @param binding: binding value
+         * @param image: image to associate with this descriptor
+         * @param sampler: sample to associate with this image
+         */
         void update_descriptor_set(int first_descriptor_set_index, int binding, buffer::image2d const &image,
                                    image::sampler const &sampler);
-
+        /**
+         * Draw frame with the record command buffers and update uniform values
+         * @param updaters: vector of uniform_updater. uniform_updater are created by calling
+         * ``get_uniform_updater`` on a mountain::buffer::uniform object
+         */
         void drawFrame(std::vector<buffer::uniform_updater> &&updaters);
 
         ~CommandBuffer();
