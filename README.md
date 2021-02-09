@@ -1,3 +1,4 @@
+[![Documentation Status](https://readthedocs.org/projects/mountain-api/badge/?version=latest)](https://mountain-api.readthedocs.io/en/latest/?badge=latest)
 # Mountain-API
 
 ## VERSION 0.1
