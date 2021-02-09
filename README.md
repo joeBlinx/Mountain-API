@@ -1,3 +1,4 @@
+[![Build Status](https://drone.aigle-grenier.ovh/api/badges/joeBlinx/Mountain-API/status.svg)](https://drone.aigle-grenier.ovh/joeBlinx/Mountain-API)
 [![Documentation Status](https://readthedocs.org/projects/mountain-api/badge/?version=latest)](https://mountain-api.readthedocs.io/en/latest/?badge=latest)
 # Mountain-API
 
