@@ -2,13 +2,13 @@
 // Created by joe on 5/1/19.
 //
 
-#ifndef SANDBOX_SWAPCHAIN_HPP
-#define SANDBOX_SWAPCHAIN_HPP
+#ifndef MOUNTAIN_API_SWAPCHAIN_H
+#define MOUNTAIN_API_SWAPCHAIN_H
 
 #include <vulkan/vulkan.hpp>
 #include <vector>
-#include "mountain/context.hpp"
-#include "swapChain.hpp"
+#include "mountain/context.h"
+#include "swapChain.h"
 namespace mountain {
 
     struct RenderPass;
@@ -16,17 +16,19 @@ namespace mountain {
 
     struct SwapChain {
 
-        SwapChain(Context const &context, RenderPass const &render_pass, vk::ImageUsageFlags image_usage, int width,
-                  int height);
+        /**
+         * Construct a Vulkan swap chain for graphics purpose
+         * @param context: Vulkan context
+         * @param render_pass:
+         * @param width: width of the output image
+         * @param height: height of the output image
+         */
+        SwapChain(Context const &context, RenderPass const &render_pass, int width, int height);
 
         SwapChain(SwapChain const &) = delete;
 
         SwapChain &operator=(SwapChain const &) = delete;
-
-        ~SwapChain();
-
-        vk::SwapchainKHR get_swap_chain() const;
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
         const std::vector<vk::UniqueImageView> &get_swap_chain_image_views()
         const;
 
@@ -35,6 +37,10 @@ namespace mountain {
         vk::Format get_swap_chain_image_format() const;
 
         const vk::Extent2D &get_swap_chain_extent() const;
+
+        vk::SwapchainKHR get_swap_chain() const;
+#endif
+        ~SwapChain();
 
     private:
         Context const &_context;
@@ -51,12 +57,11 @@ namespace mountain {
 
         void create_depth_resources();
 
-        void create_swap_chain(Context const &context, vk::ImageUsageFlags image_usage, int width,
-                               int height); // there are some parameter
+        void create_swap_chain(Context const &context, int width, int height); // there are some parameter
         void create_image_views();
 
         void create_frame_buffer(const RenderPass &render_pass);
     };
 
 }
-#endif //SANDBOX_SWAPCHAIN_HPP
+#endif //MOUNTAIN_API_SWAPCHAIN_H

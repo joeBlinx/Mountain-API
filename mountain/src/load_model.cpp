@@ -7,7 +7,14 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 #include <unordered_map>
-
+namespace std {
+    template<> struct hash<mountain::model::Vertex> {
+        size_t operator()(mountain::model::Vertex const& vertex) const {
+            return (hash<glm::vec3>()(vertex.pos) ^
+                    (hash<glm::vec2>()(vertex.tex_coord) << 1));
+        }
+    };
+}
 namespace mountain::model{
     std::pair<std::vector<Vertex>, std::vector<uint32_t>> load_obj(fs::path const& model_path){
         tinyobj::attrib_t attrib;

@@ -1,4 +1,4 @@
-#include "context.hpp"	
+#include "context.h"
 #include "utils/utils.hpp"
 #include <string_view>
 #include "utils/log.hpp"
@@ -7,16 +7,15 @@
 #include <string_view>
 #include <set>
 #include <uniform.h>
+#include "no_sanitize.h"
 namespace mountain {
 
     Context::SwapChainSupportDetails query_swap_chain_support(vk::PhysicalDevice const &device, VkSurfaceKHR surface);
 
     Context::QueueFamilyIndices
     find_queue_families(vk::PhysicalDevice const &device, VkSurfaceKHR surface, vk::QueueFlagBits queue_flag);
-
-    Context::Context(int width, int height, std::string_view title, std::vector<const char *> const &devicesExtension)
-            : _window(title, width, height) {
-        createInstance(title);
+    Context::Context(const Window &window, std::vector<const char *> const &devicesExtension): _window(window) {
+        createInstance(window.get_title());
         createSurface();
         setUpDebugCallBack();
 
@@ -30,6 +29,10 @@ namespace mountain {
 
         create_logical_device(devicesExtension, _validationLayers);
         create_command_pool();
+    }
+    Context::Context(int width, int height, std::string_view title, std::vector<const char *> const &devicesExtension)
+            : Context(Window(title, width, height), devicesExtension) {
+
     }
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -193,7 +196,7 @@ namespace mountain {
             if (queueFamily.queueCount > 0 && presentSupport) {
                 indices.present_family = i;
             }
-            if (indices.isComplete()) {
+            if (indices.is_complete()) {
                 break;
 
             }
@@ -237,7 +240,7 @@ namespace mountain {
         }
         vk::PhysicalDeviceFeatures supported_features;
         device.getFeatures(&supported_features);
-        return indices.isComplete() && extensionSupported && swapChainAdequate && supported_features.samplerAnisotropy;
+        return indices.is_complete() && extensionSupported && swapChainAdequate && supported_features.samplerAnisotropy;
     }
 
     int get_point_to_device_type(vk::PhysicalDeviceType device_type) {
@@ -292,6 +295,7 @@ namespace mountain {
         utils::printFatalError("no suitable GPU found");
     }
 
+    NO_SANITIZE
     void Context::create_logical_device(std::vector<char const *> const &devicesExtension,
                                         std::vector<const char *> const &validationLayers) {
 
@@ -320,8 +324,8 @@ namespace mountain {
             info.ppEnabledLayerNames = validationLayers.data();
         }
 
-        _device = _physical_device.createDevice(info),
-                _graphics_queue = _device.getQueue(_indices.graphics_family, 0);
+        _device = _physical_device.createDevice(info);
+        _graphics_queue = _device.getQueue(_indices.graphics_family, 0);
         _present_queue = _device.getQueue(_indices.present_family, 0);
     }
 
@@ -461,7 +465,7 @@ namespace mountain {
         return {std::move(image), std::move(image_memory)};
     }
 
-    vk::SurfaceFormatKHR Context::chooseSwapSurfaceFormat() const {
+    vk::SurfaceFormatKHR Context::choose_swap_surface_format() const {
         auto const &available_formats = _swap_chain_details.formats;
         if (available_formats.size() == 1 && available_formats[0].format == vk::Format::eUndefined) {
             return {vk::Format::eB8G8R8A8Unorm, vk::ColorSpaceKHR::eSrgbNonlinear};
@@ -476,4 +480,6 @@ namespace mountain {
 
         return available_formats[0];
     }
+
+
 }

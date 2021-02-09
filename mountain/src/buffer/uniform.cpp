@@ -3,7 +3,7 @@
 //
 
 #include <uniform.h>
-#include "swapChain.hpp"
+#include "swapChain.h"
 
 mountain::buffer::uniform_updater::uniform_updater(std::vector<vk::UniqueDeviceMemory> &memories, std::byte *data, size_t data_size):
 _data(static_cast<std::byte*>(malloc(data_size))),

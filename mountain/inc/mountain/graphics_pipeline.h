@@ -1,14 +1,14 @@
-//width
+//
 // Created by stiven on 13/04/2020.
 //
 
-#ifndef SANDBOX_GRAPHICS_PIPELINE_H
-#define SANDBOX_GRAPHICS_PIPELINE_H
+#ifndef MOUNTAIN_API_GRAPHICS_PIPELINE_H
+#define MOUNTAIN_API_GRAPHICS_PIPELINE_H
 
 #include <vulkan/vulkan.hpp>
 #include <vector>
 #include <array>
-#include "mountain/buffer/vertex.hpp"
+#include "mountain/buffer/vertex.h"
 #include <filesystem>
 #include "utils/utils.hpp"
 namespace mountain {
@@ -18,29 +18,55 @@ namespace mountain {
     template<class T>
     concept PushConstantType = sizeof(T) <= 256 && sizeof(T) % 4 == 0;
 
+    /**
+     * @tparam PushConstantType: type of the value we want to be a push constant
+     */
     template<PushConstantType>
     struct PushConstant {
+        /**
+         * the stage in which the push constant will be use
+         */
         vk::ShaderStageFlagBits shader_stage;
     };
+
     struct shader {
+        /**
+         * path to spir-v file
+         */
         std::filesystem::path path;
+        /**
+         * Type of shader we pass
+         */
         vk::ShaderStageFlagBits type;
     };
 
     struct GraphicsPipeline {
+        /**
+         * Create a vulkan pipeline
+         * @tparam n: number of shaders
+         * @tparam Ts: types of values hold by push constant
+         * @param context: Vulkan context
+         * @param swap_chain
+         * @param render_pass
+         * @param shaders: array of compiled shaders
+         * @param buffers: arrays of vertex buffers
+         * @param descriptor_layout: array of descriptor layout for handling uniform
+         * @param push_constant: PushConstant for each shaders use
+         */
         template<size_t n, class ...Ts>
-        GraphicsPipeline(Context const &device, SwapChain const &swap_chain, RenderPass const &render_pass,
+        GraphicsPipeline(Context const &context, SwapChain const &swap_chain, RenderPass const &render_pass,
                          std::array<shader, n> const &shaders,
                          const std::vector<buffer::vertex> &buffers,
                          std::vector<vk::DescriptorSetLayout> const &descriptor_layout = {},
                          PushConstant<Ts> const &...push_constant);
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
         vk::Pipeline const &get_pipeline() const { return _pipeline; }
 
         vk::PipelineLayout const &get_pipeline_layout() const { return *_pipeline_layout; }
 
         std::vector<vk::PushConstantRange> const &get_push_constant_ranges() const { return _push_constant_ranges; }
-
+#endif
         ~GraphicsPipeline();
 
     private:

@@ -2,52 +2,97 @@
 // Created by joe on 05/08/18.
 //
 
-#ifndef SANDBOX_INITVULKAN_HPP
-#define SANDBOX_INITVULKAN_HPP
+#ifndef MOUNTAIN_API_INITVULKAN_H
+#define MOUNTAIN_API_INITVULKAN_H
 
 #include <vulkan/vulkan.hpp>
 #include <vector>
-#include "mountain/swapChain.hpp"
-#include "mountain/context.hpp"
-#include "mountain/renderpass/renderPass.hpp"
+#include "mountain/swapChain.h"
+#include "mountain/context.h"
+#include "mountain/renderpass/render_pass.h"
 #include "utils/utils.hpp"
-#include "mountain/buffer/vertex.hpp"
-#include "mountain/buffer/vertex.hpp"
-#include "mountain/graphics_pipeline.hpp"
+#include "mountain/buffer/vertex.h"
+#include "mountain/buffer/vertex.h"
+#include "mountain/graphics_pipeline.h"
 #include <cstddef>
 #include <mountain/buffer/image2d.h>
 #include "mountain/buffer/uniform.h"
 #include "sampler.h"
+
 namespace mountain {
 
     struct GraphicsPipeline;
-    template<class PushConstant>
-    struct PipelineData {
+    /**
+     * Pipeline Data will define how many entities of the same vertex buffer
+     * will be render. This number is the size of the push_constant_values
+     * @tparam PushConstantType: type of push constant to use in shaders
+     */
+    template<class PushConstantType>
+    struct PipelineData{
         buffer::vertex const &vertices;
         GraphicsPipeline const &graphics_pipeline;
-        std::vector<PushConstant> push_constant_values;
+        /**
+         * an array of push_constant value per object.
+         * The size of this container will determine the number of object rendered
+         */
+        std::vector<PushConstantType> push_constant_values;
     };
 
-    struct InitVulkan {
+    struct CommandBuffer {
+        /**
+         * Create CommandBuffer object
+         * @param context: Vulkan context
+         * @param swap_chain
+         * @param renderpass
+         * @param nb_uniform: number of uniform we want to use (image sample count as uniform)
+         */
+        CommandBuffer(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass,
+                      int nb_uniform = 0);
 
-        InitVulkan(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass,
-                   int nb_uniform = 0);
+        /**
+         * Create vulkan command buffer
+         *
+         * @tparam PushConstantType: type of push constant to use in shader
+         * @param pipeline_data: contains data for rendering a vertex buffer
+         */
+        template<class PushConstantType>
+        void init(PipelineData<PushConstantType> const &pipeline_data);
 
-        template<class T>
-        void createCommandBuffers(PipelineData<T> const &pipeline_data);
-
+        /**
+         *  Allocate the number of descriptor set layout we need, the size of vector parameter X the number of image in swap chain
+         * @param descriptor_set_layouts
+         */
         void allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> &&descriptor_set_layouts);
 
+        /**
+         * Update uniform descriptor set
+         * @tparam T: type of value for the uniform
+         * @param first_descriptor_set_index: set value for this descriptor
+         * @param binding: binding value
+         * @param uniform_buffer: uniform buffer to associate with this descriptor
+         */
         template<class T>
         void update_descriptor_set(int first_descriptor_set_index, int binding,
                                    const buffer::uniform<T> &uniform_buffer);
 
+        /**
+         * Update image descriptor set
+
+         * @param first_descriptor_set_index: set value for this descriptor
+         * @param binding: binding value
+         * @param image: image to associate with this descriptor
+         * @param sampler: sample to associate with this image
+         */
         void update_descriptor_set(int first_descriptor_set_index, int binding, buffer::image2d const &image,
                                    image::sampler const &sampler);
-
+        /**
+         * Draw frame with the record command buffers and update uniform values
+         * @param updaters: vector of uniform_updater. uniform_updater are created by calling
+         * ``get_uniform_updater`` on a mountain::buffer::uniform object
+         */
         void drawFrame(std::vector<buffer::uniform_updater> &&updaters);
 
-        ~InitVulkan();
+        ~CommandBuffer();
 
     private:
 #ifdef NDEBUG
@@ -88,7 +133,7 @@ namespace mountain {
 
 
     template<class T>
-    void InitVulkan::createCommandBuffers(PipelineData<T> const &pipeline_data) {
+    void CommandBuffer::init(PipelineData<T> const &pipeline_data) {
         for (size_t i = 0; i < _commandBuffers.size(); i++) {
             VkCommandBufferBeginInfo beginInfo = {};
             beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -152,8 +197,8 @@ namespace mountain {
     }
 
     template<class T>
-    void InitVulkan::update_descriptor_set(int first_descriptor_set_index, int binding,
-                                           const buffer::uniform<T> &uniform_buffer) {
+    void CommandBuffer::update_descriptor_set(int first_descriptor_set_index, int binding,
+                                              const buffer::uniform<T> &uniform_buffer) {
         /*
         * We use one descriptor set layout by image of the swap chain,
         * but for using multiple set layout, we store them as follow:
@@ -191,5 +236,5 @@ namespace mountain {
                                                    write_sets.data(), 0, nullptr);
     }
 }
-#endif //SANDBOX_INITVULKAN_HPP
+#endif //MOUNTAIN_API_INITVULKAN_H
 

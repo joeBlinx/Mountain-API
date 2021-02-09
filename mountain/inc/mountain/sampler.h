@@ -2,16 +2,24 @@
 // Created by stiven on 1/6/21.
 //
 
-#ifndef SANDBOX_SAMPLER_H
-#define SANDBOX_SAMPLER_H
+#ifndef MOUNTAIN_API_SAMPLER_H
+#define MOUNTAIN_API_SAMPLER_H
 
-#include "context.hpp"
+#include "context.h"
 namespace mountain::image {
     struct sampler {
+        /**
+         * Create a basic sampler with mipmap
+         * @param context: Vulkan context
+         * @param mipmap_levels: mipmap level you want
+         */
         sampler(Context const &context, uint32_t mipmap_levels);
-        operator vk::Sampler() const{return *_sampler;}
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+        explicit operator vk::Sampler() const{return *_sampler;}
+#endif
     private:
         vk::UniqueSampler _sampler;
     };
 }
-#endif //SANDBOX_SAMPLER_H
+#endif //MOUNTAIN_API_SAMPLER_H

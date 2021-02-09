@@ -2,10 +2,12 @@
 // Created by stiven on 12/14/20.
 //
 
-#ifndef SANDBOX_WINDOW_H
-#define SANDBOX_WINDOW_H
+#ifndef MOUNTAIN_API_WINDOW_H
+#define MOUNTAIN_API_WINDOW_H
 #ifdef USE_GLFW
+
 #include "glfw/window.h"
+
 #elif USE_SDL2
 #include "sdl2/window.h"
 #else
@@ -13,4 +15,4 @@
 #endif
 
 
-#endif //SANDBOX_WINDOW_H
+#endif //MOUNTAIN_API_WINDOW_H

@@ -1,12 +1,12 @@
 
 #include <vector>
-#include <mountain/context.hpp>
-#include <mountain/renderpass/renderPass.hpp>
-#include <mountain/swapChain.hpp>
+#include <mountain/context.h>
+#include <mountain/renderpass/render_pass.h>
+#include <mountain/swapChain.h>
 #include <glm/glm.hpp>
-#include <mountain/buffer/vertex.hpp>
-#include <mountain/graphics_pipeline.hpp>
-#include <mountain/initVulkan.hpp>
+#include <mountain/buffer/vertex.h>
+#include <mountain/graphics_pipeline.h>
+#include <mountain/command_buffer.h>
 #include <thread>
 #include "ressource_paths.h"
 #include "mountain/descriptor_setlayout_binding/descriptorset_layout.h"
@@ -70,7 +70,6 @@ int main(){
     mountain::SwapChain const swap_chain{
             context,
             render_pass,
-            vk::ImageUsageFlagBits::eColorAttachment,
             width,
             height
     };
@@ -89,7 +88,7 @@ int main(){
                               buffers, {descriptor_set});
     mountain::buffer::image2d const statue_image(context, ASSETS_FOLDER / "image/statue.jpg", 1);
     mountain::image::sampler const sampler(context, 1);
-    mountain::InitVulkan init(
+    mountain::CommandBuffer init(
             context,
             swap_chain,
             render_pass, 1);
@@ -100,7 +99,7 @@ int main(){
     mountain::PipelineData<no_uni> object{
         buffers[0], pipeline, {}
     };
-    init.createCommandBuffers(object);
+    init.init(object);
     using namespace std::chrono_literals;
     while (!glfwWindowShouldClose(context.get_window().get_window())) {
         glfwPollEvents();

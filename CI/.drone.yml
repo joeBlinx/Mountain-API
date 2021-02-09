@@ -12,23 +12,34 @@ steps:
     commands :
       - docker build docker/ -t ubuntu_docker
 
-  - name: build
+  - name: cmake_generation
     image: ubuntu_docker
-    pull : never
-    volumes:
-      - name : build_folder
-        path : /workspace/build
+    pull: never
     commands:
       - mkdir build || exit 0
       - cd build
-      - cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DBUILD_SAMPLES=ON ..
-      - cmake --build . -j 10
+      - cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DBUILD_SAMPLES=ON -DBUILD_DOCUMENTATION=ON ..
+
+  - name: build_api
+    image: ubuntu_docker
+    pull : never
+    commands:
+      - cmake --build build --target Mountain_API
+
+  - name: build_samples
+    image: ubuntu_docker
+    pull : never
+    commands:
+      - cmake --build build --target samples
+
+  - name: build_documentation
+    image: ubuntu_docker
+    pull: never
+    commands:
+      - cmake --build build --target documentation
 
 
 volumes:
   - name: build_docker
     host:
       path: /var/run/docker.sock
-  - name: build_folder
-    host:
-      path: /home/.build/sandbox

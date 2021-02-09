@@ -2,7 +2,7 @@
 // Created by joe on 05/08/18.
 //
 
-#include "initVulkan.hpp"
+#include "command_buffer.h"
 #include "utils/log.hpp"
 #include <stdexcept>
 #include <vector>
@@ -12,14 +12,14 @@
 #include <algorithm>
 #include "utils/utils.hpp"
 #include <array>
-#include <mountain/swapChain.hpp>
-#include <mountain/context.hpp>
-#include <mountain/buffer/vertex.hpp>
+#include <mountain/swapChain.h>
+#include <mountain/context.h>
+#include <mountain/buffer/vertex.h>
 #include <uniform.h>
 namespace mountain {
 
-    InitVulkan::InitVulkan(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass,
-                           int nb_uniform)
+    CommandBuffer::CommandBuffer(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass,
+                                 int nb_uniform)
             :
             _swapchain(swap_chain.get_swap_chain()),
             _swapChainImageViews(swap_chain.get_swap_chain_image_views()),
@@ -39,7 +39,7 @@ namespace mountain {
 
     }
 
-    void InitVulkan::drawFrame(std::vector<buffer::uniform_updater> &&updaters) {
+    void CommandBuffer::drawFrame(std::vector<buffer::uniform_updater> &&updaters) {
         uint32_t imageIndex;
         vkAcquireNextImageKHR(_context.get_device(), _swapchain, std::numeric_limits<uint64_t>::max(),
                               _imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
@@ -81,7 +81,7 @@ namespace mountain {
 
     }
 
-    InitVulkan::~InitVulkan() {
+    CommandBuffer::~CommandBuffer() {
         _context.get_device().destroy(_renderFinishedSemaphore);
         _context.get_device().destroy(_imageAvailableSemaphore);
 
@@ -95,13 +95,13 @@ namespace mountain {
 
 //unique by software
 
-    void InitVulkan::createSemaphores() {
+    void CommandBuffer::createSemaphores() {
         _imageAvailableSemaphore = _context.get_device().createSemaphore({});
         _renderFinishedSemaphore = _context.get_device().createSemaphore({});
 
     }
 
-    void InitVulkan::allocate_command_buffer() {
+    void CommandBuffer::allocate_command_buffer() {
         _commandBuffers.resize(_swapchainFrameBuffer.size());
         vk::CommandBufferAllocateInfo allocInfo = {};
         allocInfo.commandPool = _commandPool;
@@ -110,7 +110,7 @@ namespace mountain {
         _commandBuffers = _context.get_device().allocateCommandBuffers(allocInfo);
     }
 
-    void InitVulkan::create_descriptor_pool(int nb_uniform) {
+    void CommandBuffer::create_descriptor_pool(int nb_uniform) {
         std::array<vk::DescriptorPoolSize, 2> pool_size;
         pool_size[0].type = vk::DescriptorType::eUniformBuffer;
         pool_size[0].descriptorCount = _swapChainImageViews.size() * nb_uniform;
@@ -129,7 +129,7 @@ namespace mountain {
 
     }
 
-    void InitVulkan::allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> &&descriptor_set_layouts) {
+    void CommandBuffer::allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> &&descriptor_set_layouts) {
         /*
          * We use one descriptor set layout by image of the swap chain,
          * but for using multiple set layout, we store them as follow:
@@ -162,8 +162,8 @@ namespace mountain {
         );
     }
 
-    void InitVulkan::update_descriptor_set(int first_descriptor_set_index, int binding, const buffer::image2d &image,
-                                           const image::sampler &sampler) {
+    void CommandBuffer::update_descriptor_set(int first_descriptor_set_index, int binding, const buffer::image2d &image,
+                                              const image::sampler &sampler) {
         /*
        * We use one descriptor set layout by image of the swap chain,
        * but for using multiple set layout, we store them as follow:
@@ -179,7 +179,7 @@ namespace mountain {
         for (size_t i = 0; i < _swapChainImageViews.size(); i++) {
             it_image_infos->imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
             it_image_infos->imageView = *image.get_image_view();
-            it_image_infos->sampler = sampler;
+            it_image_infos->sampler = static_cast<vk::Sampler>(sampler);
 
             it_write_sets->dstSet = *it_descriptor_set;
             it_write_sets->dstBinding = binding; //this is a bug

@@ -5,7 +5,7 @@
 #include "buffer/image2d.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
-#include <context.hpp>
+#include <context.h>
 #include <uniform.h>
 #include "utils/utils.hpp"
 #include "utils/log.hpp"

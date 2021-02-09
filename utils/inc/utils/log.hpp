@@ -2,8 +2,8 @@
 // Created by joe on 05/08/18.
 //
 
-#ifndef SANDBOX_LOG_HPP
-#define SANDBOX_LOG_HPP
+#ifndef MOUNTAIN_API_LOG_HPP
+#define MOUNTAIN_API_LOG_HPP
 
 #include <vulkan/vulkan.hpp>
 #include <iosfwd>
@@ -23,4 +23,4 @@ void checkError(T const& , const std::string& ){
 
 
 
-#endif //SANDBOX_LOG_HPP
+#endif //MOUNTAIN_API_LOG_HPP

@@ -3,9 +3,9 @@
 //
 
 
-#include "swapChain.hpp"
+#include "swapChain.h"
 #include  <algorithm>
-#include <renderPass.hpp>
+#include <render_pass.h>
 
 namespace mountain {
 
@@ -38,10 +38,10 @@ namespace mountain {
         }
     }
 
-    void SwapChain::create_swap_chain(Context const &context, vk::ImageUsageFlags image_usage, int width, int height) {
+    void SwapChain::create_swap_chain(Context const &context, int width, int height) {
 
         Context::SwapChainSupportDetails const &swap_chain_support = context.get_swap_chain_details();
-        vk::SurfaceFormatKHR surfaceFormat = context.chooseSwapSurfaceFormat();
+        vk::SurfaceFormatKHR surfaceFormat = context.choose_swap_surface_format();
         vk::PresentModeKHR presentMode = chooseSwapPresentMode(swap_chain_support.presentModes);
         _swap_chain_extent = chooseSwapExtent(swap_chain_support.capabilities, width, height);
 
@@ -59,7 +59,7 @@ namespace mountain {
         createInfo.imageColorSpace = surfaceFormat.colorSpace;
         createInfo.imageExtent = _swap_chain_extent;
         createInfo.imageArrayLayers = 1;
-        createInfo.imageUsage = image_usage; // can change
+        createInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment; // can change
 
         auto const &indices = context.get_queue_family_indice();
         uint32_t queueFamilyIndices[] = {static_cast<uint32_t>(indices.graphics_family),
@@ -101,10 +101,9 @@ namespace mountain {
         _context->destroy(_swap_chain);
     }
 
-    SwapChain::SwapChain(Context const &context, RenderPass const &render_pass, vk::ImageUsageFlags image_usage,
-                         int width,
-                         int height) : _context(context) {
-        create_swap_chain(context, image_usage, width, height);
+    SwapChain::SwapChain(Context const &context, RenderPass const &render_pass, int width, int height)
+            : _context(context) {
+        create_swap_chain(context, width, height);
         create_image_views();
         if (render_pass.has_depth()) {
             create_depth_resources();
