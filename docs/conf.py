@@ -52,7 +52,7 @@ author = 'Stiven Aigle'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['breathe', 'recommonmark']
-breathe_default_project = "mountain"
+breathe_default_project = "Mountain-API"
 
 
 # Add any paths that contain templates here, relative to this directory.
