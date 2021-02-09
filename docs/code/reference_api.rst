@@ -20,6 +20,13 @@ Mountain::RenderPass
 .. doxygenstruct:: mountain::RenderPass
     :members:
 
+Mountain::SwapChain
+-------------------
+
+.. doxygenstruct:: mountain::SwapChain
+    :members:
+    :undoc-members:
+
 Mountain::GraphicsPipeline
 --------------------------
 

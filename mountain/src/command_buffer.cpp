@@ -179,7 +179,7 @@ namespace mountain {
         for (size_t i = 0; i < _swapChainImageViews.size(); i++) {
             it_image_infos->imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
             it_image_infos->imageView = *image.get_image_view();
-            it_image_infos->sampler = sampler;
+            it_image_infos->sampler = static_cast<vk::Sampler>(sampler);
 
             it_write_sets->dstSet = *it_descriptor_set;
             it_write_sets->dstBinding = binding; //this is a bug

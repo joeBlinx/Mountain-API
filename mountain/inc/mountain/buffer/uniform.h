@@ -9,7 +9,7 @@
 #include "utils/raii_helper.h"
 #include <memory>
 namespace mountain::buffer {
-#ifndef DOXYGEN_SHOULD_SKiP_THIS
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
         struct uniform_updater {
             uniform_updater(std::vector<vk::UniqueDeviceMemory> &memories, std::byte *data, size_t data_size);
 
@@ -35,9 +35,11 @@ namespace mountain::buffer {
          * @tparam T: type of the value we want in our uniform
          */
         template<class T>
-        struct uniform {
+        struct uniform{
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
             using iterator = std::vector<vk::UniqueBuffer>::iterator;
             using const_iterator = std::vector<vk::UniqueBuffer>::const_iterator;
+#endif
             /**
              * Construct a uniform object
              * @param context: Vulkan context

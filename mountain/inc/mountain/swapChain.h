@@ -16,12 +16,19 @@ namespace mountain {
 
     struct SwapChain {
 
+        /**
+         * Construct a Vulkan swap chain for graphics purpose
+         * @param context: Vulkan context
+         * @param render_pass:
+         * @param width: width of the output image
+         * @param height: height of the output image
+         */
         SwapChain(Context const &context, RenderPass const &render_pass, int width, int height);
 
         SwapChain(SwapChain const &) = delete;
 
         SwapChain &operator=(SwapChain const &) = delete;
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
         const std::vector<vk::UniqueImageView> &get_swap_chain_image_views()
         const;
 
@@ -32,7 +39,7 @@ namespace mountain {
         const vk::Extent2D &get_swap_chain_extent() const;
 
         vk::SwapchainKHR get_swap_chain() const;
-
+#endif
         ~SwapChain();
 
     private:
