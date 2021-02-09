@@ -6,7 +6,7 @@
 #include "mountain/context.h"
 #include "utils/raii_helper.h"
 namespace mountain {
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     template<class T>
     constexpr vk::Format get_format() {
         return vertex_format_t<T, sizeof(T) / sizeof(uint32_t)>;
@@ -17,6 +17,7 @@ namespace mountain {
         vk::Format format;
         uint32_t offset;
     };
+#endif
 #define NARGS(...) NARGS_(__VA_ARGS__, 6, 5, 4, 3, 2, 1, 0)
 #define NARGS_(_6, _5, _4, _3, _2, _1, N, ...) N
 
@@ -130,7 +131,9 @@ namespace mountain {
             uint32_t _indices_offset;
         };
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 #include "mountain/buffer/vertex.tpp"
+#endif
 
     }
 }

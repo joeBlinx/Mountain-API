@@ -23,14 +23,18 @@ namespace mountain {
 
     struct GraphicsPipeline;
     /**
-     * Pipeline Date will define how many entities of the same vertex buffer
+     * Pipeline Data will define how many entities of the same vertex buffer
      * will be render. This number is the size of the push_constant_values
      * @tparam PushConstantType: type of push constant to use in shaders
      */
     template<class PushConstantType>
-    struct PipelineData {
+    struct PipelineData{
         buffer::vertex const &vertices;
         GraphicsPipeline const &graphics_pipeline;
+        /**
+         * an array of push_constant value per object.
+         * The size of this container will determine the number of object rendered
+         */
         std::vector<PushConstantType> push_constant_values;
     };
 
