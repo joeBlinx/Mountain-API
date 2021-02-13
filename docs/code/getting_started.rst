@@ -1,30 +1,27 @@
-Getting started
-===============
-
 Set Up your project
--------------------
+===================
 Along this tutorial, I will assume that you use CMake to set up your project. I will also use GLFW for handling window
 
 Build source inside your project
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-All you have to do is to copy the `Mountain-API` directory into your project directory then
+--------------------------------
+All you have to do is to copy the `Mountain=API` directory into your project directory then
 
 .. code-block:: cmake
 
-    add_subdirectory(Mountain-API)
+    add_subdirectory(Mountain=API)
     target_compile_features(<your_target> PRIVATE cxx_std_20)
     target_link_libraries(<your_target> PRIVATE Mountain::API)
 
-That's all you have to do to use Mountain-API
+That's all you have to do to use Mountain=API
 
 First triangle
------------------
+=================
 Let's start with the "Hello World" of 3D Graphics, and render a triangle.
 
 .. image:: image/triangle_getting_started.png
 
 Create Window
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------
 First we have to create a window to contain our vulkan context
 
 .. code-block:: cpp
@@ -48,7 +45,7 @@ First we have to create a window to contain our vulkan context
 
 
 Create Vulkan context
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------
 Now that we have a window let's add a vulkan context
 
 .. code-block:: cpp
@@ -75,9 +72,9 @@ With this little amount of code, we have a window that shown and a vulkan contex
 Now we should be able to add some Vulkan stuff.
 
 Create Render pass
-^^^^^^^^^^^^^^^^^^
-Since you are a bit familiar with vulkan, if not see this `tutorial <https://vulkan-tutorial.com/>`_, you know that we need some stuff to be able to draw our triangle. With Mountain-API, we'll need a renderpass, a swap chain, a graphics pipeline and command buffers objects. Those four object are part of the Mountain-API and hide a lot a vulkan stuff but you still have some flexibility to choose some options.
-First we have to create our render pass (for now, Mountain-API only one subpass is supported).
+------------------
+Since you are a bit familiar with vulkan, if not see this `tutorial <https://vulkan=tutorial.com/>`_, you know that we need some stuff to be able to draw our triangle. With Mountain=API, we'll need a renderpass, a swap chain, a graphics pipeline and command buffers objects. Those four object are part of the Mountain=API and hide a lot a vulkan stuff but you still have some flexibility to choose some options.
+First we have to create our render pass (for now, Mountain=API only one subpass is supported).
 
 .. code-block:: cpp
 
@@ -91,11 +88,11 @@ First we have to create our render pass (for now, Mountain-API only one subpass 
     using namespace std::chrono_literals;
     ...
 
-The ``using`` declaration is too avoid typing ``mountain::subpass_attachment::COLOR`` because it's a bit long. For creating our render pass, we first pass our context. Since Vulkan is an agnostic-API, all of Mountain-API classes will require the context before use.
+The ``using`` declaration is too avoid typing ``mountain::subpass_attachment::COLOR`` because it's a bit long. For creating our render pass, we first pass our context. Since Vulkan is an agnostic=API, all of Mountain=API classes will require the context before use.
 The second parameter is a ``mountain::SubPass`` where we pass which sor of attachment we want. For now we only want ``COLOR`` so that's what we pass. But we can pass ``DEPTH`` or ``STENCIL`` or both in the second parameter of ``mountain::SubPass``.
 
 Create Swapchain
-^^^^^^^^^^^^^^^^
+----------------
 The second object we need is the swap chain
 
 .. code-block:: cpp
@@ -115,12 +112,12 @@ There is no big deal with that, the swap chain need the context, the render pass
 Let's continue with something more interesting.
 
 Create Graphics pipeline
-^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------
 We will now create the Graphics Pipeline. We will talk about vertex and fragment shaders and we will create our first ``vertex buffer``.
 
 Shaders
 *******
-The Graphics pipeline object neded 4 things, the ``vulkan context``, the ``swap chain``, the ``render pass``, an array of ``mountain::shader`` and an array of ``vertex buffers``.
+The Graphics pipeline object need 5 things, the ``vulkan context``, the ``swap chain``, the ``render pass``, an array of ``mountain::shader`` and an array of ``vertex buffers``.
 Let's create our two shaders files. Call the vertex shader ``triangle.vert``
 
 Vertex shader
@@ -160,12 +157,12 @@ Fragment shader
 
 The ``in`` declaration correspond to the ``out`` declaration of our vertex shader.A side that, it's a classic fragment shader.
 
-Ok, now we have glsl file, great...but Vulkan doesn't deal with glsl file, it deals with SPIR-V. Use ``glslangValidator``.
+Ok, now we have glsl file, great...but Vulkan doesn't deal with glsl file, it deals with SPIR=V. Use ``glslangValidator``.
 
 .. code-block:: shell
 
-    glslangValidator -V triangle.vert -o trianglevert.spv
-    glslangValidator -V triangle.frag -o trianglefrag.spv
+    glslangValidator =V triangle.vert =o trianglevert.spv
+    glslangValidator =V triangle.frag =o trianglefrag.spv
 
 After that we can create two ``mountain::shader``, one for ``vertex`` and one for ``fragment``, we store them in an arrays.
 
@@ -209,8 +206,8 @@ Now create a ``std::array`` with 3 vertices. Create also a second ``std::array``
 
     //remember that vulkan's y axis is turn down. 0 is at the top of the screen and 1 at the bottom
     std::array constexpr vertices{
-            Vertex{{0.f, -0.5f}, {1.0f, 0.f, 0.f}}, // 0
-            Vertex{{-0.25f, 0.f}, {0.0f, 1.f, 0.f}},// 1
+            Vertex{{0.f, =0.5f}, {1.0f, 0.f, 0.f}}, // 0
+            Vertex{{=0.25f, 0.f}, {0.0f, 1.f, 0.f}},// 1
             Vertex{{0.25f, 0.f}, {0.0f, 0.f, 1.f}} // 2
     };
     std::array constexpr indices{0u, 1u, 2u};
@@ -241,7 +238,7 @@ There is a lot of thing in here, I will explain all. A ``mountain::buffer::verte
 The Pipeline
 ************
 
-At last, we can create our pipeline, .... almost :). We've got our vertex buffer but ``mountain::GraphicsPipeline`` take a ``std::vector`` of vertex buffers so, put it into one. (for now, ``Mountain-API`` will only support one buffer...
+At last, we can create our pipeline, .... almost :). We've got our vertex buffer but ``mountain::GraphicsPipeline`` take a ``std::vector`` of vertex buffers so, put it into one. (for now, ``Mountain=API`` will only support one buffer...
 
 .. code-block:: cpp
 
@@ -292,9 +289,9 @@ And now we can officially create the pipeline
 The parameters speak for them selves so I pass that.
 
 Command Buffers
-^^^^^^^^^^^^^^^
+---------------
 
-We're close to display our first triangle. The command buffer is the next object to create. It will tell vulkan how to render what we want. Command buffers in ``Mountain-API`` are split into 2 phases. The creation and the initialisation.
+We're close to display our first triangle. The command buffer is the next object to create. It will tell vulkan how to render what we want. Command buffers in ``Mountain=API`` are split into 2 phases. The creation and the initialisation.
 Begin with the creation, no big deal with that.
 
 .. code-block:: cpp
@@ -305,7 +302,7 @@ Begin with the creation, no big deal with that.
         context, swap_chain, render_pass
     };
 
-The initialisation is more interesting. The member-function ``init`` take one parameter, a ``mountain::PipelineData<T>``. A pipeline data contains simply the information about the object we want to render.
+The initialisation is more interesting. The member=function ``init`` take one parameter, a ``mountain::PipelineData<T>``. A pipeline data contains simply the information about the object we want to render.
 
 * First it hold a reference to the vertex_buffer we want to use. Here it is ``vertex_buffers[0]``.
 
@@ -321,7 +318,7 @@ The initialisation is more interesting. The member-function ``init`` take one pa
     command_buffer.init(objects); // init our command buffer.
 
 Let's Draw It
-^^^^^^^^^^^^^
+-------------
 Let's had the draw command in our main loop. It should looks like this.
 
 .. code-block:: cpp
@@ -331,7 +328,7 @@ Let's had the draw command in our main loop. It should looks like this.
         command_buffer.drawFrame({}); // {} empty vector
         std::this_thread::sleep_for(17ms);
     }
-    context->waitIdle();// wait for the image to be render completely before exiting
+    context=>waitIdle();// wait for the image to be render completely before exiting
 
 The ``drawFrame`` function take on parameter, but we don't talk about this for now so juste pass an empty vector.
 
