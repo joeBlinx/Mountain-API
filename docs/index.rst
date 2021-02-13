@@ -11,7 +11,15 @@ Welcome to Mountain-API's documentation!
    :caption: Contents:
 
    code/introduction
+
+.. toctree::
+   :caption: Getting Started:
+
    code/getting_started
+
+.. toctree::
+   :caption: Reference API:
+
    code/reference_api
 
 
