@@ -22,7 +22,7 @@ You can build the documentation with the option `BUILD_DOCUMENTATION` to `ON`
 ## Documentation
 https://mountain-api.readthedocs.io/en/latest/
 
-## Next Features
+<!--## Next Features
 - Make a loader of share library, the share library will old all of necessary command 
 to draw the things i want.
 
@@ -31,4 +31,4 @@ to draw the things i want.
 - config file system where you put all the specific features you need 
 
 - When we load a share lib, read a config file, destroy the previous config and load the new
-
+-->
