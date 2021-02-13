@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 
 add_library(window STATIC)
 target_link_libraries(window PUBLIC utils
-        PRIVATE common_target::common_target)
+        PRIVATE common::target)
 target_include_directories(window
         PUBLIC
             .
@@ -29,3 +29,6 @@ elseif(${USE_SDL2})
             sdl2/window.h)
     target_link_libraries(window PUBLIC SDL2::Main)
 endif()
+
+set_target_properties(window PROPERTIES
+        POSITION_INDEPENDENT_CODE ON)

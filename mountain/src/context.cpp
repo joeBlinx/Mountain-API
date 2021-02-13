@@ -30,10 +30,6 @@ namespace mountain {
         create_logical_device(devicesExtension, _validationLayers);
         create_command_pool();
     }
-    Context::Context(int width, int height, std::string_view title, std::vector<const char *> const &devicesExtension)
-            : Context(Window(title, width, height), devicesExtension) {
-
-    }
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
             [[maybe_unused]] VkDebugReportFlagsEXT flags,

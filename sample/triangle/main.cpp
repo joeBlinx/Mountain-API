@@ -52,10 +52,8 @@ int main(){
 
     int constexpr width = 1366;
     int constexpr height = 768;
-
-    mountain::Context const context{width,
-                    height,
-                    "Vulkan Triangle",
+    mountain::Window const window{"Vulkan Triangle", width, height};
+    mountain::Context const context{window,
                     devicesExtension};
 
     using mountain::subpass_attachment;

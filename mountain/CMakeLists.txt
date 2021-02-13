@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 include(CMakeParseArguments)
 
 
-add_library(Mountain_API STATIC)
+add_library(Mountain_API SHARED)
 add_library(Mountain::API ALIAS Mountain_API)
 
 target_include_directories(Mountain_API 

@@ -83,11 +83,10 @@ int main() {
 
 	int constexpr width = 1366;
 	int constexpr height = 768;
+    mountain::Window const window{"Mountain-API load obj sample\"", width, height};
+    mountain::Context const context{window,
+                                    devicesExtension};
 
-    mountain::Context const context{width,
-                 height,
-                 "Mountain-API load obj sample",
-                 devicesExtension};
     using mountain::subpass_attachment;
     mountain::RenderPass const render_pass{
         context,

@@ -40,7 +40,7 @@ function(download_dependencies)
 	list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/module)
 	if(${USE_GLFW})
 		set(_window_managment_lib glfw/3.3.2)
-
+		set(_options OPTIONS glfw/3.3.2:fPIC=True)
 	else(${USE_SDL2})
 		find_package(SDL2 REQUIRED)
 	endif()
@@ -61,6 +61,7 @@ function(download_dependencies)
 			stb/20200203
 			tinyobjloader/1.0.6
 			BASIC_SETUP CMAKE_TARGETS
-			BUILD missing)
+			BUILD missing
+			${_options})
 
 endfunction()
