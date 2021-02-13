@@ -54,10 +54,9 @@ int main(){
     int constexpr width = 1366;
     int constexpr height = 768;
 
-    mountain::Context context{width,
-                              height,
-                              "Mountain-API Push Constant",
-                              devicesExtension};
+    mountain::Window const window{"Mountain-API Push Constant", width, height};
+    mountain::Context const context{window,
+                                    devicesExtension};
 
     using mountain::subpass_attachment;
     mountain::RenderPass render_pass{

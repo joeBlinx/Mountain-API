@@ -36,8 +36,6 @@ namespace mountain {
          */
         Context(Window const& window, std::vector<const char *> const &devicesExtension);
 
-        Context(int width, int height, std::string_view title, std::vector<const char *> const &devicesExtension);
-
         Context(Context const &) = delete;
 
         Context &operator=(Context const &) = delete;
