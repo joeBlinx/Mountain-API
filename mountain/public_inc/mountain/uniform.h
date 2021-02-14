@@ -5,7 +5,7 @@
 #ifndef MOUNTAIN_API_UNIFORM_H
 #define MOUNTAIN_API_UNIFORM_H
 
-#include "mountain/swapChain.h"
+#include "swapChain.h"
 #include "utils/raii_helper.h"
 #include <memory>
 namespace mountain::buffer {

@@ -3,7 +3,7 @@
 //
 
 #include <glm/glm.hpp>
-#include "load_model.h"
+#include "../public_inc/mountain/load_model.h"
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 #include <unordered_map>

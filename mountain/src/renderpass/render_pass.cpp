@@ -2,9 +2,9 @@
 // Created by joe on 5/10/19.
 //
 
-#include <context.h>
+#include "../../public_inc/mountain/context.h"
 #include "utils/log.hpp"
-#include "render_pass.h"
+#include "../../public_inc/mountain/render_pass.h"
 
 namespace mountain {
 

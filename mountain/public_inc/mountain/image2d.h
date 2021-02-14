@@ -6,7 +6,7 @@
 #define MOUNTAIN_API_IMAGE2D_H
 #include <vulkan/vulkan.hpp>
 #include <filesystem>
-#include "mountain/context.h"
+#include "context.h"
 #include <limits>
 namespace mountain::buffer {
         namespace fs = std::filesystem;

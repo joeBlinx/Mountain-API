@@ -3,7 +3,7 @@
 #include <array>
 #include <utils/type_trait.hpp>
 #include <algorithm>
-#include "mountain/context.h"
+#include "context.h"
 #include "utils/raii_helper.h"
 namespace mountain {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -132,7 +132,7 @@ namespace mountain {
         };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-#include "mountain/buffer/vertex.tpp"
+#include "vertex.tpp"
 #endif
 
     }

@@ -5,7 +5,7 @@
 #ifndef MOUNTAIN_API_DESCRIPTORSET_LAYOUT_H
 #define MOUNTAIN_API_DESCRIPTORSET_LAYOUT_H
 #include <vulkan/vulkan.hpp>
-#include "mountain/context.h"
+#include "context.h"
 namespace mountain::descriptorset_layout {
         /**
          * Create descriptor layout to be use as a uniform

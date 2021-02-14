@@ -2,16 +2,16 @@
 #include "mountain/command_buffer.h"
 #include "mountain/context.h"
 #include "mountain/swapChain.h"
-#include "mountain/renderpass/render_pass.h"
+#include "mountain/render_pass.h"
 #include <vector>
-#include <mountain/buffer/uniform.h>
+#include "mountain/uniform.h"
 #include <chrono>
-#include <mountain/buffer/image2d.h>
-#include <mountain/sampler.h>
-#include "mountain/buffer/vertex.h"
+#include "mountain/image2d.h"
+#include "mountain/sampler.h"
+#include "mountain/vertex.h"
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
-#include "mountain/descriptor_setlayout_binding/descriptorset_layout.h"
+#include "mountain/descriptorset_layout.h"
 #include "mountain/load_model.h"
 #include "ressource_paths.h"
 
