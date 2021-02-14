@@ -78,7 +78,7 @@ First we have to create our render pass (for now, Mountain=API only one subpass 
 
 .. code-block:: cpp
 
-    #include "mountain/renderpass/render_pass.h"
+    #include "mountain/render_pass.h"
     ...
     using mountain::subpass_attachment;
     mountain::RenderPass const render_pass{

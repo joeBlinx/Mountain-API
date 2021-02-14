@@ -24,7 +24,7 @@ steps:
     image: ubuntu_docker
     pull : never
     commands:
-      - cmake --build build --target Mountain_API
+      - cmake --build build --target MountainAPI
 
   - name: build_samples
     image: ubuntu_docker
