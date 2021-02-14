@@ -7,16 +7,16 @@
 
 #include <vulkan/vulkan.hpp>
 #include <vector>
-#include "mountain/swapChain.h"
-#include "mountain/context.h"
-#include "mountain/renderpass/render_pass.h"
+#include "swapChain.h"
+#include "context.h"
+#include "render_pass.h"
 #include "utils/utils.hpp"
-#include "mountain/buffer/vertex.h"
-#include "mountain/buffer/vertex.h"
-#include "mountain/graphics_pipeline.h"
+#include "vertex.h"
+#include "vertex.h"
+#include "graphics_pipeline.h"
 #include <cstddef>
-#include <mountain/buffer/image2d.h>
-#include "mountain/buffer/uniform.h"
+#include "image2d.h"
+#include "uniform.h"
 #include "sampler.h"
 
 namespace mountain {

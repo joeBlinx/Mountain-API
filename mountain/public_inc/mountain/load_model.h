@@ -6,7 +6,7 @@
 #define MOUNTAIN_API_LOAD_MODEL_H
 
 #include <filesystem>
-#include "buffer/vertex.h"
+#include "vertex.h"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
 

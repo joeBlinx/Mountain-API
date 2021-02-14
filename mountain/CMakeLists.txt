@@ -1,20 +1,21 @@
 cmake_minimum_required(VERSION 3.10)
 include(CMakeParseArguments)
 
+add_library(MountainAPI SHARED)
+add_library(Mountain::API ALIAS MountainAPI)
+set_target_properties(MountainAPI PROPERTIES
+		VERSION 0.1)
 
-add_library(Mountain_API SHARED)
-add_library(Mountain::API ALIAS Mountain_API)
-
-target_include_directories(Mountain_API 
-							PUBLIC 
-								inc/ 
+target_include_directories(MountainAPI 
+							PUBLIC
+		public_inc/
 							PRIVATE
-		inc/mountain
-		inc/mountain/renderpass
-		inc/mountain/buffer
-		inc/mountain/descriptor_setlayout_binding
+		private_inc/mountain
+		private_inc/mountain/renderpass
+		private_inc/mountain/buffer
+		private_inc/mountain/descriptor_setlayout_binding
 								)
-target_link_libraries(Mountain_API PRIVATE
+target_link_libraries(MountainAPI PRIVATE
 										vulkan::headers
 									PUBLIC
 										utils::utils
@@ -24,17 +25,32 @@ target_link_libraries(Mountain_API PRIVATE
 										CONAN_PKG::glm
 											)
 
-target_compile_definitions(Mountain_API PUBLIC -DGLFW_INCLUDE_VULKAN)
+target_compile_definitions(MountainAPI PUBLIC -DGLFW_INCLUDE_VULKAN)
 if(${USE_SANITIZER})
 	if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-		target_compile_options(Mountain_API PRIVATE $<$<CONFIG:Debug>:-fsanitize=address  -fsanitize=undefined>)
-		target_link_libraries(Mountain_API PRIVATE $<$<CONFIG:Debug>:-fsanitize=address -fsanitize=undefined>)
+		target_compile_options(MountainAPI PRIVATE $<$<CONFIG:Debug>:-fsanitize=address  -fsanitize=undefined>)
+		target_link_libraries(MountainAPI PRIVATE $<$<CONFIG:Debug>:-fsanitize=address -fsanitize=undefined>)
 	elseif(MSVC)
-		target_compile_options(Mountain_API PRIVATE $<$<CONFIG:Debug>:/fsanitize=address>)
-		target_link_libraries(Mountain_API PRIVATE $<$<CONFIG:Debug>:/fsanitize=address>)
+		target_compile_options(MountainAPI PRIVATE $<$<CONFIG:Debug>:/fsanitize=address>)
+		target_link_libraries(MountainAPI PRIVATE $<$<CONFIG:Debug>:/fsanitize=address>)
 	endif()
 endif()
-set_common_properties(Mountain_API)
+set_common_properties(MountainAPI)
+# There must be only one public include
+get_target_property(_public_include Mountain::API INTERFACE_INCLUDE_DIRECTORIES)
+# If this line failed it's likely that you have more than one public include directory
+file(GLOB_RECURSE _public_headers "${_public_include}*.h")
+set_target_properties(MountainAPI
+		PROPERTIES
+		PUBLIC_HEADER "${_public_headers}")
+
+install(
+		TARGETS MountainAPI
+		CONFIGURATIONS Release
+		RUNTIME DESTINATION bin
+		LIBRARY DESTINATION bin
+		PUBLIC_HEADER DESTINATION include/mountain
+)
 set_sources(_srcs
 				FOLDER src
 				FILES 
@@ -53,27 +69,24 @@ set_sources(_srcs_buffer
 			FOLDER src/buffer
 			FILES
 				vertex.cpp)
-set_sources(_headers_buffer
-			FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/inc/mountain/buffer
-			FILES 
+
+set_sources(_headers
+		FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/public_inc/mountain
+			FILES
 				vertex.h
 				vertex.tpp
 				uniform.h
 				image2d.h
-)			
-set_sources(_headers 
-				FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/inc/mountain
-				FILES 
-					context.h
-					renderpass/render_pass.h
-					swapChain.h
-					command_buffer.h
-					graphics_pipeline.h
-					sampler.h
-					load_model.h
-					no_sanitize.h
-				)
+				context.h
+				render_pass.h
+				swapChain.h
+				command_buffer.h
+				graphics_pipeline.h
+				sampler.h
+				load_model.h
+				no_sanitize.h
+			)
 
-target_sources(Mountain_API PRIVATE ${_srcs} ${_srcs_buffer}
-							INTERFACE ${_headers} ${_headers_buffer})
+target_sources(MountainAPI PRIVATE ${_srcs} ${_srcs_buffer}
+							INTERFACE ${_headers})
 							

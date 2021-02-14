@@ -1,13 +1,13 @@
 
 #include <vector>
-#include <mountain/context.h>
-#include <mountain/renderpass/render_pass.h>
-#include <mountain/swapChain.h>
+#include "mountain/context.h"
+#include "mountain/render_pass.h"
+#include "mountain/swapChain.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
-#include <mountain/buffer/vertex.h>
-#include <mountain/graphics_pipeline.h>
-#include <mountain/command_buffer.h>
+#include "mountain/vertex.h"
+#include "mountain/graphics_pipeline.h"
+#include "mountain/command_buffer.h"
 #include <thread>
 #include "ressource_paths.h"
 void key_callback(GLFWwindow* window, int key, int , int action, int)

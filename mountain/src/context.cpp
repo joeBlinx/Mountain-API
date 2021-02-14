@@ -1,4 +1,4 @@
-#include "context.h"
+#include "../public_inc/mountain/context.h"
 #include "utils/utils.hpp"
 #include <string_view>
 #include "utils/log.hpp"
@@ -6,8 +6,8 @@
 #include <cstring>
 #include <string_view>
 #include <set>
-#include <uniform.h>
-#include "no_sanitize.h"
+#include "../public_inc/mountain/uniform.h"
+#include "../public_inc/mountain/no_sanitize.h"
 namespace mountain {
 
     Context::SwapChainSupportDetails query_swap_chain_support(vk::PhysicalDevice const &device, VkSurfaceKHR surface);
