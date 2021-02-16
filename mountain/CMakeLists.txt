@@ -4,7 +4,7 @@ include(CMakeParseArguments)
 add_library(MountainAPI SHARED)
 add_library(Mountain::API ALIAS MountainAPI)
 set_target_properties(MountainAPI PROPERTIES
-		VERSION 0.1)
+		VERSION ${CMAKE_PROJECT_VERSION})
 
 target_include_directories(MountainAPI 
 							PUBLIC
