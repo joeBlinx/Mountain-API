@@ -4,11 +4,11 @@
 
 #ifndef MOUNTAIN_API_GLFWWINDOW_H
 #define MOUNTAIN_API_GLFWWINDOW_H
-#include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 #include <string_view>
 #include <string>
 #include <vector>
+struct GLFWwindow;
 namespace mountain {
 
     /**
@@ -40,14 +40,10 @@ namespace mountain {
         std::string _title;
     };
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-    inline VkResult create_window_surface(VkInstance instance,
+    VkResult create_window_surface(VkInstance instance,
                                           Window const &handle,
                                           const VkAllocationCallbacks *allocator,
-                                          VkSurfaceKHR *surface) {
-        return glfwCreateWindowSurface(instance,
-                                       handle.get_window(), allocator, surface);
-
-    }
+                                          VkSurfaceKHR *surface);
 
 #endif
 }

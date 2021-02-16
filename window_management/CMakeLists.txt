@@ -17,7 +17,11 @@ if(${USE_GLFW})
             PRIVATE
             glfw/window.cpp
             glfw/window.h)
+    set_target_properties(window PROPERTIES
+            PUBLIC_HEADER glfw/window.h)
+
     target_link_libraries(window PUBLIC CONAN_PKG::glfw)
+
 elseif(${USE_SDL2})
     target_compile_definitions(window
             PUBLIC
@@ -28,7 +32,15 @@ elseif(${USE_SDL2})
             sdl2/window.cpp
             sdl2/window.h)
     target_link_libraries(window PUBLIC SDL2::Main)
+    set_target_properties(window PROPERTIES
+            PUBLIC_HEADER sdl2/window.h)
 endif()
 
 set_target_properties(window PROPERTIES
         POSITION_INDEPENDENT_CODE ON)
+
+install(
+        TARGETS window
+        CONFIGURATIONS Release
+        PUBLIC_HEADER DESTINATION include/mountain
+)

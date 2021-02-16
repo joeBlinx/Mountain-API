@@ -5,6 +5,8 @@
 #include <string_view>
 #include "window.h"
 #include "utils/utils.hpp"
+#include <GLFW/glfw3.h>
+
 namespace mountain {
 
     void errorGLFW([[maybe_unused]] int error, const char *msg) {
@@ -39,5 +41,13 @@ namespace mountain {
 
     GLFWwindow *Window::get_window() const {
         return _window;
+    }
+    VkResult create_window_surface(VkInstance instance,
+                                   Window const &handle,
+                                   const VkAllocationCallbacks *allocator,
+                                   VkSurfaceKHR *surface) {
+        return glfwCreateWindowSurface(instance,
+                                       handle.get_window(), allocator, surface);
+
     }
 }

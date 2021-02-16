@@ -14,6 +14,7 @@
 #include "mountain/descriptorset_layout.h"
 #include "mountain/load_model.h"
 #include "ressource_paths.h"
+#include "GLFW/glfw3.h"
 
 struct Model{
     glm::mat4 model {1};
