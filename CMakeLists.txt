@@ -1,11 +1,19 @@
 cmake_minimum_required(VERSION 3.10)
-include(cmake/conan.cmake)
-include(cmake/utils/utils.cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/utils)
 
+include(conan)
+include(utils)
+include(package)
 check_build_type()
+
 project(MOUNTAIN-API
         LANGUAGES CXX
+        VERSION 0.1.0
         )
+
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
 option(USE_SDL2 "use sdl2 for window managment" OFF)
