@@ -51,6 +51,12 @@ install(
 		LIBRARY DESTINATION bin
 		PUBLIC_HEADER DESTINATION include/mountain
 )
+
+install(
+		FILES ${CMAKE_SOURCE_DIR}/cmake/modules/FindMountainAPI.cmake
+		DESTINATION ./
+
+)
 set_sources(_srcs
 				FOLDER src
 				FILES 
