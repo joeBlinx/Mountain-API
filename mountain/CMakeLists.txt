@@ -35,7 +35,7 @@ if(${USE_SANITIZER})
 		target_link_libraries(MountainAPI PRIVATE $<$<CONFIG:Debug>:/fsanitize=address>)
 	endif()
 endif()
-set_common_properties(MountainAPI)
+target_compile_features(MountainAPI PUBLIC cxx_std_20)
 # There must be only one public include
 get_target_property(_public_include Mountain::API INTERFACE_INCLUDE_DIRECTORIES)
 # If this line failed it's likely that you have more than one public include directory

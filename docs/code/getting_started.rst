@@ -4,15 +4,26 @@ Along this tutorial, I will assume that you use CMake to set up your project. I 
 
 Build source inside your project
 --------------------------------
-All you have to do is to copy the `Mountain=API` directory into your project directory then
+All you have to do is to copy the ``Mountain-API`` directory into your project directory then
 
 .. code-block:: cmake
 
-    add_subdirectory(Mountain=API)
-    target_compile_features(<your_target> PRIVATE cxx_std_20)
+    add_subdirectory(Mountain-API)
     target_link_libraries(<your_target> PRIVATE Mountain::API)
 
 That's all you have to do to use Mountain=API
+
+Use Mountain-API package
+------------------------
+
+If you download the binary package of ``Mountain-API``, you can use the ``find_package`` function.
+But first, you will have to use ``CMAKE_MODULE_PATH`` to tell CMake where is the package.
+
+.. code-block:: cmake
+
+    set(CMAKE_MODULE_PATH <path_of_the_package> ${CMAKE_MODULE_PATH})
+    find_package(MountainAPI)
+    target_link_libraries(<your_target> PRIVATE Mountain::API)
 
 First triangle
 =================
