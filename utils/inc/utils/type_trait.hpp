@@ -4,7 +4,7 @@
 template<class T, int n>
 struct vertex_format;
 template<class T, int n>
-vk::Format vertex_format_t = vertex_format<T, n>::value;
+constexpr vk::Format vertex_format_t = vertex_format<T, n>::value;
 
 template<class T>
 struct vertex_format<T, 1>{
