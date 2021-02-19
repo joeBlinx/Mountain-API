@@ -21,7 +21,7 @@ macro(set_common_properties target)
 endmacro()
 
 macro(check_build_type)
-	get_target_property(_multi_config GLOBAL GENERATOR_IS_MULTI_CONFIG)
+	get_property(_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 	if(NOT ${_multi_config})
 		set(available_build_type Debug Release)
 		if(NOT ${CMAKE_BUILD_TYPE} IN_LIST available_build_type)
