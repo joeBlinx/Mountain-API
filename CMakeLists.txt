@@ -14,13 +14,12 @@ project(MOUNTAIN-API
         VERSION 0.1.0
         )
 
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
 option(USE_SDL2 "use sdl2 for window managment" OFF)
 option(USE_GLFW "use glfw for window managment" ON)
-option(BUILD_SAMPLE "build sample" OFF)
+option(BUILD_SAMPLES "build sample" OFF)
 option(BUILD_DOCUMENTATION "build documentation" OFF)
-option(USE_SANITIZER "use asan ad ubsan if available" OFF)
+option(USE_SANITIZER "use asan and ubsan if available" OFF)
 
 message("USE_SDL2 is ${USE_SDL2}")
 message("USE_GLFW is ${USE_GLFW}")
