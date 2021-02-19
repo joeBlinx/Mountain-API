@@ -20,10 +20,8 @@ namespace mountain::model{
         bool operator==(const Vertex& other) const {
             return pos == other.pos && tex_coord == other.tex_coord;
         }
-        static decltype(auto) get_format_offset(){
-            return CLASS_DESCRIPTION(
-                    Vertex, pos, tex_coord
-                    );
+        static auto get_format_offsets() {
+            return mountain::get_format_offsets(&Vertex::pos, &Vertex::tex_coord);
         }
     };
 #endif

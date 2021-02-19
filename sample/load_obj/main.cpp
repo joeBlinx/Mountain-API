@@ -58,7 +58,7 @@ std::vector<mountain::buffer::vertex> create_buffers(mountain::Context const& co
     std::vector<mountain::buffer::vertex> vertex_buffers;
     vertex_buffers.emplace_back(mountain::buffer::vertex(context,
                                                          mountain::buffer::vertex_description(0, 0,
-                                                                                              mountain::model::Vertex::get_format_offset()),
+                                                                                              mountain::model::Vertex::get_format_offsets()),
                                                          vertices_3d,
                                                          std::move(indices_3d)
     ));

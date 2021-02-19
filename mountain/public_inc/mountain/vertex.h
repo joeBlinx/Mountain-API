@@ -8,9 +8,9 @@
 namespace mountain {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
     template<class T>
-    constexpr vk::Format get_format() {
-        return vertex_format_t<T, sizeof(T) / sizeof(uint32_t)>;
-    }
+    constexpr vk::Format get_format =
+         vertex_format_t<T, sizeof(T) / sizeof(uint32_t)>;
+
 
     template<class T>
     struct format_offset {
@@ -18,25 +18,22 @@ namespace mountain {
         uint32_t offset;
     };
 #endif
-#define NARGS(...) NARGS_(__VA_ARGS__, 6, 5, 4, 3, 2, 1, 0)
-#define NARGS_(_6, _5, _4, _3, _2, _1, N, ...) N
-
-#define CONC(A, B) CONC_(A, B)
-#define CONC_(A, B) A##B
-
-
-#define CLASS_DESCRIPTION_1(object, attrib1)  mountain::format_offset<object>{ mountain::get_format<decltype(object::attrib1)>(), offsetof(object, attrib1) }
-#define CLASS_DESCRIPTION_2(object, attrib1, attrib2)  CLASS_DESCRIPTION_1(object, attrib1), mountain::format_offset<object>{ mountain::get_format<decltype(object::attrib2)>(), offsetof(object, attrib2) }
-#define CLASS_DESCRIPTION_3(object, attrib1, attrib2, attrib3)   CLASS_DESCRIPTION_2(object, attrib1,  attrib2), mountain::format_offset<object>{ mountain::get_format<decltype(object::attrib3)>(), offsetof(object, attrib3) }
-#define CLASS_DESCRIPTION_4(object, attrib1, attrib2, attrib3, attrib4)   CLASS_DESCRIPTION_3(object, attrib1,  attrib2, attrib3), mountain::format_offset<object>{ mountain::get_format<decltype(object::attrib4)>(), offsetof(object, attrib4) }
-#define CLASS_DESCRIPTION_5(object, attrib1, attrib2, attrib3, attrib4, attrib5)  CLASS_DESCRIPTION_4(object, attrib1,  attrib2, attrib3, attrib4), mountain::format_offset<object>{ mountain::get_format<decltype(object::attrib5)>(), offsetof(object, attrib5) }
-#define CLASS_DESCRIPTION_6(object, attrib1, attrib2, attrib3, attrib4, attrib5, attrib6)  CLASS_DESCRIPTION_5(object, attrib1,  attrib2, attrib3, attrib4, attrib5), mountain::format_offset<object>{ mountain::get_format<decltype(object::attrib6)>(), offsetof(object, attrib6) }
 /**
  *
- * @param object: a structure type
- * @param ...: attribute inside the structure
+ * @tparam T: type of the structure
+ * @tparam Ts: type of the attributes
+ * @param args: member pointer to attributes
+ * @return an array of offset by attribute. Use to create a buffer::vertex
  */
-#define CLASS_DESCRIPTION(object, ...) std::array{ CONC(CLASS_DESCRIPTION_, NARGS(__VA_ARGS__)) (object, __VA_ARGS__) }
+template<class T, class ...Ts>
+auto get_format_offsets(Ts T::* ... args){
+    return std::array{
+        format_offset<T>{
+            mountain::get_format<Ts>,
+           static_cast<uint32_t>(reinterpret_cast<std::uint64_t>(static_cast<void*>(&(static_cast<T*>(nullptr)->*args))))
+        }...
+    };
+}
     namespace buffer {
         struct vertex_description {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

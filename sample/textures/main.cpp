@@ -21,6 +21,9 @@ std::vector<mountain::buffer::vertex> create_buffers(mountain::Context const& co
     struct Vertex{
         glm::vec2 pos; // location 0
         glm::vec2 uv; // location 1
+        static auto get_description() {
+            return mountain::get_format_offsets(&Vertex::pos, &Vertex::uv);
+        }
     };
     /* This is a triangle that will be shown
      *                 0       1
@@ -42,7 +45,7 @@ std::vector<mountain::buffer::vertex> create_buffers(mountain::Context const& co
             mountain::buffer::vertex{context,
                                      mountain::buffer::vertex_description(0,
                                                                           0,
-                                                                          CLASS_DESCRIPTION(Vertex, uv, pos)),
+                                                                          Vertex::get_description()),
                                      vertices,
                                      indices}
     );
