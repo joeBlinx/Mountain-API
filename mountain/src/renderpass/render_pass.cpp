@@ -95,7 +95,7 @@ namespace mountain {
 
 
         vk::RenderPassCreateInfo renderPassInfo = {};
-        renderPassInfo.attachmentCount = attachments_desc.size();
+        renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments_desc.size());
         renderPassInfo.pAttachments = attachments_desc.data();
         renderPassInfo.subpassCount = 1;
         renderPassInfo.pSubpasses = &subpass;

@@ -112,7 +112,7 @@ namespace mountain {
         vk::UniqueDescriptorPool _descriptor_pool;
         std::vector<vk::DescriptorSet> _descriptor_sets;
         std::vector<vk::DescriptorSetLayout> _descriptor_set_layouts;
-        int _nb_descriptor_set_by_image{};
+        std::size_t _nb_descriptor_set_by_image{};
 
         vk::Queue _graphicsQueue;
         vk::Queue _presentQueue;

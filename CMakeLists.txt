@@ -14,6 +14,12 @@ project(MOUNTAIN-API
         VERSION 0.1.0
         )
 
+if(WIN32)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+    set(CMAKE_PDB_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+endif()
 
 option(USE_SDL2 "use sdl2 for window managment" OFF)
 option(USE_GLFW "use glfw for window managment" ON)
@@ -36,3 +42,5 @@ endif()
 if(${BUILD_SAMPLES})
     add_subdirectory(sample)
 endif()
+set_target_properties(MountainAPI PROPERTIES FOLDER "pouet")
+set_target_properties(window PROPERTIES FOLDER "pouet")
