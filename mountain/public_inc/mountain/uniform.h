@@ -45,7 +45,7 @@ namespace mountain::buffer {
              * @param context: Vulkan context
              * @param swap_chain_nb_images: nb of uniform to create, one for each swap chain image
              */
-            MOUNTAINAPI_EXPORT uniform(Context const &context, size_t swap_chain_nb_images);
+            uniform(Context const &context, size_t swap_chain_nb_images);
 
             /**
              *
@@ -53,18 +53,18 @@ namespace mountain::buffer {
              * @return an uniform_updater object, it has to be passed to the draw function of
              * CommandBuffer to be effective
              */
-            MOUNTAINAPI_EXPORT uniform_updater get_uniform_updater(const T &value);
+            uniform_updater get_uniform_updater(const T &value);
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-            MOUNTAINAPI_EXPORT iterator begin() { return std::begin(_buffers); }
+            iterator begin() { return std::begin(_buffers); }
 
-            MOUNTAINAPI_EXPORT iterator end() { return std::end(_buffers); }
+            iterator end() { return std::end(_buffers); }
 
-            MOUNTAINAPI_EXPORT const_iterator begin() const { return std::begin(_buffers); }
+            const_iterator begin() const { return std::begin(_buffers); }
 
-            MOUNTAINAPI_EXPORT const_iterator end() const { return std::end(_buffers); }
+            const_iterator end() const { return std::end(_buffers); }
 
-            MOUNTAINAPI_EXPORT auto size() const {
+            auto size() const {
                 return _buffers.size();
             }
 #endif

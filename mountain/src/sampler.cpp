@@ -5,7 +5,7 @@
 #include "../public_inc/mountain/sampler.h"
 namespace mountain {
 
-    image::sampler::sampler(Context const &context, uint32_t mipmap_levels) {
+    image::sampler::sampler(Context const &context, float mipmap_levels) {
         //TODO: basic sampler but i need to find a way to be more flexible
         // Linear filter and repeat image
         vk::SamplerCreateInfo sampler_info{};

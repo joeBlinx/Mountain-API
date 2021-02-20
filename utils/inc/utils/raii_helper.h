@@ -4,7 +4,7 @@
 namespace utils::raii_helper{
     struct MapMemory{
 
-        MapMemory(vk::Device const& device, vk::UniqueDeviceMemory& device_memory, uint32_t offset, uint32_t size, void**data):_device(device),
+        MapMemory(vk::Device const& device, vk::UniqueDeviceMemory& device_memory, vk::DeviceSize offset, vk::DeviceSize size, void**data):_device(device),
         _device_memory(device_memory){
             checkError(_device.mapMemory(*_device_memory, offset, size, vk::MemoryMapFlags(), data),
                        "unable to map memory");
