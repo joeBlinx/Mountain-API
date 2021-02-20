@@ -26,7 +26,7 @@ namespace mountain::buffer {
              * @param image_path: Path to the texture image
              * @param mipmap_level : mipmap level wanted (automatically compute)
              */
-            image2d(Context const &context, fs::path const &image_path, uint32_t mipmap_level);
+            MOUNTAINAPI_EXPORT image2d(Context const &context, fs::path const &image_path, uint32_t mipmap_level);
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
             vk::UniqueImage const &get_image() const { return _image; }
 

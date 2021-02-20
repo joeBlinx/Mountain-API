@@ -30,7 +30,7 @@ namespace mountain::model{
      * @param model_path: path to the obj to load
      * @return a vector of vertices and a vector of the corresponding indices
      */
-    std::pair<std::vector<Vertex>, std::vector<uint32_t>> load_obj(fs::path const& model_path);
+    MOUNTAINAPI_EXPORT std::pair<std::vector<Vertex>, std::vector<uint32_t>> load_obj(fs::path const& model_path);
 }
 
 #endif //MOUNTAIN_API_LOAD_MODEL_H
