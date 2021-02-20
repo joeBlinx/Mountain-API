@@ -1,8 +1,8 @@
 //
 // Created by stiven on 12/23/20.
 //
-#include "../../public_inc/mountain/context.h"
-#include "../../public_inc/mountain/descriptorset_layout.h"
+#include "mountain/context.h"
+#include "mountain/descriptorset_layout.h"
 #include "utils/log.hpp"
 namespace mountain::descriptorset_layout {
     vk::DescriptorSetLayoutBinding create_descriptor_image_sampler(int binding, vk::ShaderStageFlags const &shader){

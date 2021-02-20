@@ -5,6 +5,7 @@
 #include <vulkan/vulkan.hpp>
 #include <string_view>
 #include "window.h"
+#include "mountain/mountainapi_export.h"
 struct GLFWwindow;
 namespace mountain {
         /**
@@ -34,13 +35,13 @@ namespace mountain {
          * @param window: The window we want to us
          * @param devicesExtension : extensions we need. Example : VK_KHR_SWAPCHAIN_EXTENSION_NAME
          */
-        Context(Window const& window, std::vector<const char *> const &devicesExtension);
+        MOUNTAINAPI_EXPORT Context(Window const& window, std::vector<const char *> const &devicesExtension);
 
         Context(Context const &) = delete;
 
         Context &operator=(Context const &) = delete;
 
-        ~Context();
+        MOUNTAINAPI_EXPORT ~Context();
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
         VkSurfaceKHR get_vk_surface() const { return _surface; }
@@ -64,18 +65,18 @@ namespace mountain {
          *
          * @return Window object
          */
-        Window const &get_window() const { return _window; }
+        MOUNTAINAPI_EXPORT Window const &get_window() const { return _window; }
 
         /**
          * Useful to use vk::Device method through Context object
          * @return The vulkan device
          */
-        vk::Device const &operator*() const { return get_device(); }
+        MOUNTAINAPI_EXPORT vk::Device const &operator*() const { return get_device(); }
         /**
          * Useful to use vk::Device method through Context object
          * @return The vulkan device
          */
-        vk::Device const *operator->() const { return &get_device(); }
+        MOUNTAINAPI_EXPORT vk::Device const *operator->() const { return &get_device(); }
 
         /**
          * Helper function which create a buffer and it's associated memory
@@ -85,7 +86,7 @@ namespace mountain {
          * @param properties: Properties that we want for the memories. example: eTransferDst
          */
         [[nodiscard]] std::pair<vk::UniqueDeviceMemory, vk::UniqueBuffer>
-        create_buffer_and_memory(vk::DeviceSize const &size, vk::BufferUsageFlags usage,
+        MOUNTAINAPI_EXPORT create_buffer_and_memory(vk::DeviceSize const &size, vk::BufferUsageFlags usage,
                                  vk::MemoryPropertyFlags properties) const;
         /**
          * Copy a fixed size content of source into destination
@@ -93,7 +94,7 @@ namespace mountain {
          * @param source
          * @param size: Fixed size data to copied
          */
-        void
+        MOUNTAINAPI_EXPORT void
         copy_buffer(vk::UniqueBuffer &destination, vk::UniqueBuffer const &source, vk::DeviceSize const &size) const;
 
         /**
@@ -103,7 +104,7 @@ namespace mountain {
          * @param width: width of the image
          * @param height: height of the image
          */
-        void copy_buffer_to_image(vk::Buffer buffer, vk::Image image, uint32_t width, uint32_t height) const;
+        MOUNTAINAPI_EXPORT void copy_buffer_to_image(vk::Buffer buffer, vk::Image image, uint32_t width, uint32_t height) const;
 
         /**
          * Create a 2d Image view from an Image
@@ -134,7 +135,7 @@ namespace mountain {
          *
          * @return adequate swap chain format
          */
-        vk::SurfaceFormatKHR choose_swap_surface_format() const;
+        MOUNTAINAPI_EXPORT vk::SurfaceFormatKHR choose_swap_surface_format() const;
 
     private:
         std::vector<const char *> const _validationLayers = {

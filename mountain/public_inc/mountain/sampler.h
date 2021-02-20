@@ -13,7 +13,7 @@ namespace mountain::image {
          * @param context: Vulkan context
          * @param mipmap_levels: mipmap level you want
          */
-        sampler(Context const &context, uint32_t mipmap_levels);
+        MOUNTAINAPI_EXPORT sampler(Context const &context, uint32_t mipmap_levels);
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
         explicit operator vk::Sampler() const{return *_sampler;}

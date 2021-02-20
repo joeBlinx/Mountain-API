@@ -23,13 +23,13 @@ namespace mountain {
          * @param width: width of the output image
          * @param height: height of the output image
          */
-        SwapChain(Context const &context, RenderPass const &render_pass, int width, int height);
+        MOUNTAINAPI_EXPORT SwapChain(Context const &context, RenderPass const &render_pass, int width, int height);
 
         SwapChain(SwapChain const &) = delete;
 
         SwapChain &operator=(SwapChain const &) = delete;
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-        const std::vector<vk::UniqueImageView> &get_swap_chain_image_views()
+        MOUNTAINAPI_EXPORT const std::vector<vk::UniqueImageView> &get_swap_chain_image_views()
         const;
 
         std::vector<vk::Framebuffer> get_framebuffers() const;
@@ -40,7 +40,7 @@ namespace mountain {
 
         vk::SwapchainKHR get_swap_chain() const;
 #endif
-        ~SwapChain();
+        MOUNTAINAPI_EXPORT ~SwapChain();
 
     private:
         Context const &_context;
