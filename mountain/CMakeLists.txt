@@ -16,6 +16,7 @@ set_target_properties(MountainAPI PROPERTIES
 target_include_directories(MountainAPI 
 							PUBLIC
 		public_inc/
+		${CMAKE_BINARY_DIR}
 							PRIVATE
 		private_inc/mountain
 		private_inc/mountain/renderpass
@@ -32,7 +33,10 @@ target_link_libraries(MountainAPI PRIVATE
 										CONAN_PKG::glm
 											)
 
-target_compile_definitions(MountainAPI PUBLIC -DGLFW_INCLUDE_VULKAN)
+target_compile_definitions(MountainAPI
+		PUBLIC GLFW_INCLUDE_VULKAN
+		PRIVATE MountainAPI_EXPORTS
+		)
 if(${USE_SANITIZER})
 	if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 		target_compile_options(MountainAPI PRIVATE $<$<CONFIG:Debug>:-fsanitize=address  -fsanitize=undefined>)
@@ -43,27 +47,7 @@ if(${USE_SANITIZER})
 	endif()
 endif()
 target_compile_features(MountainAPI PUBLIC cxx_std_20)
-# There must be only one public include
-get_target_property(_public_include Mountain::API INTERFACE_INCLUDE_DIRECTORIES)
-# If this line failed it's likely that you have more than one public include directory
-file(GLOB_RECURSE _public_headers "${_public_include}*.h")
-set_target_properties(MountainAPI
-		PROPERTIES
-		PUBLIC_HEADER "${_public_headers}")
 
-install(
-		TARGETS MountainAPI
-		CONFIGURATIONS Release
-		RUNTIME DESTINATION bin
-		LIBRARY DESTINATION bin
-		PUBLIC_HEADER DESTINATION include/mountain
-)
-
-install(
-		FILES ${CMAKE_SOURCE_DIR}/cmake/modules/FindMountainAPI.cmake
-		DESTINATION ./
-
-)
 set_sources(_srcs
 				FOLDER src
 				FILES 
@@ -83,7 +67,7 @@ set_sources(_srcs_buffer
 			FILES
 				vertex.cpp)
 
-set_sources(_headers
+set_sources(_public_headers
 		FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/public_inc/mountain
 			FILES
 				vertex.h
@@ -99,7 +83,25 @@ set_sources(_headers
 				load_model.h
 				no_sanitize.h
 			)
+set(_public_headers ${_public_headers} ${CMAKE_CURRENT_BINARY_DIR}/mountainapi_export.h)
 
 target_sources(MountainAPI PRIVATE ${_srcs} ${_srcs_buffer}
-							INTERFACE ${_headers})
-							
+							INTERFACE ${_public_headers})
+
+set_target_properties(MountainAPI
+		PROPERTIES
+		PUBLIC_HEADER "${_public_headers}" )
+
+install(
+		TARGETS MountainAPI
+		CONFIGURATIONS Release
+		RUNTIME DESTINATION bin
+		LIBRARY DESTINATION bin
+		PUBLIC_HEADER DESTINATION include/mountain
+)
+
+install(
+		FILES ${CMAKE_SOURCE_DIR}/cmake/modules/FindMountainAPI.cmake
+		DESTINATION ./
+
+)
