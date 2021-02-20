@@ -11,7 +11,7 @@
 namespace mountain::buffer {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
         struct uniform_updater {
-            uniform_updater(std::vector<vk::UniqueDeviceMemory> &memories, std::byte *data, size_t data_size);
+            MOUNTAINAPI_EXPORT uniform_updater(std::vector<vk::UniqueDeviceMemory> &memories, std::byte *data, size_t data_size);
 
             void operator()(Context const &context, int current_image);
 
@@ -45,7 +45,7 @@ namespace mountain::buffer {
              * @param context: Vulkan context
              * @param swap_chain_nb_images: nb of uniform to create, one for each swap chain image
              */
-            uniform(Context const &context, size_t swap_chain_nb_images);
+            MOUNTAINAPI_EXPORT uniform(Context const &context, size_t swap_chain_nb_images);
 
             /**
              *
@@ -53,18 +53,18 @@ namespace mountain::buffer {
              * @return an uniform_updater object, it has to be passed to the draw function of
              * CommandBuffer to be effective
              */
-            uniform_updater get_uniform_updater(const T &value);
+            MOUNTAINAPI_EXPORT uniform_updater get_uniform_updater(const T &value);
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-            iterator begin() { return std::begin(_buffers); }
+            MOUNTAINAPI_EXPORT iterator begin() { return std::begin(_buffers); }
 
-            iterator end() { return std::end(_buffers); }
+            MOUNTAINAPI_EXPORT iterator end() { return std::end(_buffers); }
 
-            const_iterator begin() const { return std::begin(_buffers); }
+            MOUNTAINAPI_EXPORT const_iterator begin() const { return std::begin(_buffers); }
 
-            const_iterator end() const { return std::end(_buffers); }
+            MOUNTAINAPI_EXPORT const_iterator end() const { return std::end(_buffers); }
 
-            auto size() const {
+            MOUNTAINAPI_EXPORT auto size() const {
                 return _buffers.size();
             }
 #endif
