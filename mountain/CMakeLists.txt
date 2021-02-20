@@ -1,8 +1,15 @@
 cmake_minimum_required(VERSION 3.10)
 include(CMakeParseArguments)
 
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
+include(GenerateExportHeader)
+
 add_library(MountainAPI SHARED)
 add_library(Mountain::API ALIAS MountainAPI)
+
+generate_export_header(MountainAPI)
+
 set_target_properties(MountainAPI PROPERTIES
 		VERSION ${CMAKE_PROJECT_VERSION})
 
