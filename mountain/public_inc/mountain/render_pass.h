@@ -27,7 +27,7 @@ namespace mountain {
      * Define the subpass for RenderPass
      */
     struct SubPass {
-        bool attachment_color{}; // must be filled with subpass_attachment
+        unsigned attachment_color{}; // must be filled with subpass_attachment
         unsigned attachment_depth_stencil = 0; // must be filled with subpass_attachment
     };
     /**
