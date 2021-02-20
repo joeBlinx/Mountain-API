@@ -37,7 +37,7 @@ auto get_format_offsets(Ts T::* ... args){
     namespace buffer {
         struct vertex_description {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-            size_t attributes_size;
+            uint32_t attributes_size;
             vk::VertexInputBindingDescription bindings;
             std::vector<vk::VertexInputAttributeDescription> attributes;
 #endif

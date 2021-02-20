@@ -36,9 +36,9 @@ namespace mountain {
             });
 
 
-            create_info.vertexBindingDescriptionCount = bindings_descriptions.size();
+            create_info.vertexBindingDescriptionCount = static_cast<uint32_t>(bindings_descriptions.size());
             create_info.pVertexBindingDescriptions = bindings_descriptions.data();
-            create_info.vertexAttributeDescriptionCount = attribute_descriptions.size();
+            create_info.vertexAttributeDescriptionCount = static_cast<uint32_t>(attribute_descriptions.size());
             create_info.pVertexAttributeDescriptions = attribute_descriptions.data();
         }
     };
@@ -100,7 +100,7 @@ namespace mountain {
         */
 
         vk::GraphicsPipelineCreateInfo pipelineInfo{};
-        pipelineInfo.stageCount = shaders_stages.size();
+        pipelineInfo.stageCount = static_cast<uint32_t>(shaders_stages.size());
         pipelineInfo.pStages = shaders_stages.data();
 
         pipelineInfo.pVertexInputState = &vertex_info.create_info;

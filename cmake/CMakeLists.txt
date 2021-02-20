@@ -4,7 +4,9 @@ add_library(common_target INTERFACE)
 add_library(common::target ALIAS common_target)
 
 if(${CMAKE_CXX_COMPILER_ID} MATCHES GNU OR ${CMAKE_CXX_COMPILER_ID} MATCHES Clang)
-    target_compile_options(common_target INTERFACE -Wall -Wextra -pedantic $<$<CONFIG:Release>:-Werror>)
+    target_compile_options(common_target INTERFACE -Wall -Wextra -pedantic $<$<CONFIG:Release>:-Werror> -Wconversion)
+elseif(MSCV)
+    target_compile_options(common_target INTERFACE /W4 $<$<CONFIG:Release>:/Werror>)
 endif()
 
 target_compile_features(common_target INTERFACE cxx_std_20)

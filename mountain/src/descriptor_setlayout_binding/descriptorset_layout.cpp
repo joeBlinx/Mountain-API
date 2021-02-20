@@ -26,7 +26,7 @@ namespace mountain::descriptorset_layout {
     vk::DescriptorSetLayout create_descriptorset_layout(Context const& context,
                                                         std::vector<vk::DescriptorSetLayoutBinding> && set_layout_bindings){
         vk::DescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo{};
-        descriptorSetLayoutCreateInfo.bindingCount = set_layout_bindings.size();
+        descriptorSetLayoutCreateInfo.bindingCount = static_cast<uint32_t>(set_layout_bindings.size());
         descriptorSetLayoutCreateInfo.pBindings = set_layout_bindings.data();
 
         vk::DescriptorSetLayout descriptor_layout;
