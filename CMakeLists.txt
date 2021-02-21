@@ -4,7 +4,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
         ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules
         ${CMAKE_CURRENT_SOURCE_DIR}/cmake/utils)
 
-include(conan)
 include(utils)
 include(package)
 check_build_type()
