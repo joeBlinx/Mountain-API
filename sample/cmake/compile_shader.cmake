@@ -42,6 +42,8 @@ function(compile_shaders target)
                     ${CMAKE_COMMAND} -E copy ${shader_extension}.spv ${_output_dir}/${shader_without_extension}${shader_extension}.spv #mv shader to build folder
                     )
             add_dependencies(${target} ${target}_build_${shader_name})
+            set_target_properties(${target}_build_${shader_name} PROPERTIES FOLDER "Samples/${target}/shaders")
+
         endforeach()
     endif()
 endfunction()
