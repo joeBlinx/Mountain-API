@@ -41,7 +41,9 @@ function(download_dependencies)
 	list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/module)
 	if(${USE_GLFW})
 		set(_window_managment_lib glfw/3.3.2)
-		set(_options OPTIONS glfw/3.3.2:fPIC=True)
+		set(_options OPTIONS 
+                    glfw/3.3.2:fPIC=True
+                    )
 	else(${USE_SDL2})
 		find_package(SDL2 REQUIRED)
 	endif()
