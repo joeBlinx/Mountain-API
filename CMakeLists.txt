@@ -42,5 +42,9 @@ endif()
 if(${BUILD_SAMPLES})
     add_subdirectory(sample)
 endif()
-set_target_properties(MountainAPI PROPERTIES FOLDER "pouet")
-set_target_properties(window PROPERTIES FOLDER "pouet")
+
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+set_target_properties(MountainAPI PROPERTIES FOLDER "API")
+set_target_properties(window PROPERTIES FOLDER "API")
+set_target_properties(utils PROPERTIES FOLDER "API")
