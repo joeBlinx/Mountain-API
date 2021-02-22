@@ -1,14 +1,15 @@
 cmake_minimum_required(VERSION 3.10)
 include(CMakeParseArguments)
 
-set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
-include(GenerateExportHeader)
 
 add_library(MountainAPI SHARED)
 add_library(Mountain::API ALIAS MountainAPI)
 
 generate_export_header(MountainAPI)
+add_library(MountainExportFile INTERFACE)
+add_library(Mountain::ExportFile ALIAS MountainExportFile)
+
+target_include_directories(MountainExportFile INTERFACE ${CMAKE_BINARY_DIR})
 
 set_target_properties(MountainAPI PROPERTIES
 		VERSION ${CMAKE_PROJECT_VERSION})
@@ -16,7 +17,6 @@ set_target_properties(MountainAPI PROPERTIES
 target_include_directories(MountainAPI 
 							PUBLIC
 		public_inc/
-		${CMAKE_BINARY_DIR}
 							PRIVATE
 		private_inc/mountain
 		private_inc/mountain/renderpass
@@ -31,6 +31,7 @@ target_link_libraries(MountainAPI PRIVATE
 										CONAN_PKG::stb
 										CONAN_PKG::tinyobjloader
 										CONAN_PKG::glm
+                                        Mountain::ExportFile
 											)
 
 target_compile_definitions(MountainAPI
