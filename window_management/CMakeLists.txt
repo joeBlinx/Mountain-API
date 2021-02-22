@@ -38,7 +38,8 @@ endif()
 
 set_target_properties(window PROPERTIES
         POSITION_INDEPENDENT_CODE ON)
-
+        
+target_link_libraries(window PRIVATE Mountain::ExportFile)
 install(
         TARGETS window
         CONFIGURATIONS Release
