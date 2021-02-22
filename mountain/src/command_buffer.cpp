@@ -2,7 +2,7 @@
 // Created by joe on 05/08/18.
 //
 
-#include "../public_inc/mountain/command_buffer.h"
+#include "mountain/command_buffer.h"
 #include "utils/log.hpp"
 #include <stdexcept>
 #include <vector>
@@ -12,10 +12,10 @@
 #include <algorithm>
 #include "utils/utils.hpp"
 #include <array>
-#include "../public_inc/mountain/swapChain.h"
-#include "../public_inc/mountain/context.h"
-#include "../public_inc/mountain/vertex.h"
-#include "../public_inc/mountain/uniform.h"
+#include "mountain/swapChain.h"
+#include "mountain/context.h"
+#include "mountain/vertex.h"
+#include "mountain/uniform.h"
 namespace mountain {
 
     CommandBuffer::CommandBuffer(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass,
