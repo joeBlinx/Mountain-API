@@ -2,11 +2,11 @@
 // Created by stiven on 13/04/2020.
 //
 
-#include "../public_inc/mountain/graphics_pipeline.h"
+#include "mountain/graphics_pipeline.h"
 #include "utils/utils.hpp"
-#include "../public_inc/mountain/context.h"
-#include "../public_inc/mountain/swapChain.h"
-#include "../public_inc/mountain/render_pass.h"
+#include "mountain/context.h"
+#include "mountain/swapChain.h"
+#include "mountain/render_pass.h"
 namespace mountain {
 
     vk::PipelineInputAssemblyStateCreateInfo createAssembly(vk::PrimitiveTopology topology);
