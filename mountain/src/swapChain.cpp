@@ -3,9 +3,9 @@
 //
 
 
-#include "../public_inc/mountain/swapChain.h"
+#include "mountain/swapChain.h"
 #include  <algorithm>
-#include "../public_inc/mountain/render_pass.h"
+#include "mountain/render_pass.h"
 
 namespace mountain {
 
