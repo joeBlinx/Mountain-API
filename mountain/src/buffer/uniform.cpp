@@ -2,8 +2,8 @@
 // Created by stiven_perso on 12/19/20.
 //
 
-#include "../../public_inc/mountain/uniform.h"
-#include "../../public_inc/mountain/swapChain.h"
+#include "mountain/uniform.h"
+#include "mountain/swapChain.h"
 
 mountain::buffer::uniform_updater::uniform_updater(std::vector<vk::UniqueDeviceMemory> &memories, std::byte *data, size_t data_size):
 _data(static_cast<std::byte*>(malloc(data_size))),

@@ -2,11 +2,11 @@
 // Created by stiven_perso on 1/5/21.
 //
 
-#include "../../public_inc/mountain/image2d.h"
+#include "mountain/image2d.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
-#include "../../public_inc/mountain/context.h"
-#include "../../public_inc/mountain/uniform.h"
+#include "mountain/context.h"
+#include "mountain/uniform.h"
 #include "utils/utils.hpp"
 #include "utils/log.hpp"
 mountain::buffer::image2d::image2d(Context const &context, fs::path const &image_path, uint32_t mipmap_level) {

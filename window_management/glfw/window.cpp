@@ -10,15 +10,17 @@
 namespace mountain {
 
     void errorGLFW([[maybe_unused]] int error, const char *msg) {
-        utils::printError(msg);
+        utils::printError("error code:", error, ":", msg);
     }
 
     Window::Window(std::string_view title, unsigned int width, unsigned int height) :
             _width(width),
             _height(height),
             _title(title) {
+        if(!glfwInit()){
+            utils::printFatalError("GLFW failed to init");
+        }
         glfwSetErrorCallback(errorGLFW);
-        glfwInit();
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 

@@ -1,4 +1,4 @@
-#include "../public_inc/mountain/context.h"
+#include "mountain/context.h"
 #include "utils/utils.hpp"
 #include <string_view>
 #include "utils/log.hpp"
@@ -6,15 +6,15 @@
 #include <cstring>
 #include <string_view>
 #include <set>
-#include "../public_inc/mountain/uniform.h"
-#include "../public_inc/mountain/no_sanitize.h"
+#include "mountain/uniform.h"
+#include "mountain/no_sanitize.h"
 namespace mountain {
 
     Context::SwapChainSupportDetails query_swap_chain_support(vk::PhysicalDevice const &device, VkSurfaceKHR surface);
 
     Context::QueueFamilyIndices
     find_queue_families(vk::PhysicalDevice const &device, VkSurfaceKHR surface, vk::QueueFlagBits queue_flag);
-    Context::Context(const Window &window, std::vector<const char *> const &devicesExtension): _window(window) {
+    Context::Context(const Window& window, std::vector<const char*> const& devicesExtension) : _window((window)) {
         createInstance(window.get_title());
         createSurface();
         setUpDebugCallBack();

@@ -2,7 +2,7 @@
 // Created by stiven on 1/6/21.
 //
 
-#include "../public_inc/mountain/sampler.h"
+#include "mountain/sampler.h"
 namespace mountain {
 
     image::sampler::sampler(Context const &context, float mipmap_levels) {
