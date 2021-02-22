@@ -32,6 +32,11 @@ message("USE_GLFW is ${USE_GLFW}")
 download_dependencies()
 find_package(Vulkan 1.2 REQUIRED)
 add_subdirectory(cmake)
+
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
+include(GenerateExportHeader)
+
 add_subdirectory(mountain)
 add_subdirectory(utils)
 add_subdirectory(window_management)
