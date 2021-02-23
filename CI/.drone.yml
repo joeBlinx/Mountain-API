@@ -38,6 +38,18 @@ steps:
     commands:
       - cmake --build build --target documentation
 
+  - name: package
+    image: ubuntu_docker
+    pull: never
+    commands:
+      - cd build && cpack
+      - gh release create `git tag --points-at HEAD` Moutain-API.tar.gz
+
+
+    trigger:
+      event:
+        - promote
+
 
 volumes:
   - name: build_docker
