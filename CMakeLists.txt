@@ -7,6 +7,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 include(utils)
 include(package)
 check_build_type()
+cmake_policy(SET CMP0079 NEW) # https://cmake.org/cmake/help/latest/policy/CMP0079.html
 
 project(MOUNTAIN-API
         LANGUAGES CXX
@@ -35,7 +36,6 @@ add_subdirectory(cmake)
 
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
-include(GenerateExportHeader)
 
 add_subdirectory(mountain)
 add_subdirectory(utils)

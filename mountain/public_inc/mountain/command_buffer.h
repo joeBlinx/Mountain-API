@@ -112,7 +112,7 @@ namespace mountain {
         vk::UniqueDescriptorPool _descriptor_pool;
         std::vector<vk::DescriptorSet> _descriptor_sets;
         std::vector<vk::DescriptorSetLayout> _descriptor_set_layouts;
-        std::size_t _nb_descriptor_set_by_image{};
+        uint32_t _nb_descriptor_set_by_image{};
 
         vk::Queue _graphicsQueue;
         vk::Queue _presentQueue;
@@ -158,7 +158,7 @@ namespace mountain {
                 clear_color.emplace_back(
                         VkClearValue{.depthStencil {1.f, 0}});
             }
-            renderPassInfo.clearValueCount = std::size(clear_color);
+            renderPassInfo.clearValueCount = static_cast<uint32_t>(std::size(clear_color));
             renderPassInfo.pClearValues = clear_color.data();
 
             vkCmdBeginRenderPass(_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
@@ -232,7 +232,7 @@ namespace mountain {
              *  |A|B|A|B|A|B| we pass from A to the other A
              * */
         }
-        _context.get_device().updateDescriptorSets(write_sets.size(),
+        _context.get_device().updateDescriptorSets(static_cast<uint32_t>(write_sets.size()),
                                                    write_sets.data(), 0, nullptr);
     }
 }

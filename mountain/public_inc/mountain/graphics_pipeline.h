@@ -114,9 +114,9 @@ namespace mountain {
     template<class ...Ts>
     void GraphicsPipeline::create_pipeline_layout(std::vector<vk::DescriptorSetLayout> const &descriptor_layout,
                                                   PushConstant<Ts> const &...push_constant) {
-        int offset = 0;
+        uint32_t offset = 0;
         auto create_push_constant_ranges = [&offset]<class T>(PushConstant<T> const &push_constant) mutable {
-            vk::PushConstantRange range(push_constant.shader_stage, offset, sizeof(T));
+            vk::PushConstantRange range(push_constant.shader_stage, offset, static_cast<uint32_t>(sizeof(T)));
             offset += sizeof(T);
             return range;
         };
@@ -125,9 +125,9 @@ namespace mountain {
             std::swap(_push_constant_ranges, push_constant_range);
         }
         vk::PipelineLayoutCreateInfo pipelineLayoutInfo = {};
-        pipelineLayoutInfo.setLayoutCount = descriptor_layout.size();
+        pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptor_layout.size());
         pipelineLayoutInfo.pSetLayouts = descriptor_layout.data();
-        pipelineLayoutInfo.pushConstantRangeCount = _push_constant_ranges.size();
+        pipelineLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(_push_constant_ranges.size());
         pipelineLayoutInfo.pPushConstantRanges = _push_constant_ranges.data();
         _pipeline_layout = _device.get_device().createPipelineLayoutUnique(pipelineLayoutInfo);
 

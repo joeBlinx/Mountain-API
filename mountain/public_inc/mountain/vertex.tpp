@@ -29,11 +29,11 @@ void vertex::create_buffer(container const& vertices, vk::BufferUsageFlags buffe
 template<Container container, Container_uint32_t indices_container>
 vertex::vertex(Context const &device, vertex_description &&description, container &&vertices, indices_container &&indices)
         :_device(device),
-        _indices_count(indices.size()),
+        _indices_count(static_cast<uint32_t>(indices.size())),
         _description(std::move(description))
-        {
+       {
     auto const& vk_device = _device.get_device();
-    vk::DeviceSize buffer_size = sizeof(vertices[0]) * vertices.size();
+    auto const buffer_size = static_cast<uint32_t>(sizeof(vertices[0]) * vertices.size());
     _indices_offset = buffer_size;
     vk::DeviceSize indices_buffer_size = indices.size() * sizeof(indices[0]);
     auto[staging_memory, staging_buffer] = _device.create_buffer_and_memory(buffer_size + indices_buffer_size,
