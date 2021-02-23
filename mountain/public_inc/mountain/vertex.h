@@ -54,7 +54,7 @@ auto get_format_offsets(Ts T::* ... args){
             template<class T, auto N>
             vertex_description(uint32_t binding, uint32_t location_start_from,
                                std::array<format_offset<T>, N> &&format_offsets):
-                    attributes_size(format_offsets.size()),
+                    attributes_size(static_cast<uint32_t>(format_offsets.size())),
                     bindings(binding,
                              sizeof(T),
                              vk::VertexInputRate::eVertex) {

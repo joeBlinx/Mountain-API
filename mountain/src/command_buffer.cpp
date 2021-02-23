@@ -140,7 +140,7 @@ namespace mountain {
          */
         _descriptor_set_layouts = std::move(descriptor_set_layouts);
         size_t const nb_image_swap_chain = _swapChainImageViews.size();
-        _nb_descriptor_set_by_image = _descriptor_set_layouts.size();
+        _nb_descriptor_set_by_image = static_cast<uint32_t>(_descriptor_set_layouts.size());
         std::vector<vk::DescriptorSetLayout> layouts;
         layouts.resize(nb_image_swap_chain * _nb_descriptor_set_by_image);
 
