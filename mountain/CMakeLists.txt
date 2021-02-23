@@ -5,11 +5,8 @@ include(CMakeParseArguments)
 add_library(MountainAPI SHARED)
 add_library(Mountain::API ALIAS MountainAPI)
 
-generate_export_header(MountainAPI)
-add_library(MountainExportFile INTERFACE)
-add_library(Mountain::ExportFile ALIAS MountainExportFile)
+include(export_header)
 
-target_include_directories(MountainExportFile INTERFACE ${CMAKE_BINARY_DIR})
 
 set_target_properties(MountainAPI PROPERTIES
 		VERSION ${CMAKE_PROJECT_VERSION})
@@ -25,18 +22,18 @@ target_include_directories(MountainAPI
 								)
 target_link_libraries(MountainAPI PRIVATE
 										vulkan::headers
-									PUBLIC
+                                        Mountain::ExportDefinition
+                                    PUBLIC
+                                        Mountain::ExportFile
 										utils::utils
 										window
 										CONAN_PKG::stb
 										CONAN_PKG::tinyobjloader
 										CONAN_PKG::glm
-                                        Mountain::ExportFile
 											)
 
 target_compile_definitions(MountainAPI
 		PUBLIC GLFW_INCLUDE_VULKAN
-		PRIVATE MountainAPI_EXPORTS
 		)
 if(${USE_SANITIZER})
 	if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
