@@ -120,7 +120,7 @@ int main(){
         glfwPollEvents();
         illuminance = (illuminance + 2) % 255;
         auto &push_constant = object.push_constant_values[0];
-        push_constant.fragment_push_constant.color = static_cast<float>(illuminance / 255.0f);
+        push_constant.fragment_push_constant.color = static_cast<float>(illuminance) / 255.0f;
         // because we use push constant we have to rebuild the command buffer each time we want
         // to modify our push constant value
         init.init(object);
