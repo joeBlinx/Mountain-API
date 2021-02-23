@@ -14,7 +14,7 @@ foreach(sample IN ITEMS ${_samples})
 
 endforeach()
 
-add_custom_target(samples ALL_SAMPLES) # one target to build all samples
+add_custom_target(samples ALL) # one target to build all samples
 add_dependencies(samples ${_samples})
 set_target_properties(samples PROPERTIES FOLDER "Samples")
 
