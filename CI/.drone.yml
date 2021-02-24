@@ -41,11 +41,13 @@ steps:
   - name: package
     image: ubuntu_docker
     pull: never
+    environment:
+      GIT_TOKEN:
+        from_secret: git_token
     commands:
       - cd build && cpack
+      - gh auth login --with-token < ${GIT_TOKEN}
       - gh release create `git tag --points-at HEAD` Moutain-API.tar.gz
-
-
     trigger:
       event:
         - promote
