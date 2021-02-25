@@ -46,12 +46,19 @@ steps:
         from_secret: git_token
     commands:
       - cd build && cpack
-      - gh auth login --with-token < ${GIT_TOKEN}
-      - gh release create `git tag --points-at HEAD` Moutain-API.tar.gz
-    trigger:
-      event:
-        - promote
+    when:
+      event: promote
 
+  - name: publish
+    image: plugins/github-release
+    settings:
+      api_key: 
+        from_secret: git_token
+      files:
+        - build/Moutain-API.tar.gz
+      title: 0.0.1
+    when:
+      event: promote
 
 volumes:
   - name: build_docker
