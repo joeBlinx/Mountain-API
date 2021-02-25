@@ -47,7 +47,7 @@ steps:
     commands:
       - cd build && cpack
     when:
-      event: promote
+      event: tag
 
   - name: publish
     image: plugins/github-release
@@ -58,7 +58,7 @@ steps:
         - build/Moutain-API.tar.gz
       title: 0.0.1
     when:
-      event: promote
+      event: tag
 
 volumes:
   - name: build_docker
