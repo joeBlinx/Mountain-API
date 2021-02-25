@@ -20,7 +20,7 @@ if read_the_docs_build:
     output_dir = 'build'
     configureDoxyfile(input_dir, output_dir)
     subprocess.call('doxygen', shell=True)
-    breathe_projects['Mountain-API'] = output_dir + '/xml'
+    breathe_projects['MountainAPI'] = output_dir + '/xml'
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -41,7 +41,7 @@ if read_the_docs_build:
 
 # -- Project information -----------------------------------------------------
 
-project = 'Mountain-API'
+project = 'MountainAPI'
 copyright = '2021, Stiven Aigle'
 author = 'Stiven Aigle'
 
@@ -52,7 +52,7 @@ author = 'Stiven Aigle'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['breathe', 'recommonmark']
-breathe_default_project = "Mountain-API"
+breathe_default_project = "MountainAPI"
 
 
 # Add any paths that contain templates here, relative to this directory.
