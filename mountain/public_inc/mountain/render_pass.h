@@ -10,6 +10,7 @@
 #include <array>
 #include "utils/log.hpp"
 #include <utility>
+#include "mountain/mountainapi_export.h"
 namespace mountain {
 
     struct Context;
@@ -26,7 +27,7 @@ namespace mountain {
      * Define the subpass for RenderPass
      */
     struct SubPass {
-        bool attachment_color{}; // must be filled with subpass_attachment
+        unsigned attachment_color{}; // must be filled with subpass_attachment
         unsigned attachment_depth_stencil = 0; // must be filled with subpass_attachment
     };
     /**
@@ -39,12 +40,12 @@ namespace mountain {
          * @param context: Vulkan context
          * @param sub_pass: Define the subpass we will be using
          */
-        RenderPass(Context const &context, const SubPass &sub_pass);
+        MOUNTAINAPI_EXPORT RenderPass(Context const &context, const SubPass &sub_pass);
 
         /**
          * @return true if renderpass will use depth
          */
-        bool has_depth() const { return subpass_attachment::DEPTH & _color_depth_stencil; }
+        MOUNTAINAPI_EXPORT bool has_depth() const { return subpass_attachment::DEPTH & _color_depth_stencil; }
 
         /**
          * Deleted copy operation
@@ -62,7 +63,7 @@ namespace mountain {
         template<SubPass ...attachment>
         static RenderPass create(vk::Device device, vk::Format const &swap_chain_image_format);
 
-        ~RenderPass();
+        MOUNTAINAPI_EXPORT ~RenderPass();
 #endif
     private:
 

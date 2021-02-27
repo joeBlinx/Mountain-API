@@ -2,9 +2,9 @@
 // Created by joe on 5/10/19.
 //
 
-#include "../../public_inc/mountain/context.h"
+#include "mountain/context.h"
 #include "utils/log.hpp"
-#include "../../public_inc/mountain/render_pass.h"
+#include "mountain/render_pass.h"
 
 namespace mountain {
 
@@ -95,7 +95,7 @@ namespace mountain {
 
 
         vk::RenderPassCreateInfo renderPassInfo = {};
-        renderPassInfo.attachmentCount = attachments_desc.size();
+        renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments_desc.size());
         renderPassInfo.pAttachments = attachments_desc.data();
         renderPassInfo.subpassCount = 1;
         renderPassInfo.pSubpasses = &subpass;

@@ -20,10 +20,8 @@ namespace mountain::model{
         bool operator==(const Vertex& other) const {
             return pos == other.pos && tex_coord == other.tex_coord;
         }
-        static decltype(auto) get_format_offset(){
-            return CLASS_DESCRIPTION(
-                    Vertex, pos, tex_coord
-                    );
+        static auto get_format_offsets() {
+            return mountain::get_format_offsets(&Vertex::pos, &Vertex::tex_coord);
         }
     };
 #endif
@@ -32,7 +30,7 @@ namespace mountain::model{
      * @param model_path: path to the obj to load
      * @return a vector of vertices and a vector of the corresponding indices
      */
-    std::pair<std::vector<Vertex>, std::vector<uint32_t>> load_obj(fs::path const& model_path);
+    MOUNTAINAPI_EXPORT std::pair<std::vector<Vertex>, std::vector<uint32_t>> load_obj(fs::path const& model_path);
 }
 
 #endif //MOUNTAIN_API_LOAD_MODEL_H

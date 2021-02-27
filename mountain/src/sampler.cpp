@@ -2,7 +2,7 @@
 // Created by stiven on 1/6/21.
 //
 
-#include "../public_inc/mountain/sampler.h"
+#include "mountain/sampler.h"
 namespace mountain {
 
     image::sampler::sampler(Context const &context, uint32_t mipmap_levels) {
@@ -31,7 +31,7 @@ namespace mountain {
         sampler_info.mipmapMode = vk::SamplerMipmapMode::eLinear;
         sampler_info.mipLodBias = 0.f;
         sampler_info.minLod = 0.f;
-        sampler_info.maxLod = mipmap_levels;
+        sampler_info.maxLod = static_cast<float>(mipmap_levels);
 
         _sampler = context->createSamplerUnique(sampler_info);
     }

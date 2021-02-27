@@ -58,7 +58,7 @@ std::vector<mountain::buffer::vertex> create_buffers(mountain::Context const& co
     std::vector<mountain::buffer::vertex> vertex_buffers;
     vertex_buffers.emplace_back(mountain::buffer::vertex(context,
                                                          mountain::buffer::vertex_description(0, 0,
-                                                                                              mountain::model::Vertex::get_format_offset()),
+                                                                                              mountain::model::Vertex::get_format_offsets()),
                                                          vertices_3d,
                                                          std::move(indices_3d)
     ));
@@ -70,7 +70,7 @@ VP create_vp_matrix(int width, int height){
     VP ubo{};
     ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     ubo.proj = glm::perspective(glm::radians(45.0f),
-                                width / (float) height,
+                                (float) width / (float) height,
                                 0.1f, 10.0f);
     ubo.proj[1][1] *= -1;
 

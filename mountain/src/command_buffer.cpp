@@ -2,7 +2,7 @@
 // Created by joe on 05/08/18.
 //
 
-#include "../public_inc/mountain/command_buffer.h"
+#include "mountain/command_buffer.h"
 #include "utils/log.hpp"
 #include <stdexcept>
 #include <vector>
@@ -12,10 +12,10 @@
 #include <algorithm>
 #include "utils/utils.hpp"
 #include <array>
-#include "../public_inc/mountain/swapChain.h"
-#include "../public_inc/mountain/context.h"
-#include "../public_inc/mountain/vertex.h"
-#include "../public_inc/mountain/uniform.h"
+#include "mountain/swapChain.h"
+#include "mountain/context.h"
+#include "mountain/vertex.h"
+#include "mountain/uniform.h"
 namespace mountain {
 
     CommandBuffer::CommandBuffer(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass,
@@ -111,17 +111,18 @@ namespace mountain {
     }
 
     void CommandBuffer::create_descriptor_pool(int nb_uniform) {
+        auto const max_uniform = static_cast<uint32_t>(_swapChainImageViews.size()) * nb_uniform;
         std::array<vk::DescriptorPoolSize, 2> pool_size;
         pool_size[0].type = vk::DescriptorType::eUniformBuffer;
-        pool_size[0].descriptorCount = _swapChainImageViews.size() * nb_uniform;
+        pool_size[0].descriptorCount = max_uniform;
 
         pool_size[1].type = vk::DescriptorType::eCombinedImageSampler;
-        pool_size[1].descriptorCount = _swapChainImageViews.size() * nb_uniform;
+        pool_size[1].descriptorCount = max_uniform;
 
         vk::DescriptorPoolCreateInfo _pool_info;
-        _pool_info.poolSizeCount = pool_size.size();
+        _pool_info.poolSizeCount = static_cast<uint32_t>(pool_size.size());
         _pool_info.pPoolSizes = pool_size.data();
-        _pool_info.maxSets = _swapChainImageViews.size() * nb_uniform;
+        _pool_info.maxSets = max_uniform; // may be a bug here, test with max_uniform of uniform and image
 
 
         _descriptor_pool = _context.get_device().createDescriptorPoolUnique(_pool_info);
@@ -139,7 +140,7 @@ namespace mountain {
          */
         _descriptor_set_layouts = std::move(descriptor_set_layouts);
         size_t const nb_image_swap_chain = _swapChainImageViews.size();
-        _nb_descriptor_set_by_image = _descriptor_set_layouts.size();
+        _nb_descriptor_set_by_image = static_cast<uint32_t>(_descriptor_set_layouts.size());
         std::vector<vk::DescriptorSetLayout> layouts;
         layouts.resize(nb_image_swap_chain * _nb_descriptor_set_by_image);
 
@@ -152,7 +153,7 @@ namespace mountain {
         }
         vk::DescriptorSetAllocateInfo allo_info{};
         allo_info.descriptorPool = *_descriptor_pool;
-        allo_info.descriptorSetCount = layouts.size();
+        allo_info.descriptorSetCount = static_cast<uint32_t>(layouts.size());
         allo_info.pSetLayouts = layouts.data();
 
         _descriptor_sets.resize(layouts.size());
@@ -196,7 +197,7 @@ namespace mountain {
              *  |A|B|A|B|A|B| we pass from A to the other A
              * */
         }
-        _context.get_device().updateDescriptorSets(write_sets.size(),
+        _context.get_device().updateDescriptorSets(static_cast<uint32_t>(write_sets.size()),
                                                    write_sets.data(), 0, nullptr);
     }
 }

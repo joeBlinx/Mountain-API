@@ -1,8 +1,8 @@
 //
 // Created by stiven on 12/23/20.
 //
-#include "../../public_inc/mountain/context.h"
-#include "../../public_inc/mountain/descriptorset_layout.h"
+#include "mountain/context.h"
+#include "mountain/descriptorset_layout.h"
 #include "utils/log.hpp"
 namespace mountain::descriptorset_layout {
     vk::DescriptorSetLayoutBinding create_descriptor_image_sampler(int binding, vk::ShaderStageFlags const &shader){
@@ -26,7 +26,7 @@ namespace mountain::descriptorset_layout {
     vk::DescriptorSetLayout create_descriptorset_layout(Context const& context,
                                                         std::vector<vk::DescriptorSetLayoutBinding> && set_layout_bindings){
         vk::DescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo{};
-        descriptorSetLayoutCreateInfo.bindingCount = set_layout_bindings.size();
+        descriptorSetLayoutCreateInfo.bindingCount = static_cast<uint32_t>(set_layout_bindings.size());
         descriptorSetLayoutCreateInfo.pBindings = set_layout_bindings.data();
 
         vk::DescriptorSetLayout descriptor_layout;

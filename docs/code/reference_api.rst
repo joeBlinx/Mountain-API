@@ -55,7 +55,7 @@ Mountain::buffer::vertex
 .. doxygenstruct:: mountain::buffer::vertex_description
     :members:
 
-.. doxygendefine:: CLASS_DESCRIPTION
+.. doxygenfunction:: mountain::get_format_offsets
 
 .. doxygenstruct:: mountain::buffer::vertex
     :members:

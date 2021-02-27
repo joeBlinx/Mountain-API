@@ -8,6 +8,7 @@
 #include <string_view>
 #include <string>
 #include <vector>
+#include "mountain/mountainapi_export.h"
 struct GLFWwindow;
 namespace mountain {
 
@@ -21,18 +22,18 @@ namespace mountain {
          * @param width: width of the window
          * @param height: height of the window
          */
-        Window(std::string_view title, unsigned width, unsigned height);
+        MOUNTAINAPI_EXPORT Window(std::string_view title, unsigned width, unsigned height);
 
         /**
          * @return vector of supported extension by this window
          */
         std::vector<const char *> get_instance_extension() const;
 
-        GLFWwindow *get_window() const;
+        MOUNTAINAPI_EXPORT GLFWwindow *get_window() const;
 
-        std::string_view get_title() const { return _title; }
+        MOUNTAINAPI_EXPORT std::string_view get_title() const { return _title; }
 
-        ~Window();
+        MOUNTAINAPI_EXPORT ~Window();
 
     private:
         GLFWwindow *_window;
@@ -40,7 +41,7 @@ namespace mountain {
         std::string _title;
     };
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-    VkResult create_window_surface(VkInstance instance,
+    MOUNTAINAPI_EXPORT VkResult create_window_surface(VkInstance instance,
                                           Window const &handle,
                                           const VkAllocationCallbacks *allocator,
                                           VkSurfaceKHR *surface);

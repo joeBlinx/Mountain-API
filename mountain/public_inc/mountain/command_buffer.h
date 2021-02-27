@@ -46,7 +46,7 @@ namespace mountain {
          * @param renderpass
          * @param nb_uniform: number of uniform we want to use (image sample count as uniform)
          */
-        CommandBuffer(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass,
+        MOUNTAINAPI_EXPORT CommandBuffer(const Context &context, const SwapChain &swap_chain, RenderPass const &renderpass,
                       int nb_uniform = 0);
 
         /**
@@ -62,7 +62,7 @@ namespace mountain {
          *  Allocate the number of descriptor set layout we need, the size of vector parameter X the number of image in swap chain
          * @param descriptor_set_layouts
          */
-        void allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> &&descriptor_set_layouts);
+        MOUNTAINAPI_EXPORT void allocate_descriptor_set(std::vector<vk::DescriptorSetLayout> &&descriptor_set_layouts);
 
         /**
          * Update uniform descriptor set
@@ -83,16 +83,16 @@ namespace mountain {
          * @param image: image to associate with this descriptor
          * @param sampler: sample to associate with this image
          */
-        void update_descriptor_set(int first_descriptor_set_index, int binding, buffer::image2d const &image,
+        MOUNTAINAPI_EXPORT void update_descriptor_set(int first_descriptor_set_index, int binding, buffer::image2d const &image,
                                    image::sampler const &sampler);
         /**
          * Draw frame with the record command buffers and update uniform values
          * @param updaters: vector of uniform_updater. uniform_updater are created by calling
          * ``get_uniform_updater`` on a mountain::buffer::uniform object
          */
-        void drawFrame(std::vector<buffer::uniform_updater> &&updaters);
+        MOUNTAINAPI_EXPORT void drawFrame(std::vector<buffer::uniform_updater> &&updaters);
 
-        ~CommandBuffer();
+        MOUNTAINAPI_EXPORT ~CommandBuffer();
 
     private:
 #ifdef NDEBUG
@@ -112,7 +112,7 @@ namespace mountain {
         vk::UniqueDescriptorPool _descriptor_pool;
         std::vector<vk::DescriptorSet> _descriptor_sets;
         std::vector<vk::DescriptorSetLayout> _descriptor_set_layouts;
-        int _nb_descriptor_set_by_image{};
+        uint32_t _nb_descriptor_set_by_image{};
 
         vk::Queue _graphicsQueue;
         vk::Queue _presentQueue;
@@ -158,7 +158,7 @@ namespace mountain {
                 clear_color.emplace_back(
                         VkClearValue{.depthStencil {1.f, 0}});
             }
-            renderPassInfo.clearValueCount = std::size(clear_color);
+            renderPassInfo.clearValueCount = static_cast<uint32_t>(std::size(clear_color));
             renderPassInfo.pClearValues = clear_color.data();
 
             vkCmdBeginRenderPass(_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
@@ -232,7 +232,7 @@ namespace mountain {
              *  |A|B|A|B|A|B| we pass from A to the other A
              * */
         }
-        _context.get_device().updateDescriptorSets(write_sets.size(),
+        _context.get_device().updateDescriptorSets(static_cast<uint32_t>(write_sets.size()),
                                                    write_sets.data(), 0, nullptr);
     }
 }

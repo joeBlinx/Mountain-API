@@ -38,6 +38,24 @@ steps:
     commands:
       - cmake --build build --target documentation
 
+  - name: package
+    image: ubuntu_docker
+    pull: never
+    commands:
+      - cd build && cpack
+    when:
+      event: tag
+
+  - name: publish
+    image: plugins/github-release
+    settings:
+      api_key: 
+        from_secret: git_token
+      files:
+        - build/MOUNTAIN-API.tar.gz
+      title: 0.0.1
+    when:
+      event: tag
 
 volumes:
   - name: build_docker

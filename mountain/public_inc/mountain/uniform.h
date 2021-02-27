@@ -11,7 +11,7 @@
 namespace mountain::buffer {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
         struct uniform_updater {
-            uniform_updater(std::vector<vk::UniqueDeviceMemory> &memories, std::byte *data, size_t data_size);
+            MOUNTAINAPI_EXPORT uniform_updater(std::vector<vk::UniqueDeviceMemory> &memories, std::byte *data, size_t data_size);
 
             void operator()(Context const &context, int current_image);
 

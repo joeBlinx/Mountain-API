@@ -3,9 +3,9 @@
 //
 
 
-#include "../public_inc/mountain/swapChain.h"
+#include "mountain/swapChain.h"
 #include  <algorithm>
-#include "../public_inc/mountain/render_pass.h"
+#include "mountain/render_pass.h"
 
 namespace mountain {
 
@@ -156,7 +156,7 @@ namespace mountain {
 
             vk::FramebufferCreateInfo framebufferInfo;
             framebufferInfo.renderPass = render_pass.get_renderpass();
-            framebufferInfo.attachmentCount = std::size(attachments);
+            framebufferInfo.attachmentCount = static_cast<uint32_t>(std::size(attachments));
             framebufferInfo.pAttachments = attachments.data();
             framebufferInfo.width = _swap_chain_extent.width;
             framebufferInfo.height = _swap_chain_extent.height;

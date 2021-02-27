@@ -21,6 +21,9 @@ std::vector<mountain::buffer::vertex> create_buffers(mountain::Context const& co
     struct Vertex{
         glm::vec2 pos; // location 0
         glm::vec3 color; // location 1
+        static auto get_description() {
+            return mountain::get_format_offsets(&Vertex::pos, &Vertex::color);
+        }
     };
     /* This is a triangle that will be shown
      *                    1 (0., -0.5f) don't forget that the y axis
@@ -40,7 +43,7 @@ std::vector<mountain::buffer::vertex> create_buffers(mountain::Context const& co
             mountain::buffer::vertex{context,
                                      mountain::buffer::vertex_description(0,
                                                                           0,
-                                                                          CLASS_DESCRIPTION(Vertex, color, pos)),
+                                                                         Vertex::get_description()),
                                      vertices,
                                      indices}
     );
@@ -117,7 +120,7 @@ int main(){
         glfwPollEvents();
         illuminance = (illuminance + 2) % 255;
         auto &push_constant = object.push_constant_values[0];
-        push_constant.fragment_push_constant.color = static_cast<float>(illuminance / 255.0f);
+        push_constant.fragment_push_constant.color = static_cast<float>(illuminance) / 255.0f;
         // because we use push constant we have to rebuild the command buffer each time we want
         // to modify our push constant value
         init.init(object);

@@ -67,7 +67,7 @@ namespace mountain {
 
         std::vector<vk::PushConstantRange> const &get_push_constant_ranges() const { return _push_constant_ranges; }
 #endif
-        ~GraphicsPipeline();
+        MOUNTAINAPI_EXPORT ~GraphicsPipeline();
 
     private:
         Context const &_device;
@@ -75,13 +75,13 @@ namespace mountain {
         vk::UniquePipelineLayout _pipeline_layout;
         std::vector<vk::PushConstantRange> _push_constant_ranges;
 
-        vk::ShaderModule createShaderModule(std::vector<char> const &code);
+        MOUNTAINAPI_EXPORT vk::ShaderModule createShaderModule(std::vector<char> const &code);
 
         template<class ...Ts>
         void create_pipeline_layout(std::vector<vk::DescriptorSetLayout> const &descriptor_layout,
                                     PushConstant<Ts> const &...push_constant);
 
-        void init(const SwapChain &swap_chain, const RenderPass &render_pass,
+        MOUNTAINAPI_EXPORT void init(const SwapChain &swap_chain, const RenderPass &render_pass,
                   const std::vector<buffer::vertex> &buffers,
                   std::vector<vk::PipelineShaderStageCreateInfo> &&shaders_stages);
 
@@ -114,9 +114,9 @@ namespace mountain {
     template<class ...Ts>
     void GraphicsPipeline::create_pipeline_layout(std::vector<vk::DescriptorSetLayout> const &descriptor_layout,
                                                   PushConstant<Ts> const &...push_constant) {
-        int offset = 0;
+        uint32_t offset = 0;
         auto create_push_constant_ranges = [&offset]<class T>(PushConstant<T> const &push_constant) mutable {
-            vk::PushConstantRange range(push_constant.shader_stage, offset, sizeof(T));
+            vk::PushConstantRange range(push_constant.shader_stage, offset, static_cast<uint32_t>(sizeof(T)));
             offset += sizeof(T);
             return range;
         };
@@ -125,15 +125,15 @@ namespace mountain {
             std::swap(_push_constant_ranges, push_constant_range);
         }
         vk::PipelineLayoutCreateInfo pipelineLayoutInfo = {};
-        pipelineLayoutInfo.setLayoutCount = descriptor_layout.size();
+        pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptor_layout.size());
         pipelineLayoutInfo.pSetLayouts = descriptor_layout.data();
-        pipelineLayoutInfo.pushConstantRangeCount = _push_constant_ranges.size();
+        pipelineLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(_push_constant_ranges.size());
         pipelineLayoutInfo.pPushConstantRanges = _push_constant_ranges.data();
         _pipeline_layout = _device.get_device().createPipelineLayoutUnique(pipelineLayoutInfo);
 
     }
 
-    vk::PipelineShaderStageCreateInfo createShaderInfo(vk::ShaderModule &module, vk::ShaderStageFlagBits type);
+    MOUNTAINAPI_EXPORT vk::PipelineShaderStageCreateInfo createShaderInfo(vk::ShaderModule &module, vk::ShaderStageFlagBits type);
 
     template<size_t n>
     std::vector<vk::PipelineShaderStageCreateInfo>
