@@ -5,10 +5,6 @@ layout(location = 1) in vec2 tex_coords;
 
 layout(location = 1) out vec2 frag_tex_coord;
 
-layout(push_constant) uniform pushConstants {
-   mat4 model;
-} model;
-
 layout(set = 0, binding = 2) uniform uniform_buffer{
     mat4 view;
     mat4 proj;
