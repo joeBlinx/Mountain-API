@@ -16,21 +16,17 @@
 #include "ressource_paths.h"
 #include "GLFW/glfw3.h"
 #include "mountain/subpass.h"
-struct Model{
-    glm::mat4 model;
-};
-Model rotate(){
-    static auto startTime = std::chrono::high_resolution_clock::now();
-    auto currentTime = std::chrono::high_resolution_clock::now();
-    float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-    return Model(glm::rotate(glm::mat4{1.}, time*glm::radians<float>(30.), glm::vec3(0., 0., 1.)));
-}
+
 struct VP{
     glm::mat4 view{1.};
     glm::mat4 proj{1.};
 };
 void key_callback(GLFWwindow* window, int key, int , int action, int)
 {
+    auto* obj = static_cast<move_rectangle*>(glfwGetWindowUserPointer(window));
+    if (key == GLFW_KEY_E && action == GLFW_PRESS){
+        obj->move();
+    }
     if(key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE){
         glfwSetWindowShouldClose(window, true);
     }
@@ -111,10 +107,6 @@ int main() {
 
     auto const vertex_buffers = create_buffers(context);
 
-    mountain::PushConstant<Model> const push_vertex{
-		vk::ShaderStageFlagBits::eVertex
-	};
-
     vk::DescriptorSetLayoutBinding const ubo_binding_layout =
             mountain::descriptorset_layout::create_descriptor_uniform(2, vk::ShaderStageFlagBits::eVertex);
 
@@ -137,8 +129,7 @@ int main() {
                                   mountain::shader{SHADER_FOLDER /"trianglefrag.spv", vk::ShaderStageFlagBits::eFragment}
                               },
                               vertex_buffers,
-                              layouts,
-                              push_vertex);
+                              layouts);
     mountain::CommandBuffer init(
             context,
             swap_chain,
@@ -152,39 +143,29 @@ int main() {
 
     glfwSetKeyCallback(context.get_window().get_window(), key_callback);
 
-    auto record = [&](Model const& rotation) {
-        init.record([&](mountain::CommandBuffer const &command_api, std::size_t const index) {
-            auto const &command = command_api.get_command_buffer(index);
-            command.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline.get_pipeline());
-            std::array size = {vk::DeviceSize(0)};
-            auto const &vertex = vertex_buffers[0];
-            command.bindVertexBuffers(0, 1, &vertex.get_buffer(), size.data());
-            command.bindIndexBuffer(vertex.get_buffer(), vertex.get_indices_offset(), vk::IndexType::eUint32);
-            auto const[descriptor_set, size_descriptor_set] = command_api.get_descriptor_set_size(index);
-            command.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                       pipeline.get_pipeline_layout(),
-                                       0, size_descriptor_set,
-                                       descriptor_set, 0, nullptr
-            );
-            for (auto const &push_constant: pipeline.get_push_constant_ranges()) {
-                command.pushConstants(pipeline.get_pipeline_layout(),
-                                      push_constant.stageFlags, push_constant.offset,
-                                      push_constant.size,
-                                      &rotation);
-            }
 
-            command.drawIndexed(vertex.get_indices_count(), 1, 0, 0, 0);
-            command.nextSubpass(vk::SubpassContents::eInline);
-        });
-    };
-    record(rotate());
+    init.record([&](mountain::CommandBuffer const& command_api, std::size_t const index){
+        auto const& command = command_api.get_command_buffer(index);
+        command.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline.get_pipeline());
+        std::array size = {vk::DeviceSize(0)};
+        auto const& vertex = vertex_buffers[0];
+        command.bindVertexBuffers(0, 1, &vertex.get_buffer(), size.data());
+        command.bindIndexBuffer(vertex.get_buffer(), vertex.get_indices_offset(), vk::IndexType::eUint32);
+        auto const[descriptor_set, size_descriptor_set] = command_api.get_descriptor_set_size(index);
+        command.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                   pipeline.get_pipeline_layout(),
+                                   0, size_descriptor_set,
+                                   descriptor_set, 0, nullptr
+                                   );
+        command.drawIndexed(vertex.get_indices_count(), 1, 0, 0, 0);
+        command.nextSubpass(vk::SubpassContents::eInline);
+    });
 
     std::vector<mountain::buffer::uniform_updater> updaters;
     updaters.emplace_back(uniform_vp.get_uniform_updater(create_vp_matrix(width, height)));
     while (!glfwWindowShouldClose(context.get_window().get_window())) {
         glfwPollEvents();
         init.drawFrame(std::move(updaters));
-        record(rotate());
     }
     vkDeviceWaitIdle(context.get_device());
 

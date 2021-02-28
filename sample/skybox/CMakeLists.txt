@@ -17,6 +17,9 @@ compile_shaders(load_obj
 			${CMAKE_CURRENT_SOURCE_DIR}
 		)
 
+add_custom_target(copy_assets ALL
+		${CMAKE_COMMAND} -E copy_directory  ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets
+		)
 add_dependencies(load_obj copy_assets)
 
 target_compile_definitions(load_obj PRIVATE
