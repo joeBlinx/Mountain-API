@@ -1,8 +1,9 @@
 project(samples)
 
 include(cmake/compile_shader.cmake)
+include(cmake/copy_assets.cmake)
 
-set(_samples triangle load_obj push_constants textures)
+set(_samples triangle load_obj push_constants textures skybox)
 foreach(sample IN ITEMS ${_samples})
     set(SHADER_FOLDER ${CMAKE_CURRENT_BINARY_DIR}/${sample})
     set(ASSETS_FOLDER ${CMAKE_SOURCE_DIR}/assets)

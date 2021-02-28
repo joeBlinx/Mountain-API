@@ -1,13 +1,13 @@
-add_executable(load_obj)
+add_executable(skybox)
 
-target_sources(load_obj
+target_sources(skybox
 		PRIVATE
 		main.cpp
 		)
 
-set_common_properties(load_obj)
+set_common_properties(skybox)
 
-compile_shaders(load_obj
+compile_shaders(skybox
 		SHADERS
 			triangle.vert
 			triangle.frag
@@ -17,17 +17,15 @@ compile_shaders(load_obj
 			${CMAKE_CURRENT_SOURCE_DIR}
 		)
 
-add_custom_target(copy_assets ALL
-		${CMAKE_COMMAND} -E copy_directory  ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets
-		)
-add_dependencies(load_obj copy_assets)
 
-target_compile_definitions(load_obj PRIVATE
+add_dependencies(skybox copy_assets)
+
+target_compile_definitions(skybox PRIVATE
 		GLM_FORCE_RADIANS
 		GLM_FORCE_DEPTH_ZERO_TO_ONE
 		)
 
-target_link_libraries(load_obj PRIVATE
+target_link_libraries(skybox PRIVATE
 									Mountain::API
 									CONAN_PKG::glm
 											)
