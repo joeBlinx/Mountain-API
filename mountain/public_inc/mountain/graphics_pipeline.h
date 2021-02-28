@@ -15,6 +15,7 @@ namespace mountain {
 
     struct SwapChain;
     struct RenderPass;
+    struct SubPass;
     template<class T>
     concept PushConstantType = sizeof(T) <= 256 && sizeof(T) % 4 == 0;
 
@@ -54,7 +55,7 @@ namespace mountain {
          * @param push_constant: PushConstant for each shaders use
          */
         template<size_t n, class ...Ts>
-        GraphicsPipeline(Context const &context, SwapChain const &swap_chain, RenderPass const &render_pass,
+        GraphicsPipeline(Context const &context, SwapChain const &swap_chain, SubPass const &render_pass,
                          std::array<shader, n> const &shaders,
                          const std::vector<buffer::vertex> &buffers,
                          std::vector<vk::DescriptorSetLayout> const &descriptor_layout = {},
@@ -81,9 +82,9 @@ namespace mountain {
         void create_pipeline_layout(std::vector<vk::DescriptorSetLayout> const &descriptor_layout,
                                     PushConstant<Ts> const &...push_constant);
 
-        MOUNTAINAPI_EXPORT void init(const SwapChain &swap_chain, const RenderPass &render_pass,
-                  const std::vector<buffer::vertex> &buffers,
-                  std::vector<vk::PipelineShaderStageCreateInfo> &&shaders_stages);
+        MOUNTAINAPI_EXPORT void init(const SwapChain &swap_chain, const SubPass &sub_pass,
+                                     const std::vector<buffer::vertex> &buffers,
+                                     std::vector<vk::PipelineShaderStageCreateInfo> &&shaders_stages);
 
         template<size_t n>
         std::vector<vk::PipelineShaderStageCreateInfo> create_shader_info(std::array<shader, n> const &shaders);
@@ -100,7 +101,7 @@ namespace mountain {
 
     template<size_t n, class ...Ts>
     GraphicsPipeline::GraphicsPipeline(Context const &device, SwapChain const &swap_chain,
-                                       RenderPass const &render_pass, std::array<shader, n> const &shaders,
+                                       SubPass const &render_pass, std::array<shader, n> const &shaders,
                                        const std::vector<buffer::vertex> &buffers,
                                        std::vector<vk::DescriptorSetLayout> const &descriptor_layout,
                                        PushConstant<Ts> const &...push_constant) :

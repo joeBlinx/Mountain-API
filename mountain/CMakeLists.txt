@@ -53,7 +53,7 @@ set_sources(_srcs
 					renderpass/render_pass.cpp
 					swapChain.cpp
 					command_buffer.cpp
-					graphics_pipeline.cpp
+					pipeline/graphics_pipeline.cpp
 					buffer/uniform.cpp
 					buffer/image2d.cpp
 					descriptor_setlayout_binding/descriptorset_layout.cpp
