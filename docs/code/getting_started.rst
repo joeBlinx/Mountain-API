@@ -94,13 +94,13 @@ First we have to create our render pass (for now, Mountain=API only one subpass 
     using mountain::subpass_attachment;
     mountain::RenderPass const render_pass{
                                 context,
-                                mountain::SubPass{subpass_attachment::COLOR}
+                                mountain::SubPassAttachment{subpass_attachment::COLOR}
         };
     using namespace std::chrono_literals;
     ...
 
 The ``using`` declaration is too avoid typing ``mountain::subpass_attachment::COLOR`` because it's a bit long. For creating our render pass, we first pass our context. Since Vulkan is an agnostic=API, all of Mountain=API classes will require the context before use.
-The second parameter is a ``mountain::SubPass`` where we pass which sor of attachment we want. For now we only want ``COLOR`` so that's what we pass. But we can pass ``DEPTH`` or ``STENCIL`` or both in the second parameter of ``mountain::SubPass``.
+The second parameter is a ``mountain::SubPassAttachment`` where we pass which sor of attachment we want. For now we only want ``COLOR`` so that's what we pass. But we can pass ``DEPTH`` or ``STENCIL`` or both in the second parameter of ``mountain::SubPassAttachment``.
 
 Create Swapchain
 ----------------

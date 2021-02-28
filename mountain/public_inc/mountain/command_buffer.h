@@ -58,6 +58,14 @@ namespace mountain {
         template<class PushConstantType>
         void init(PipelineData<PushConstantType> const &pipeline_data);
 
+        template <class T>
+        void record(T&& record_function)
+        requires std::is_invocable_v<T, CommandBuffer const&, std::size_t const>;
+
+        MOUNTAINAPI_EXPORT vk::CommandBuffer const& get_command_buffer(std::size_t const i)const{return _commandBuffers[i];}
+        MOUNTAINAPI_EXPORT std::pair<vk::DescriptorSet const*, std::uint32_t>
+        get_descriptor_set_size(std::size_t const i) const{
+            return {&_descriptor_sets[i * _nb_descriptor_set_by_image], _nb_descriptor_set_by_image};}
         /**
          *  Allocate the number of descriptor set layout we need, the size of vector parameter X the number of image in swap chain
          * @param descriptor_set_layouts
@@ -152,7 +160,7 @@ namespace mountain {
             renderPassInfo.renderArea.extent = _swapChainExtent;
 
             std::vector<VkClearValue> clear_color{
-                    {.color{0.5f, 0.5f, 0.5f, 1.0f}}
+                    {.color{{0.5f, 0.5f, 0.5f, 1.0f}}}
             };
             if (_renderpass.has_depth()) {
                 clear_color.emplace_back(
@@ -187,7 +195,7 @@ namespace mountain {
             }
             vkCmdDrawIndexed(_commandBuffers[i], vertex_buffer.get_indices_count(), 1, 0, 0, 0); // draw buffer
 //        }
-
+            _commandBuffers[i].nextSubpass(vk::SubpassContents::eInline);
             vkCmdEndRenderPass(_commandBuffers[i]);
             checkError(vkEndCommandBuffer(_commandBuffers[i]),
                        "failed to record command buffer!");
@@ -234,6 +242,44 @@ namespace mountain {
         }
         _context.get_device().updateDescriptorSets(static_cast<uint32_t>(write_sets.size()),
                                                    write_sets.data(), 0, nullptr);
+    }
+
+    template<class T>
+    void CommandBuffer::record(T&& record_function)
+    requires std::is_invocable_v<T, CommandBuffer const&, std::size_t const>{
+        for (size_t i = 0; i < _commandBuffers.size(); i++) {
+            auto const& command_buffer = _commandBuffers[i];
+            vk::CommandBufferBeginInfo beginInfo = {};
+            beginInfo.flags = vk::CommandBufferUsageFlagBits::eSimultaneousUse;
+            command_buffer.begin(beginInfo);
+
+            vk::RenderPassBeginInfo render_pass_info{};
+            render_pass_info.renderPass = _renderpass.get_renderpass();
+            render_pass_info.framebuffer = _swapchainFrameBuffer[i];
+
+            render_pass_info.renderArea.offset = vk::Offset2D{0, 0};
+            render_pass_info.renderArea.extent = _swapChainExtent;
+
+            std::vector<vk::ClearValue> clear_color{
+                    vk::ClearValue(
+                            vk::ClearColorValue{
+                                std::array{0.5f, 0.5f, 0.5f, 1.0f}})
+            };
+            if (_renderpass.has_depth()) {
+                clear_color.emplace_back(
+                        vk::ClearValue{{1.f, 0}});
+            }
+            render_pass_info.clearValueCount = static_cast<uint32_t>(std::size(clear_color));
+            render_pass_info.pClearValues = clear_color.data();
+
+            command_buffer.beginRenderPass(render_pass_info, vk::SubpassContents::eInline);
+            record_function(*this, i);
+
+            vkCmdEndRenderPass(_commandBuffers[i]);
+            checkError(vkEndCommandBuffer(_commandBuffers[i]),
+                       "failed to record command buffer!");
+
+        }
     }
 }
 #endif //MOUNTAIN_API_INITVULKAN_H

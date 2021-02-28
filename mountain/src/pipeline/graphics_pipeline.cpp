@@ -7,6 +7,7 @@
 #include "mountain/context.h"
 #include "mountain/swapChain.h"
 #include "mountain/render_pass.h"
+#include "mountain/subpass.h"
 namespace mountain {
 
     vk::PipelineInputAssemblyStateCreateInfo createAssembly(vk::PrimitiveTopology topology);
@@ -70,7 +71,7 @@ namespace mountain {
     };
 
 
-    void GraphicsPipeline::init(const SwapChain &swap_chain, const RenderPass &render_pass,
+    void GraphicsPipeline::init(const SwapChain &swap_chain, const SubPass &sub_pass,
                                 const std::vector<buffer::vertex> &buffers,
                                 std::vector<vk::PipelineShaderStageCreateInfo> &&shaders_stages) {
 
@@ -98,7 +99,7 @@ namespace mountain {
 
         /**can be factorised in function
         */
-
+        auto const& render_pass = sub_pass.renderpass;
         vk::GraphicsPipelineCreateInfo pipelineInfo{};
         pipelineInfo.stageCount = static_cast<uint32_t>(shaders_stages.size());
         pipelineInfo.pStages = shaders_stages.data();
@@ -114,7 +115,7 @@ namespace mountain {
         pipelineInfo.pDynamicState = nullptr; // Optional
         pipelineInfo.layout = *_pipeline_layout;
         pipelineInfo.renderPass = render_pass.get_renderpass();
-        pipelineInfo.subpass = 0;
+        pipelineInfo.subpass = sub_pass.index;
         // pipelineInfo.basePipelineHandle ; // Optional
         pipelineInfo.basePipelineIndex = -1; // Optional
         auto create_pipeline = [&] { // create pipeline this way because for some reason I cannot use the c++ APi the same way on different computers

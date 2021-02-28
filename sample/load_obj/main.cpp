@@ -15,7 +15,7 @@
 #include "mountain/load_model.h"
 #include "ressource_paths.h"
 #include "GLFW/glfw3.h"
-
+#include "mountain/subpass.h"
 struct Model{
     glm::mat4 model {1};
 };
@@ -88,10 +88,34 @@ int main() {
     mountain::Context const context{window,
                                     devicesExtension};
 
-    using mountain::subpass_attachment;
+
     mountain::RenderPass const render_pass{
         context,
-        mountain::SubPass{subpass_attachment::COLOR, subpass_attachment::DEPTH}
+                {mountain::RenderPass::COLOR | mountain::RenderPass::DEPTH,
+                 mountain::RenderPass::COLOR},
+        {[] {
+                vk::SubpassDependency dependency = {};
+                dependency.srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+                dependency.srcAccessMask = static_cast<vk::AccessFlagBits>(0);
+                dependency.dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput|
+                        vk::PipelineStageFlagBits::eEarlyFragmentTests;
+                dependency.dstAccessMask =
+                        vk::AccessFlagBits::eColorAttachmentWrite
+                        |vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+                return dependency;
+            }(),
+         [] {
+             vk::SubpassDependency dependency = {};
+             dependency.srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+             dependency.srcAccessMask = static_cast<vk::AccessFlagBits>(0);
+             dependency.dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput|
+                                       vk::PipelineStageFlagBits::eEarlyFragmentTests;
+             dependency.dstAccessMask =
+                     vk::AccessFlagBits::eColorAttachmentWrite
+                     |vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+             return dependency;
+         }()
+        }
     };
 
     mountain::SwapChain const swap_chain{
@@ -124,7 +148,7 @@ int main() {
     auto layouts = std::vector{descriptor_layout};
     mountain::GraphicsPipeline pipeline(context,
                               swap_chain,
-                              render_pass,
+                            mountain::SubPass{render_pass, 0},
                               std::array{
                                   mountain::shader{SHADER_FOLDER / "trianglevert.spv", vk::ShaderStageFlagBits::eVertex},
                                   mountain::shader{SHADER_FOLDER /"trianglefrag.spv", vk::ShaderStageFlagBits::eFragment}
@@ -152,7 +176,27 @@ int main() {
 
     glfwSetWindowUserPointer(context.get_window().get_window(), &move);
 
-    init.init(move.obj);
+    init.record([&](mountain::CommandBuffer const& command_api, std::size_t const index){
+        auto const& command = command_api.get_command_buffer(index);
+        command.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline.get_pipeline());
+        std::array size = {vk::DeviceSize(0)};
+        auto const& vertex = vertex_buffers[0];
+        command.bindVertexBuffers(0, 1, &vertex.get_buffer(), size.data());
+        command.bindIndexBuffer(vertex.get_buffer(), vertex.get_indices_offset(), vk::IndexType::eUint32);
+        auto const[descriptor_set, size_descriptor_set] = command_api.get_descriptor_set_size(index);
+        command.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                   pipeline.get_pipeline_layout(),
+                                   0, size_descriptor_set,
+                                   descriptor_set, 0, nullptr
+                                   );
+        for(auto const& push_constant: pipeline.get_push_constant_ranges()){
+            Model model{glm::mat4{1.0f}};
+            command.pushConstants(pipeline.get_pipeline_layout(), push_constant.stageFlags, push_constant.offset,
+                                  push_constant.size, reinterpret_cast<std::byte const*>(&model));
+        }
+        command.drawIndexed(vertex.get_indices_count(), 1, 0, 0, 0);
+        command.nextSubpass(vk::SubpassContents::eInline);
+    });
 
     std::vector<mountain::buffer::uniform_updater> updaters;
     updaters.emplace_back(uniform_vp.get_uniform_updater(create_vp_matrix(width, height)));
