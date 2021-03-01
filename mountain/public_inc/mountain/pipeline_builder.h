@@ -8,54 +8,76 @@
 #include "mountain/graphics_pipeline.h"
 #include <vector>
 #include "subpass.h"
-
+#include <span>
+#include "mountain/mountainapi_export.h"
 namespace mountain{
+
     struct PipelineBuilder{
-        PipelineBuilder& create_assembly(vk::PrimitiveTopology const topology);
-        PipelineBuilder& create_viewport_info(vk::Extent2D const& extent);
-        PipelineBuilder& create_depth_stencil_state(vk::PipelineDepthStencilStateCreateInfo const& depth_stencil);
-        PipelineBuilder& create_color_blend_state();
-        template<size_t n>
-        PipelineBuilder& create_shaders_info(std::array<shader, n> const& shaders);
-        PipelineBuilder& create_vertex_info();
-        PipelineBuilder& create_rasterizer();
-        PipelineBuilder& create_mutlisampling();
-        PipelineBuilder& define_subpass(SubPass const& subpass);
 
+        explicit PipelineBuilder(Context const& context):_context(context){}
+        MOUNTAINAPI_EXPORT PipelineBuilder& create_assembly(vk::PrimitiveTopology const  topology);
+        MOUNTAINAPI_EXPORT PipelineBuilder& create_viewport_info(vk::Extent2D const& extent);
+        MOUNTAINAPI_EXPORT PipelineBuilder& create_depth_stencil_state(vk::PipelineDepthStencilStateCreateInfo const& depth_stencil);
+        MOUNTAINAPI_EXPORT PipelineBuilder& create_color_blend_state();
+        MOUNTAINAPI_EXPORT PipelineBuilder& create_shaders_info(std::span<shader> const shaders);
+        MOUNTAINAPI_EXPORT PipelineBuilder &create_vertex_info(std::span<const buffer::vertex> const vertex_buffers);
+        MOUNTAINAPI_EXPORT PipelineBuilder &create_rasterizer(vk::PolygonMode const polygon_mode);
+        MOUNTAINAPI_EXPORT PipelineBuilder& create_mutlisampling();
+        MOUNTAINAPI_EXPORT PipelineBuilder& define_subpass(SubPass const& subpass);
 
-        template<class ...PushConstantType, std::size_t n>
-        PipelineBuilder& create_pipeline_layout(std::array<vk::DescriptorSetLayout, n> const& descriptor_layout,
+        template<class ...PushConstantType>
+        MOUNTAINAPI_EXPORT PipelineBuilder& create_pipeline_layout(std::span<vk::DescriptorSetLayout> const& descriptor_layout,
                                                 PushConstant<PushConstantType> const& ...push_constant);
 
+        MOUNTAINAPI_EXPORT GraphicsPipeline build();
+
     private:
+        vk::UniqueShaderModule create_shader_module(std::vector<char> const &code);
+
         vk::PipelineInputAssemblyStateCreateInfo _assembly{};
         vk::Viewport _viewport;
         vk::Rect2D _scissor;
         vk::PipelineViewportStateCreateInfo _viewport_info{};
         vk::PipelineDepthStencilStateCreateInfo _depth_stencil{};
-    vk::PipelineColorBlendAttachmentState _color_blend_attachment{};
+        vk::PipelineColorBlendAttachmentState _color_blend_attachment{};
         vk::PipelineColorBlendStateCreateInfo _color_blend_sate{};
         std::vector<vk::PipelineShaderStageCreateInfo> _shaders{};
-        vk::UniquePipelineLayout _pipeline_layout{};
+        std::vector<vk::UniqueShaderModule> _shaders_module{};
+        std::vector<vk::VertexInputAttributeDescription> _attribute_descriptions;
+        std::vector<vk::VertexInputBindingDescription> _bindings_descriptions;
         vk::PipelineVertexInputStateCreateInfo _vertex_info{};
         vk::PipelineRasterizationStateCreateInfo _rasterizer{};
         vk::PipelineMultisampleStateCreateInfo _multisampling{};
         SubPass _subpass{};
+        Context const& _context;
+
+        GraphicsPipeline _pipeline{};
 
     };
 
 
-
-    template<size_t n>
-    PipelineBuilder &PipelineBuilder::create_shaders_info(const std::array<shader, n> &shaders) {
-        return <#initializer#>;
-    }
-
-    template<class... PushConstantType, std::size_t n>
+    template<class... PushConstantType>
     PipelineBuilder &
-    PipelineBuilder::create_pipeline_layout(const std::array<vk::DescriptorSetLayout, n> &descriptor_layout,
+    PipelineBuilder::create_pipeline_layout(const std::span<vk::DescriptorSetLayout> &descriptor_layout,
                                             const PushConstant <PushConstantType> &... push_constant) {
-        return <#initializer#>;
+        uint32_t offset = 0;
+        auto create_push_constant_ranges = [&offset]<class T>(PushConstant<T> const &push_constant) mutable {
+            vk::PushConstantRange range(push_constant.shader_stage, offset, static_cast<uint32_t>(sizeof(T)));
+            offset += sizeof(T);
+            return range;
+        };
+        if constexpr (sizeof...(push_constant) > 0) {
+            _pipeline._push_constant_ranges = std::vector{create_push_constant_ranges(push_constant)...};
+        }
+        vk::PipelineLayoutCreateInfo pipelineLayoutInfo = {};
+        pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptor_layout.size());
+        pipelineLayoutInfo.pSetLayouts = descriptor_layout.data();
+        pipelineLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(_pipeline._push_constant_ranges.size());
+        pipelineLayoutInfo.pPushConstantRanges = _pipeline._push_constant_ranges.data();
+        _pipeline._pipeline_layout = _context->createPipelineLayoutUnique(pipelineLayoutInfo);
+
+        return *this;
     }
+
 }
 #endif //MOUNTAIN_API_PIPELINE_BUILDER_H

@@ -60,17 +60,19 @@ namespace mountain {
                          const std::vector<buffer::vertex> &buffers,
                          std::vector<vk::DescriptorSetLayout> const &descriptor_layout = {},
                          PushConstant<Ts> const &...push_constant);
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
+        GraphicsPipeline() = default;
+        /**
+         * @return: The vulkan pipeline object
+         */
         vk::Pipeline const &get_pipeline() const { return *_pipeline; }
 
         vk::PipelineLayout const &get_pipeline_layout() const { return *_pipeline_layout; }
 
         std::vector<vk::PushConstantRange> const &get_push_constant_ranges() const { return _push_constant_ranges; }
-#endif
 
     private:
-        Context const &_device;
+        friend class PipelineBuilder;
+        Context const *_device;
         vk::UniquePipeline _pipeline;
         vk::UniquePipelineLayout _pipeline_layout;
         std::vector<vk::PushConstantRange> _push_constant_ranges;
@@ -94,7 +96,7 @@ namespace mountain {
             pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
             pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
             pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
-            _pipeline_layout = _device.get_device().createPipelineLayoutUnique(pipelineLayoutInfo);
+            _pipeline_layout = (*_device)->createPipelineLayoutUnique(pipelineLayoutInfo);
         }
     };
 
@@ -104,7 +106,7 @@ namespace mountain {
                                        const std::vector<buffer::vertex> &buffers,
                                        std::vector<vk::DescriptorSetLayout> const &descriptor_layout,
                                        PushConstant<Ts> const &...push_constant) :
-            _device(device) {
+            _device(&device) {
         static_assert(n >= 2,
                       "shaders arrays must contains at least two entry, one vertex shader and one fragment shader");
         create_pipeline_layout(descriptor_layout, push_constant...);
@@ -129,7 +131,7 @@ namespace mountain {
         pipelineLayoutInfo.pSetLayouts = descriptor_layout.data();
         pipelineLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(_push_constant_ranges.size());
         pipelineLayoutInfo.pPushConstantRanges = _push_constant_ranges.data();
-        _pipeline_layout = _device.get_device().createPipelineLayoutUnique(pipelineLayoutInfo);
+        _pipeline_layout = (*_device)->createPipelineLayoutUnique(pipelineLayoutInfo);
 
     }
 
