@@ -36,7 +36,6 @@ namespace mountain {
                 bindings_descriptions.emplace_back(buffer.get_bindings());
             });
 
-
             create_info.vertexBindingDescriptionCount = static_cast<uint32_t>(bindings_descriptions.size());
             create_info.pVertexBindingDescriptions = bindings_descriptions.data();
             create_info.vertexAttributeDescriptionCount = static_cast<uint32_t>(attribute_descriptions.size());
@@ -119,11 +118,11 @@ namespace mountain {
         // pipelineInfo.basePipelineHandle ; // Optional
         pipelineInfo.basePipelineIndex = -1; // Optional
 
-        _pipeline = _device->createGraphicsPipelineUnique(nullptr, pipelineInfo).value;
+        _pipeline = (*_device)->createGraphicsPipelineUnique(nullptr, pipelineInfo).value;
         std::ranges::for_each(
                 shaders_stages,
                 [this](auto const &shader_stage) {
-                    vkDestroyShaderModule(_device.get_device(), shader_stage.module, nullptr);
+                    vkDestroyShaderModule(_device->get_device(), shader_stage.module, nullptr);
                 }
         );
 
@@ -134,7 +133,7 @@ namespace mountain {
         vk::ShaderModuleCreateInfo createInfo{};
         createInfo.codeSize = code.size();
         createInfo.pCode = (uint32_t *) code.data();
-        vk::ShaderModule module = _device.get_device().createShaderModule(createInfo);
+        vk::ShaderModule module = _device->get_device().createShaderModule(createInfo);
 
         return module;
 
