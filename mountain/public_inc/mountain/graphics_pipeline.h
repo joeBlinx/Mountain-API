@@ -62,17 +62,16 @@ namespace mountain {
                          PushConstant<Ts> const &...push_constant);
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-        vk::Pipeline const &get_pipeline() const { return _pipeline; }
+        vk::Pipeline const &get_pipeline() const { return *_pipeline; }
 
         vk::PipelineLayout const &get_pipeline_layout() const { return *_pipeline_layout; }
 
         std::vector<vk::PushConstantRange> const &get_push_constant_ranges() const { return _push_constant_ranges; }
 #endif
-        MOUNTAINAPI_EXPORT ~GraphicsPipeline();
 
     private:
         Context const &_device;
-        vk::Pipeline _pipeline;
+        vk::UniquePipeline _pipeline;
         vk::UniquePipelineLayout _pipeline_layout;
         std::vector<vk::PushConstantRange> _push_constant_ranges;
 
