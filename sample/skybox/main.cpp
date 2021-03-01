@@ -6,6 +6,7 @@
 #include <vector>
 #include "mountain/uniform.h"
 #include <chrono>
+#include <mountain/pipeline_builder.h>
 #include "mountain/image2d.h"
 #include "mountain/sampler.h"
 #include "mountain/vertex.h"
@@ -16,6 +17,7 @@
 #include "ressource_paths.h"
 #include "GLFW/glfw3.h"
 #include "mountain/subpass.h"
+#include <span>
 struct Model{
     glm::mat4 model;
 };
@@ -129,16 +131,30 @@ int main() {
     mountain::buffer::image2d const viking_image{context, ASSETS_FOLDER /"image/viking_room.png", 10};
     mountain::image::sampler const sampler(context, viking_image.get_mimap_levels());
     auto layouts = std::vector{descriptor_layout};
-    mountain::GraphicsPipeline pipeline(context,
-                                        swap_chain,
-                                        mountain::SubPass{render_pass, 0},
-                                        std::array{
-                                                mountain::shader{SHADER_FOLDER / "trianglevert.spv", vk::ShaderStageFlagBits::eVertex},
-                                                mountain::shader{SHADER_FOLDER /"trianglefrag.spv", vk::ShaderStageFlagBits::eFragment}
-                                        },
-                                        vertex_buffers,
-                                        layouts,
-                                        push_vertex);
+
+    // DEPTH AND STENCIL
+    vk::PipelineDepthStencilStateCreateInfo depth_stencil;
+    depth_stencil.depthTestEnable = VK_TRUE;
+    depth_stencil.depthWriteEnable = VK_TRUE;
+    depth_stencil.depthCompareOp = vk::CompareOp::eLess;
+    depth_stencil.stencilTestEnable = VK_FALSE;
+    auto const shaders = std::array{
+            mountain::shader{SHADER_FOLDER / "vikingvert.spv", vk::ShaderStageFlagBits::eVertex},
+            mountain::shader{SHADER_FOLDER / "vikingfrag.spv", vk::ShaderStageFlagBits::eFragment}
+    };
+    mountain::GraphicsPipeline pipeline = mountain::PipelineBuilder(context)
+            .create_assembly(vk::PrimitiveTopology::eTriangleList)
+            .create_viewport_info(swap_chain.get_swap_chain_extent())
+            .create_depth_stencil_state(depth_stencil)
+            .create_shaders_info(shaders)
+            .create_vertex_info(vertex_buffers)
+            .create_rasterizer(vk::PolygonMode::eFill)
+            .create_mutlisampling()
+            .define_subpass(mountain::SubPass{&render_pass, 0})
+            .create_color_blend_state()
+            .create_pipeline_layout(layouts, push_vertex)
+            .build();
+
     mountain::CommandBuffer init(
             context,
             swap_chain,
