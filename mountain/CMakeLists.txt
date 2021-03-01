@@ -54,6 +54,7 @@ set_sources(_srcs
 					swapChain.cpp
 					command_buffer.cpp
 					pipeline/graphics_pipeline.cpp
+					pipeline/pipeline_builder.cpp
 					buffer/uniform.cpp
 					buffer/image2d.cpp
 					descriptor_setlayout_binding/descriptorset_layout.cpp
@@ -77,6 +78,7 @@ set_sources(_public_headers
 				swapChain.h
 				command_buffer.h
 				graphics_pipeline.h
+				pipeline_builder.h
 				sampler.h
 				load_model.h
 				no_sanitize.h

@@ -110,21 +110,16 @@ namespace mountain {
         pipelineInfo.pRasterizationState = &rasterizer;
         pipelineInfo.pMultisampleState = &multisampling;
         pipelineInfo.pDepthStencilState =
-                render_pass.has_depth() ? &depth_stencil : nullptr; // Optional nostencil for now
+                render_pass->has_depth() ? &depth_stencil : nullptr; // Optional nostencil for now
         pipelineInfo.pColorBlendState = &colorBlending;
         pipelineInfo.pDynamicState = nullptr; // Optional
         pipelineInfo.layout = *_pipeline_layout;
-        pipelineInfo.renderPass = render_pass.get_renderpass();
+        pipelineInfo.renderPass = render_pass->get_renderpass();
         pipelineInfo.subpass = sub_pass.index;
         // pipelineInfo.basePipelineHandle ; // Optional
         pipelineInfo.basePipelineIndex = -1; // Optional
-        auto create_pipeline = [&] { // create pipeline this way because for some reason I cannot use the c++ APi the same way on different computers
-            VkPipeline temp_pipeline{};
-            auto temp = (VkGraphicsPipelineCreateInfo) pipelineInfo;
-            vkCreateGraphicsPipelines(_device.get_device(), nullptr, 1, &temp, nullptr, &temp_pipeline); // for some re
-            return temp_pipeline;
-        };
-        _pipeline = create_pipeline();
+
+        _pipeline = _device->createGraphicsPipelineUnique(nullptr, pipelineInfo).value;
         std::ranges::for_each(
                 shaders_stages,
                 [this](auto const &shader_stage) {
@@ -143,10 +138,6 @@ namespace mountain {
 
         return module;
 
-    }
-
-    GraphicsPipeline::~GraphicsPipeline() {
-        _device.get_device().destroy(_pipeline);
     }
 
     vk::PipelineShaderStageCreateInfo createShaderInfo(vk::ShaderModule &module, vk::ShaderStageFlagBits type) {
