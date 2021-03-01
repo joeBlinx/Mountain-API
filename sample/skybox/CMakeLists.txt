@@ -9,8 +9,8 @@ set_common_properties(skybox)
 
 compile_shaders(skybox
 		SHADERS
-			triangle.vert
-			triangle.frag
+		viking.vert
+        viking.frag
 		OUTPUT_DIR
 			${CMAKE_CURRENT_BINARY_DIR}
 		WORKING_DIR

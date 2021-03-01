@@ -123,7 +123,7 @@ namespace mountain{
         return *this;
     }
 
-    PipelineBuilder &PipelineBuilder::create_shaders_info(std::span<shader> const shaders) {
+    PipelineBuilder &PipelineBuilder::create_shaders_info(std::span<const shader> const shaders) {
         _shaders.reserve(size(shaders));
         _shaders_module.reserve(size(shaders));
         std::ranges::for_each(shaders, [this](auto const &shader)mutable {
