@@ -15,8 +15,8 @@ vk::SubpassDependency first_subpass(){
         vk::SubpassDependency dependency{};
         dependency.srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
         dependency.srcAccessMask = static_cast<vk::AccessFlagBits>(0);
-        dependency.dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
-        dependency.dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite;
+        dependency.dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput |vk::PipelineStageFlagBits::eEarlyFragmentTests;
+        dependency.dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite |vk::AccessFlagBits::eDepthStencilAttachmentWrite;
         return dependency;
     }();
 }

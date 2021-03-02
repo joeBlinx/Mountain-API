@@ -66,11 +66,11 @@ int main() {
         command.bindIndexBuffer(quad_vertex_buffer.get_buffer(), quad_vertex_buffer.get_indices_offset(),
                                 vk::IndexType::eUint32);
         auto const& push_vertex = back_pipeline.get_push_constant(vk::ShaderStageFlagBits::eVertex);
-        glm::mat4 model = glm::scale(glm::mat4{1.f}, glm::vec3{0.5f});
+        glm::mat4 model = glm::scale(glm::translate(glm::mat4{1.}, glm::vec3{0., 0, .5}), glm::vec3{0.5f});
         command.pushConstants(back_pipeline.get_pipeline_layout(), push_vertex.stageFlags,
                               push_vertex.offset, push_vertex.size, reinterpret_cast<std::byte const*>(&model));
         command.drawIndexed(quad_vertex_buffer.get_indices_count(), 1, 0, 0, 0);
-        model = glm::translate(glm::mat4{1.}, glm::vec3{0., 0., -0});
+        model = glm::translate(glm::mat4{1.}, glm::vec3{0., 0, 0.4});
         command.pushConstants(back_pipeline.get_pipeline_layout(), push_vertex.stageFlags,
                               push_vertex.offset, push_vertex.size, reinterpret_cast<std::byte const*>(&model));
         command.drawIndexed(quad_vertex_buffer.get_indices_count(), 1, 0, 0, 0);
