@@ -107,14 +107,12 @@ namespace mountain{
         return std::move(_pipeline);
     }
 
-    PipelineBuilder &PipelineBuilder::create_vertex_info(std::span<const buffer::vertex> const vertex_buffers) {
-        _bindings_descriptions.reserve(size(vertex_buffers));
-        _attribute_descriptions.reserve(size(vertex_buffers)*2); // 2 is just an approximation based on nothing
-        std::for_each(begin(vertex_buffers), end(vertex_buffers), [this](buffer::vertex const &buffer) {
-            std::copy(begin(buffer.get_attributes()), end(buffer.get_attributes()),
+    PipelineBuilder &PipelineBuilder::create_vertex_info(const buffer::vertex &vertex_buffer) {
+
+        std::copy(begin(vertex_buffer.get_attributes()), end(vertex_buffer.get_attributes()),
                       std::back_inserter(_attribute_descriptions));
-            _bindings_descriptions.emplace_back(buffer.get_bindings());
-        });
+
+        _bindings_descriptions.emplace_back(vertex_buffer.get_bindings());
 
         _vertex_info.vertexBindingDescriptionCount = static_cast<uint32_t>(_bindings_descriptions.size());
         _vertex_info.pVertexBindingDescriptions = _bindings_descriptions.data();

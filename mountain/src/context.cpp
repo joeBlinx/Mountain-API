@@ -309,6 +309,7 @@ namespace mountain {
         //feature required
         vk::PhysicalDeviceFeatures features{};
         features.samplerAnisotropy = VK_TRUE;
+        features.fillModeNonSolid = VK_TRUE;
         vk::DeviceCreateInfo info{};
         info.setPQueueCreateInfos(queueInfos.data());
         info.queueCreateInfoCount = (uint32_t) queueInfos.size();

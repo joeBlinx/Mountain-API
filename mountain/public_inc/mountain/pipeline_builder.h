@@ -20,7 +20,7 @@ namespace mountain{
         MOUNTAINAPI_EXPORT PipelineBuilder& create_depth_stencil_state(vk::PipelineDepthStencilStateCreateInfo const& depth_stencil);
         MOUNTAINAPI_EXPORT PipelineBuilder& create_color_blend_state();
         MOUNTAINAPI_EXPORT PipelineBuilder& create_shaders_info(std::span<const shader> const shaders);
-        MOUNTAINAPI_EXPORT PipelineBuilder &create_vertex_info(std::span<const buffer::vertex> const vertex_buffers);
+        MOUNTAINAPI_EXPORT PipelineBuilder &create_vertex_info(const buffer::vertex &vertex_buffer);
         MOUNTAINAPI_EXPORT PipelineBuilder &create_rasterizer(vk::PolygonMode const polygon_mode);
         MOUNTAINAPI_EXPORT PipelineBuilder& create_mutlisampling();
         MOUNTAINAPI_EXPORT PipelineBuilder& define_subpass(SubPass const& subpass);
