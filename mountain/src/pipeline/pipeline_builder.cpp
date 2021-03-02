@@ -104,7 +104,6 @@ namespace mountain{
         pipelineInfo.pDepthStencilState = render_pass->has_depth()? &_depth_stencil : nullptr;
         pipelineInfo.pColorBlendState = &_color_blend_sate;
 
-        _pipeline._pipeline_layout = _context->createPipelineLayoutUnique(_pipeline_layout_info);
         pipelineInfo.layout = *_pipeline._pipeline_layout;
         pipelineInfo.renderPass = render_pass->get_renderpass();
         pipelineInfo.subpass = _subpass.index;

@@ -75,6 +75,8 @@ namespace mountain{
         _pipeline_layout_info.pushConstantRangeCount = static_cast<uint32_t>(_pipeline._push_constant_ranges.size());
         _pipeline_layout_info.pPushConstantRanges = _pipeline._push_constant_ranges.data();
 
+        _pipeline._pipeline_layout = _context->createPipelineLayoutUnique(_pipeline_layout_info);
+
         return *this;
     }
 

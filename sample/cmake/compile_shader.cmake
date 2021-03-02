@@ -37,9 +37,8 @@ function(compile_shaders target)
             string(REPLACE "." "" shader_extension ${shader_extension}) #remove the dot before extension
             message("Creating custom target ${target}_build_${shader_name}")
             add_custom_target(${target}_build_${shader_name} ALL
-                    ${spriv_compiler} -V ${_shader_path} #compile shader
-                    COMMAND
-                    ${CMAKE_COMMAND} -E copy ${shader_extension}.spv ${_output_dir}/${shader_without_extension}${shader_extension}.spv #mv shader to build folder
+                    ${spriv_compiler} -V ${_shader_path} -o ${_output_dir}/${shader_without_extension}${shader_extension}.spv #compile shader
+
                     )
             add_dependencies(${target} ${target}_build_${shader_name})
             set_target_properties(${target}_build_${shader_name} PROPERTIES FOLDER "Samples/${target}/shaders")
