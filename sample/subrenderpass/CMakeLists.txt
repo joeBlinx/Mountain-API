@@ -11,8 +11,6 @@ set_common_properties(subrenderpass)
 
 compile_shaders(subrenderpass
 		SHADERS
-		shaders/viking.vert
-		shaders/viking.frag
 		shaders/portrait.frag
 		shaders/portrait.vert
 		OUTPUT_DIR
