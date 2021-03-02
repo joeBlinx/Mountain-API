@@ -40,7 +40,12 @@ namespace mountain{
         _viewport_info.pScissors = &_scissor;
         return *this;
     }
-
+    PipelineBuilder::PipelineBuilder(Context const& context):_context(context) {
+        _pipeline_layout_info.setLayoutCount = 0;
+        _pipeline_layout_info.pSetLayouts = nullptr;
+        _pipeline_layout_info.pushConstantRangeCount = 0;
+        _pipeline_layout_info.pPushConstantRanges = nullptr;
+    }
     PipelineBuilder &
     PipelineBuilder::create_depth_stencil_state(const vk::PipelineDepthStencilStateCreateInfo &depth_stencil) {
         _depth_stencil = depth_stencil;
@@ -98,6 +103,8 @@ namespace mountain{
         auto const& render_pass = _subpass.renderpass;
         pipelineInfo.pDepthStencilState = render_pass->has_depth()? &_depth_stencil : nullptr;
         pipelineInfo.pColorBlendState = &_color_blend_sate;
+
+        _pipeline._pipeline_layout = _context->createPipelineLayoutUnique(_pipeline_layout_info);
         pipelineInfo.layout = *_pipeline._pipeline_layout;
         pipelineInfo.renderPass = render_pass->get_renderpass();
         pipelineInfo.subpass = _subpass.index;

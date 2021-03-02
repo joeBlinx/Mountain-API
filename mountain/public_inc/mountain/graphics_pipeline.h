@@ -71,7 +71,7 @@ namespace mountain {
         std::vector<vk::PushConstantRange> const &get_push_constant_ranges() const { return _push_constant_ranges; }
 
     private:
-        friend class PipelineBuilder;
+        friend struct PipelineBuilder;
         Context const *_device;
         vk::UniquePipeline _pipeline;
         vk::UniquePipelineLayout _pipeline_layout;
