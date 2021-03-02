@@ -3,6 +3,8 @@ add_executable(subrenderpass)
 target_sources(subrenderpass
 		PRIVATE
 		src/main.cpp
+		src/init.cpp
+		src/init.h
 		)
 
 set_common_properties(subrenderpass)

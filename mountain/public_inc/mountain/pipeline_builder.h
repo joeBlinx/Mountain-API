@@ -14,7 +14,7 @@ namespace mountain{
 
     struct PipelineBuilder{
 
-        explicit PipelineBuilder(Context const& context):_context(context){}
+        MOUNTAINAPI_EXPORT explicit PipelineBuilder(Context const& context);
         MOUNTAINAPI_EXPORT PipelineBuilder& create_assembly(vk::PrimitiveTopology const  topology);
         MOUNTAINAPI_EXPORT PipelineBuilder& create_viewport_info(vk::Extent2D const& extent);
         MOUNTAINAPI_EXPORT PipelineBuilder& create_depth_stencil_state(vk::PipelineDepthStencilStateCreateInfo const& depth_stencil);
@@ -48,6 +48,7 @@ namespace mountain{
         vk::PipelineVertexInputStateCreateInfo _vertex_info{};
         vk::PipelineRasterizationStateCreateInfo _rasterizer{};
         vk::PipelineMultisampleStateCreateInfo _multisampling{};
+        vk::PipelineLayoutCreateInfo _pipeline_layout_info{};
         SubPass _subpass{};
         Context const& _context;
 
@@ -69,12 +70,10 @@ namespace mountain{
         if constexpr (sizeof...(push_constant) > 0) {
             _pipeline._push_constant_ranges = std::vector{create_push_constant_ranges(push_constant)...};
         }
-        vk::PipelineLayoutCreateInfo pipelineLayoutInfo = {};
-        pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptor_layout.size());
-        pipelineLayoutInfo.pSetLayouts = descriptor_layout.data();
-        pipelineLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(_pipeline._push_constant_ranges.size());
-        pipelineLayoutInfo.pPushConstantRanges = _pipeline._push_constant_ranges.data();
-        _pipeline._pipeline_layout = _context->createPipelineLayoutUnique(pipelineLayoutInfo);
+        _pipeline_layout_info.setLayoutCount = static_cast<uint32_t>(descriptor_layout.size());
+        _pipeline_layout_info.pSetLayouts = descriptor_layout.data();
+        _pipeline_layout_info.pushConstantRangeCount = static_cast<uint32_t>(_pipeline._push_constant_ranges.size());
+        _pipeline_layout_info.pPushConstantRanges = _pipeline._push_constant_ranges.data();
 
         return *this;
     }
