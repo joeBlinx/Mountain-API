@@ -1,68 +1,41 @@
-#include <iostream>
-#include "mountain/command_buffer.h"
-#include "mountain/context.h"
-#include "mountain/swapChain.h"
-#include "mountain/render_pass.h"
 #include <vector>
-#include "mountain/uniform.h"
-#include <chrono>
-#include "mountain/image2d.h"
-#include "mountain/sampler.h"
+#include "mountain/context.h"
+#include "mountain/render_pass.h"
+#include "mountain/swapChain.h"
+#include <glm/glm.hpp>
 #include "mountain/vertex.h"
-#include "glm/glm.hpp"
-#include "glm/ext.hpp"
-#include "mountain/descriptorset_layout.h"
-#include "mountain/load_model.h"
+#include "mountain/graphics_pipeline.h"
+#include "mountain/command_buffer.h"
+#include <thread>
+#include <mountain/pipeline_builder.h>
+#include <mountain/descriptorset_layout.h>
+#include <mountain/load_model.h>
 #include "ressource_paths.h"
 #include "GLFW/glfw3.h"
+#include "glm/gtx/transform.hpp"
 
 struct Model{
     glm::mat4 model {1};
 };
-struct Uniform{
-   Model model;
-};
 
-struct move_rectangle{
-    mountain::CommandBuffer& init;
-    mountain::PipelineData<Uniform> obj;
-    void move(){
-        init.init(obj);
-    }
-    void rotate(){
-        static auto startTime = std::chrono::high_resolution_clock::now();
-        auto currentTime = std::chrono::high_resolution_clock::now();
-        float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-        obj.push_constant_values[0].model.model = glm::rotate(glm::mat4{1.}, time*glm::radians<float>(30.), glm::vec3(0., 0., 1.));
-        init.init(obj);
-
-    }
-};
 struct VP{
     glm::mat4 view{1.};
     glm::mat4 proj{1.};
 };
 void key_callback(GLFWwindow* window, int key, int , int action, int)
 {
-    auto* obj = static_cast<move_rectangle*>(glfwGetWindowUserPointer(window));
-    if (key == GLFW_KEY_E && action == GLFW_PRESS){
-        obj->move();
-    }
     if(key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE){
         glfwSetWindowShouldClose(window, true);
     }
 }
-std::vector<mountain::buffer::vertex> create_buffers(mountain::Context const& context){
+mountain::buffer::vertex create_buffers(mountain::Context const& context){
 
     auto [vertices_3d, indices_3d] = mountain::model::load_obj(std::filesystem::path(ASSETS_FOLDER /                                                                             "model/viking_room.obj"));
-    std::vector<mountain::buffer::vertex> vertex_buffers;
-    vertex_buffers.emplace_back(mountain::buffer::vertex(context,
-                                                         mountain::buffer::vertex_description(0, 0,
-                                                                                              mountain::model::Vertex::get_format_offsets()),
-                                                         vertices_3d,
-                                                         std::move(indices_3d)
-    ));
-    return vertex_buffers;
+    return mountain::buffer::vertex(context,
+                                    mountain::buffer::vertex_description(0, 0,
+                                                                         mountain::model::Vertex::get_format_offsets()),
+                                    vertices_3d,
+                                    std::move(indices_3d));
 }
 VP create_vp_matrix(int width, int height){
 
@@ -70,12 +43,44 @@ VP create_vp_matrix(int width, int height){
     VP ubo{};
     ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     ubo.proj = glm::perspective(glm::radians(45.0f),
-                                width / (float) height,
+                                static_cast<float>(width) / (float) height,
                                 0.1f, 10.0f);
     ubo.proj[1][1] *= -1;
 
     return ubo;
 }
+vk::SubpassDependency create_subpassdependency(){
+    vk::SubpassDependency dependency{};
+    dependency.srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests;
+    dependency.srcAccessMask = static_cast<vk::AccessFlagBits>(0);
+    dependency.dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests;
+    dependency.dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+    return dependency;
+}
+struct CommandBufferRecord{
+    auto operator()(){
+        return [&](mountain::CommandBuffer const& command_buffer, std::size_t const index){
+            auto const& command = command_buffer.get_command_buffer(index);
+            vk::DeviceSize constexpr size{0};
+            command.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline.get_pipeline());
+            command.bindVertexBuffers(0, 1, &buffer.get_buffer(), &size);
+            command.bindIndexBuffer(buffer.get_buffer(), buffer.get_indices_offset(), vk::IndexType::eUint32);
+            auto const [descriptor_set, number_descriptor] = command_buffer.get_descriptor_set_size(index);
+            command.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipeline.get_pipeline_layout(), 0, number_descriptor,
+                                       descriptor_set, 0, nullptr);
+            auto const& push_vertex = pipeline.get_push_constant(vk::ShaderStageFlagBits::eVertex);
+            glm::mat4 const value{1.f};
+            command.pushConstants(pipeline.get_pipeline_layout(),
+                                  push_vertex.stageFlags,
+                                  push_vertex.offset,
+                                  push_vertex.size, &value);
+            command.drawIndexed(buffer.get_indices_count(), 1, 0, 0, 0);
+        };
+    }
+    mountain::buffer::vertex const& buffer;
+    mountain::GraphicsPipeline const& pipeline;
+};
+
 int main() {
 	
 	std::vector<const char*> const devicesExtension{
@@ -88,10 +93,10 @@ int main() {
     mountain::Context const context{window,
                                     devicesExtension};
 
-    using mountain::subpass_attachment;
     mountain::RenderPass const render_pass{
-        context,
-        mountain::SubPass{subpass_attachment::COLOR, subpass_attachment::DEPTH}
+            context,
+            {mountain::RenderPass::COLOR | mountain::RenderPass::DEPTH},
+            {create_subpassdependency()}
     };
 
     mountain::SwapChain const swap_chain{
@@ -101,8 +106,7 @@ int main() {
             height
     };
 
-
-    auto const vertex_buffers = create_buffers(context);
+    auto const vertex_buffer = create_buffers(context);
 
     mountain::PushConstant<Model> const push_vertex{
 		vk::ShaderStageFlagBits::eVertex
@@ -122,44 +126,56 @@ int main() {
     mountain::buffer::image2d const viking_image{context, ASSETS_FOLDER /"image/viking_room.png", 10};
     mountain::image::sampler const sampler(context, viking_image.get_mimap_levels());
     auto layouts = std::vector{descriptor_layout};
-    mountain::GraphicsPipeline pipeline(context,
-                              swap_chain,
-                              render_pass,
-                              std::array{
-                                  mountain::shader{SHADER_FOLDER / "trianglevert.spv", vk::ShaderStageFlagBits::eVertex},
-                                  mountain::shader{SHADER_FOLDER /"trianglefrag.spv", vk::ShaderStageFlagBits::eFragment}
-                              },
-                              vertex_buffers,
-                              layouts,
-                              push_vertex);
+    auto const depth_stencil = []{
+        vk::PipelineDepthStencilStateCreateInfo info{};
+        info.depthTestEnable = VK_TRUE;
+        info.depthWriteEnable = VK_TRUE;
+        info.depthCompareOp = vk::CompareOp::eLess;
+        info.stencilTestEnable = VK_FALSE;
+        return info;
+    }();
+
+    mountain::GraphicsPipeline const pipeline = mountain::PipelineBuilder(context)
+            .create_assembly(vk::PrimitiveTopology::eTriangleList)
+            .create_rasterizer(vk::PolygonMode::eFill)
+            .create_mutlisampling()
+            .create_color_blend_state()
+            .create_vertex_info(vertex_buffer)
+            .create_viewport_info(swap_chain.get_swap_chain_extent())
+            .create_shaders_info(std::array{
+                    mountain::shader{SHADER_FOLDER / "trianglevert.spv", vk::ShaderStageFlagBits::eVertex},
+                    mountain::shader{SHADER_FOLDER / "trianglefrag.spv", vk::ShaderStageFlagBits::eFragment}
+            })
+            .create_depth_stencil_state(depth_stencil)
+            .create_pipeline_layout(layouts, push_vertex)
+            .define_subpass(mountain::SubPass{&render_pass, 0})
+            .build();
+
+    CommandBufferRecord record{
+            .buffer = vertex_buffer,
+            .pipeline = pipeline};
+
     mountain::CommandBuffer init(
             context,
             swap_chain,
             render_pass, 2);
-	init.allocate_descriptor_set(std::move(layouts));
+
+
+    init.allocate_descriptor_set(std::move(layouts));
     mountain::buffer::uniform<VP> uniform_vp(context, swap_chain.get_swap_chain_image_views().size());
 
     init.update_descriptor_set(0, 2, uniform_vp);
 
     init.update_descriptor_set(0, 1, viking_image, sampler);
-    move_rectangle move{init,
-                        {vertex_buffers[0], pipeline,
-                         {{{}}}
-                        }
-    };
 
     glfwSetKeyCallback(context.get_window().get_window(), key_callback);
 
-    glfwSetWindowUserPointer(context.get_window().get_window(), &move);
-
-    init.init(move.obj);
-
+    init.record(record());
     std::vector<mountain::buffer::uniform_updater> updaters;
     updaters.emplace_back(uniform_vp.get_uniform_updater(create_vp_matrix(width, height)));
     while (!glfwWindowShouldClose(context.get_window().get_window())) {
         glfwPollEvents();
         init.drawFrame(std::move(updaters));
-        move.rotate();
     }
     vkDeviceWaitIdle(context.get_device());
 
