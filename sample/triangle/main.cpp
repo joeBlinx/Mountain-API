@@ -8,6 +8,7 @@
 #include "mountain/graphics_pipeline.h"
 #include "mountain/command_buffer.h"
 #include <thread>
+#include <mountain/pipeline_builder.h>
 #include "ressource_paths.h"
 #include "GLFW/glfw3.h"
 
@@ -17,7 +18,7 @@ void key_callback(GLFWwindow* window, int key, int , int action, int)
         glfwSetWindowShouldClose(window, true);
     }
 }
-std::vector<mountain::buffer::vertex> create_vertex(mountain::Context const& context){
+mountain::buffer::vertex create_vertex(mountain::Context const& context){
     struct Vertex{
         glm::vec2 pos; // location 0
         glm::vec3 color; // location 1
@@ -38,16 +39,20 @@ std::vector<mountain::buffer::vertex> create_vertex(mountain::Context const& con
             Vertex{{0.25f, 0.f}, {0.0f, 0.f, 1.f}} // 3
     };
     std::array<uint32_t, 3> constexpr indices{0, 1, 2};
-    std::vector<mountain::buffer::vertex> buffers;
-    buffers.emplace_back(
-            mountain::buffer::vertex{context,
-                                     mountain::buffer::vertex_description(0,
-                                                                          0,
+    return mountain::buffer::vertex{context,
+                                    mountain::buffer::vertex_description(0,
+                                                                         0,
                                                                          Vertex::get_description()),
-                                     vertices,
-                                     indices}
-    );
-    return buffers;
+                                    vertices,
+                                    indices};
+}
+vk::SubpassDependency create_subpassdependency(){
+    vk::SubpassDependency dependency{};
+    dependency.srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+    dependency.srcAccessMask = static_cast<vk::AccessFlagBits>(0);
+    dependency.dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+    dependency.dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite;
+    return dependency;
 }
 int main(){
 
@@ -61,10 +66,10 @@ int main(){
     mountain::Context const context{window,
                     devicesExtension};
 
-    using mountain::subpass_attachment;
     mountain::RenderPass const render_pass{
             context,
-            mountain::SubPass{subpass_attachment::COLOR}
+            {mountain::RenderPass::COLOR},
+            {create_subpassdependency()}
     };
 
     mountain::SwapChain const swap_chain{
@@ -74,27 +79,45 @@ int main(){
             height
     };
 
-    std::vector<mountain::buffer::vertex> const buffers = create_vertex(context);
+    auto const buffer = create_vertex(context);
+    auto const depth_stencil = []{
+        vk::PipelineDepthStencilStateCreateInfo info{};
+        info.depthTestEnable = VK_FALSE;
+        info.stencilTestEnable = VK_FALSE;
+        return info;
+    }();
+    mountain::GraphicsPipeline const pipeline = mountain::PipelineBuilder(context)
+            .create_assembly(vk::PrimitiveTopology::eTriangleList)
+            .create_rasterizer(vk::PolygonMode::eFill)
+            .create_mutlisampling()
+            .create_color_blend_state()
+            .create_vertex_info(buffer)
+            .create_viewport_info(swap_chain.get_swap_chain_extent())
+            .create_shaders_info(std::array{
+                    mountain::shader{SHADER_FOLDER / "trianglevert.spv", vk::ShaderStageFlagBits::eVertex},
+                    mountain::shader{SHADER_FOLDER / "trianglefrag.spv", vk::ShaderStageFlagBits::eFragment}
+            })
+            .create_depth_stencil_state(depth_stencil)
+            .create_pipeline_layout({})
+            .define_subpass(mountain::SubPass{&render_pass, 0})
+            .build();
 
-    mountain::GraphicsPipeline const pipeline(context,
-                              swap_chain,
-                              render_pass,
-                              std::array{
-                                      mountain::shader{SHADER_FOLDER / "trianglevert.spv", vk::ShaderStageFlagBits::eVertex},
-                                      mountain::shader{SHADER_FOLDER / "trianglefrag.spv", vk::ShaderStageFlagBits::eFragment}
-                              },
-                              buffers);
     mountain::CommandBuffer command_buffer(
             context,
             swap_chain,
             render_pass);
 
+    command_buffer.record([&](mountain::CommandBuffer const& command_buffer, std::size_t const index){
+       auto const& command = command_buffer.get_command_buffer(index);
+       vk::DeviceSize constexpr size{0};
+       command.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline.get_pipeline());
+       command.bindVertexBuffers(0, 1, &buffer.get_buffer(), &size);
+       command.bindIndexBuffer(buffer.get_buffer(), buffer.get_indices_offset(), vk::IndexType::eUint32);
+       command.drawIndexed(buffer.get_indices_count(), 1, 0, 0, 0);
+    });
+
     glfwSetKeyCallback(context.get_window().get_window(), key_callback);
-    struct no_uni{};
-    mountain::PipelineData<no_uni> object{
-        buffers[0], pipeline, {}
-    };
-    command_buffer.init(object);
+
     using namespace std::chrono_literals;
     while (!glfwWindowShouldClose(context.get_window().get_window())) {
         glfwPollEvents();
