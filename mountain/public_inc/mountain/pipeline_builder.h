@@ -26,7 +26,7 @@ namespace mountain{
         MOUNTAINAPI_EXPORT PipelineBuilder& define_subpass(SubPass const& subpass);
 
         template<class ...PushConstantType>
-        MOUNTAINAPI_EXPORT PipelineBuilder& create_pipeline_layout(std::span<vk::DescriptorSetLayout const> const& descriptor_layout,
+        MOUNTAINAPI_EXPORT PipelineBuilder& create_pipeline_layout(std::span<vk::DescriptorSetLayout const> const descriptor_layout,
                                                 PushConstant<PushConstantType> const& ...push_constant);
 
         MOUNTAINAPI_EXPORT GraphicsPipeline build();
@@ -59,7 +59,7 @@ namespace mountain{
 
     template<class... PushConstantType>
     PipelineBuilder &
-    PipelineBuilder::create_pipeline_layout(const std::span<vk::DescriptorSetLayout const> &descriptor_layout,
+    PipelineBuilder::create_pipeline_layout(const std::span<vk::DescriptorSetLayout const> descriptor_layout,
                                             const PushConstant <PushConstantType> &... push_constant) {
         uint32_t offset = 0;
         auto create_push_constant_ranges = [&offset]<class T>(PushConstant<T> const &push_constant) mutable {
