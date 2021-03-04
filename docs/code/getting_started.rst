@@ -91,16 +91,21 @@ First we have to create our render pass (for now, Mountain=API only one subpass 
 
     #include "mountain/render_pass.h"
     ...
-    using mountain::subpass_attachment;
+    vk::SubpassDependency dependency{};
+    dependency.srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+    dependency.srcAccessMask = static_cast<vk::AccessFlagBits>(0);
+    dependency.dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput |vk::PipelineStageFlagBits::eEarlyFragmentTests;
+    dependency.dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite |vk::AccessFlagBits::eDepthStencilAttachmentWrite;
     mountain::RenderPass const render_pass{
                                 context,
-                                mountain::SubPassAttachment{subpass_attachment::COLOR}
+                                {mountain::RenderPass::COLOR},
+                                {dependency}
         };
     using namespace std::chrono_literals;
     ...
 
-The ``using`` declaration is too avoid typing ``mountain::subpass_attachment::COLOR`` because it's a bit long. For creating our render pass, we first pass our context. Since Vulkan is an agnostic=API, all of Mountain=API classes will require the context before use.
-The second parameter is a ``mountain::SubPassAttachment`` where we pass which sor of attachment we want. For now we only want ``COLOR`` so that's what we pass. But we can pass ``DEPTH`` or ``STENCIL`` or both in the second parameter of ``mountain::SubPassAttachment``.
+For creating our render pass, we first pass our context. Since Vulkan is an agnostic=API, all of Mountain=API classes will require the context before use.
+The second parameter is an array of ``unsigned`` flags. 3 flags are available ``COLOR, DEPTH, STENCIL`` where we pass which sort of attachment we want. For now we only want ``COLOR`` so that's what we pass. But we can pass ``DEPTH`` or ``STENCIL``. The second parameter is an array of ``vk::SubpassDependency`` which describe the dependencies between subpass.
 
 Create Swapchain
 ----------------
@@ -234,7 +239,7 @@ The class for that is ``mountain::buffer::vertex``.
                             mountain::buffer::vertex_description(
                                 0,
                                 0,
-                                CLASS_DESCRIPTION(Vertex, pos, color)),
+                                mountain::get_format_offsets(&Vertex::pos, &Vertex::color)),
                             vertices,
                             indices};
 
@@ -244,60 +249,44 @@ There is a lot of thing in here, I will explain all. A ``mountain::buffer::verte
 
 * The second parameter is ``layout_start_from``, it specified which layout we want for our first structure attribute, here ``pos``, we specified ``0`` in the shader so we put a ``0``.
 
-* The last is an array of attribute description, we don't fill this by hand but instead we use a macro ``CLASS_DESCRIPTION``. This is a variadic macro, the first argument is the structure name and after we specified all the attribute. Here we specified ``pos`` and ``color``. **Note** : the order of the attribute has no impact for the program.
+* The last is an array of attribute description, we don't fill this by hand but instead we use a template class ``mountain::get_format_offsets``. The arguments are member pointer to the attribute we need. **Note** : the order of the attribute has no impact for the program.
 
 The Pipeline
 ************
 
-At last, we can create our pipeline, .... almost :). We've got our vertex buffer but ``mountain::GraphicsPipeline`` take a ``std::vector`` of vertex buffers so, put it into one. (for now, ``Mountain=API`` will only support one buffer...
+At last, we can create our pipeline. For that we need to use the Pipeline Builder.
 
 .. code-block:: cpp
 
-    std::vector vertex_buffers{vertex_buffer};
+    auto const depth_stencil = [] {
+        vk::PipelineDepthStencilStateCreateInfo info{};
+        info.depthTestEnable = VK_FALSE;
+        info.stencilTestEnable = VK_FALSE;
+        return info;
+    }(); // We have no depth or stencil and render pass so we disable the test
+    mountain::GraphicsPipeline const back_pipeline = mountain::PipelineBuilder(context)
+            .create_color_blend_state()
+            .create_mutlisampling()
+            .create_rasterizer(vk::PolygonMode::eFill)
+            .create_assembly(vk::PrimitiveTopology::eTriangleList)
+            .create_viewport_info(swap_chain.get_swap_chain_extent())
+            .create_vertex_info(vertex_buffer)
+            .create_depth_stencil_state(depth_stencil)
+            .define_subpass(mountain::SubPass{&render_pass, 0})
+            .create_shaders_info(shaders)
+            .create_pipeline_layout({})
+            .build();
 
-You'll notice soon enough that this code doesn't compile because the ``copy constructor/operator`` for ``mountain::buffer::vertex`` are deleted. We have to use ``std::move`` or construct our vertex in place (directly in the vector)
+All of this function are mandatory to create the graphics pipeline.
 
-.. code-block:: cpp
-
-    std::vector<mountain::vertex::buffer> vertex_buffers;
-    //do this
-    vertex_buffers.emplace_back(std::move(vertex_buffer));
-    // or
-    vertex_buffers.emplace_back(
-                        mountain::buffer::vertex vertex_buffer{
-                            context,
-                            mountain::buffer::vertex_description(
-                                0,
-                                0,
-                                CLASS_DESCRIPTION(Vertex, pos, color)),
-                            vertices,
-                            indices};
-    );
-    // or better
-    auto const vertex_buffers = [&]{
-        std::vector<mountain::vertex::buffer> vertex_buffers;
-        vertex_buffers.emplace_back(
-                        mountain::buffer::vertex vertex_buffer{
-                            context,
-                            mountain::buffer::vertex_description(
-                                0,
-                                0,
-                                CLASS_DESCRIPTION(Vertex, pos, color)),
-                            vertices,
-                            indices};
-    }();
-
-And now we can officially create the pipeline
-
-.. code-block:: cpp
-
-    mountain::GraphicsPipeline const pipeline(context,
-                                              swap_chain,
-                                              render_pass,
-                                              shaders,
-                                              buffers);
-
-The parameters speak for them selves so I pass that.
+* ``create_rasterizer`` take one parameter a ``vk::PolygonMode`` which describe how to rasterize triangle
+* ``create_assembly`` take a ``vk::PrimitiveTopology`` which describe how to vertices are assemble
+* ``create_viewport_info`` take always ``swap_chain.get_swap_chain_extent()``
+* ``create_vertex_info`` take a vertex buffer as input
+* ``create_depth_stencil_state`` take a ``vk::PipelineDepthStencilStateCreateInfo`` which describe the depth and the stencil test
+* ``define_subpass`` take a ``mountain::Subpass`` as parameter. A subpass contains a pointer to the renderpass and an index to specify which subpass will be use
+* ``create_shaders_info`` take an array of ``mountain::shader``
+* ``create_pipeline_layout`` you can ignore that for now
 
 Command Buffers
 ---------------
@@ -313,20 +302,21 @@ Begin with the creation, no big deal with that.
         context, swap_chain, render_pass
     };
 
-The initialisation is more interesting. The member=function ``init`` take one parameter, a ``mountain::PipelineData<T>``. A pipeline data contains simply the information about the object we want to render.
-
-* First it hold a reference to the vertex_buffer we want to use. Here it is ``vertex_buffers[0]``.
-
-* The pipeline we want to use, Here it's ``pipeline``.
-
-* The third and the most interesting is a ``std::vector`` of ``T``. Where T is a structure that hold ``push constant`` values (we'll talk about this later). The interesting part is that this vector will determine the number of object render with this buffer. Here we just want one triangle and no push constant. We proceed as follow
+The initialisation is more interesting. The member-function ``record`` take one parameter, a functor that take two parameters ``mountain::CommandBuffer const&`` and ``std::size const``. This function will contain the drawing command. Some Vulkan stuff are already handle by the record function like ``beginRenderPass`` or all that is related with command buffer handling. In the function that we pass, we handle the drawing things not the clean, or other things.
 
 .. code-block:: cpp
 
-    struct no_push{}; // empty struct for non push constant
-    mountain::PipelineData<no_push> objects{
-                buffers[0], pipeline, {{}} }; //one element in our vector so on triangle
-    command_buffer.init(objects); // init our command buffer.
+    command_buffer.record([&](mountain::CommandBuffer const& command_buffer, std::size_t const index){
+       auto const& command = command_buffer.get_command_buffer(index);
+       vk::DeviceSize constexpr size{0};
+       command.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline.get_pipeline());
+       command.bindVertexBuffers(0, 1, &buffer.get_buffer(), &size);
+       command.bindIndexBuffer(buffer.get_buffer(), buffer.get_indices_offset(), vk::IndexType::eUint32);
+       command.drawIndexed(buffer.get_indices_count(), 1, 0, 0, 0);
+    });
+
+I will only explain the first line because the rest is just basic vulkan stuff. When we create a command buffer object, we create multiple vulkan command buffer, one for each image in the swapchain. The index in parameter is the index of the command buffer we have to use. We retrieve the vulkan command buffer by calling ``get_command_buffer`` which return a ``vk::CommandBuffer const&``.
+
 
 Let's Draw It
 -------------
