@@ -50,22 +50,38 @@ namespace mountain {
                       int nb_uniform = 0);
 
         /**
-         * Create vulkan command buffer
          *
-         * @tparam PushConstantType: type of push constant to use in shader
-         * @param pipeline_data: contains data for rendering a vertex buffer
+         * @tparam Function: type of the function
+         * @param record_function: function that take two parameters a CommandBuffer const& and std::size_t const
+         *
+         * This parameter will contain a function that implement the drawing logic like bind Vertex buffer, bind Index buffer,
+         * drawing command etc..
+         *
+         * the std::size_t const parameter of the passed function is use to retrieve a vuilkan command buffer. It's an index
+         * of the command buffer currently used
          */
-        template<class PushConstantType>
-        void init(PipelineData<PushConstantType> const &pipeline_data);
+        template <class Function>
+        void record(Function&& record_function)
+        requires std::is_invocable_v<Function, CommandBuffer const&, std::size_t const>;
 
-        template <class T>
-        void record(T&& record_function)
-        requires std::is_invocable_v<T, CommandBuffer const&, std::size_t const>;
-
+        /**
+         *
+         * @param i: the index we want
+         * @return The ith vulkan command buffer
+         */
         MOUNTAINAPI_EXPORT vk::CommandBuffer const& get_command_buffer(std::size_t const i)const{return _commandBuffers[i];}
+
+        /**
+         * @deprecated this method will surely be removed at one point
+         * To bind a descriptor set we need several things like the a pointer to descriptor and a size to determine how many
+         * descriptor we will bind. This function provide this two things for the ith image of swapchain
+         * @param i: the index we want
+         * @return a pair that contain a pointer to descriptor set and the number of descriptor set to bind
+         */
         MOUNTAINAPI_EXPORT std::pair<vk::DescriptorSet const*, std::uint32_t>
         get_descriptor_set_size(std::size_t const i) const{
             return {&_descriptor_sets[i * _nb_descriptor_set_by_image], _nb_descriptor_set_by_image};}
+
         /**
          *  Allocate the number of descriptor set layout we need, the size of vector parameter X the number of image in swap chain
          * @param descriptor_set_layouts
@@ -138,71 +154,6 @@ namespace mountain {
 
 
     };
-
-
-    template<class T>
-    void CommandBuffer::init(PipelineData<T> const &pipeline_data) {
-        for (size_t i = 0; i < _commandBuffers.size(); i++) {
-            VkCommandBufferBeginInfo beginInfo = {};
-            beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-            beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-            beginInfo.pInheritanceInfo = nullptr; // Optional
-
-            checkError(vkBeginCommandBuffer(_commandBuffers[i], &beginInfo),
-                       "failed to begin recording command buffer!");
-            /* may be can be put into a function */
-            VkRenderPassBeginInfo renderPassInfo{};
-            renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-            renderPassInfo.renderPass = _renderpass.get_renderpass();
-            renderPassInfo.framebuffer = _swapchainFrameBuffer[i];
-
-            renderPassInfo.renderArea.offset = {0, 0};
-            renderPassInfo.renderArea.extent = _swapChainExtent;
-
-            std::vector<VkClearValue> clear_color{
-                    {.color{{0.5f, 0.5f, 0.5f, 1.0f}}}
-            };
-            if (_renderpass.has_depth()) {
-                clear_color.emplace_back(
-                        VkClearValue{.depthStencil {1.f, 0}});
-            }
-            renderPassInfo.clearValueCount = static_cast<uint32_t>(std::size(clear_color));
-            renderPassInfo.pClearValues = clear_color.data();
-
-            vkCmdBeginRenderPass(_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-            vkCmdBindPipeline(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS,
-                              pipeline_data.graphics_pipeline.get_pipeline()); // bind the pipeline
-            auto &vertex_buffer = pipeline_data.vertices;
-//        for(auto const& vertex_buffer : buffers){
-            _commandBuffers[i].bindVertexBuffers(0, 1, &vertex_buffer.get_buffer(),
-                                                 std::vector<vk::DeviceSize>{0}.data());
-            _commandBuffers[i].bindIndexBuffer(vertex_buffer.get_buffer(), vertex_buffer.get_indices_offset(),
-                                               vk::IndexType::eUint32);
-            if (!_descriptor_sets.empty()) {
-                _commandBuffers[i].bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                                      pipeline_data.graphics_pipeline.get_pipeline_layout(),
-                                                      0, _nb_descriptor_set_by_image,
-                                                      &_descriptor_sets[i * _nb_descriptor_set_by_image], 0, nullptr);
-            }
-            for (auto const &value: pipeline_data.push_constant_values) {
-                for (auto const &push_constant_range : pipeline_data.graphics_pipeline.get_push_constant_ranges()) {
-                    _commandBuffers[i].pushConstants(pipeline_data.graphics_pipeline.get_pipeline_layout(),
-                                                     push_constant_range.stageFlags, push_constant_range.offset,
-                                                     push_constant_range.size,
-                                                     (reinterpret_cast<std::byte const *>(&value) +
-                                                      push_constant_range.offset));
-                }
-            }
-            vkCmdDrawIndexed(_commandBuffers[i], vertex_buffer.get_indices_count(), 1, 0, 0, 0); // draw buffer
-//        }
-            _commandBuffers[i].nextSubpass(vk::SubpassContents::eInline);
-            vkCmdEndRenderPass(_commandBuffers[i]);
-            checkError(vkEndCommandBuffer(_commandBuffers[i]),
-                       "failed to record command buffer!");
-
-        }
-
-    }
 
     template<class T>
     void CommandBuffer::update_descriptor_set(int first_descriptor_set_index, int binding,
