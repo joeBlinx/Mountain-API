@@ -43,7 +43,7 @@ int main() {
         return info;
     }();
     mountain::PushConstant<glm::mat4> vertex_push_constant{vk::ShaderStageFlagBits::eVertex};
-    mountain::GraphicsPipeline back_pipeline = mountain::PipelineBuilder(context)
+    mountain::GraphicsPipeline const back_pipeline = mountain::PipelineBuilder(context)
             .create_color_blend_state()
             .create_mutlisampling()
             .create_rasterizer(vk::PolygonMode::eFill)
