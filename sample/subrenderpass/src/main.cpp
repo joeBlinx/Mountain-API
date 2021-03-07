@@ -1,5 +1,5 @@
 #include "mountain/context.h"
-#include "constant.h"
+#include "common/constant.h"
 #include "mountain/render_pass.h"
 #include "mountain/swapChain.h"
 #include "init.h"
@@ -19,7 +19,7 @@ void key_callback(GLFWwindow *window, int key, int, int action, int) {
 
 int main() {
     mountain::Window const window{"Subrendpass sample", constant::width, constant::height};
-    mountain::Context const context{window, constant::devicesExtension};
+    mountain::Context const context(window, constant::devicesExtension);
 
     mountain::RenderPass const render_pass{context,
                                            {mountain::RenderPass::COLOR | mountain::RenderPass::DEPTH,
