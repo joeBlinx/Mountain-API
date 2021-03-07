@@ -13,44 +13,12 @@
 #include "ressource_paths.h"
 #include "GLFW/glfw3.h"
 #include "glm/gtx/transform.hpp"
-
+#include "common/init.h"
 void key_callback(GLFWwindow* window, int key, int , int action, int)
 {
     if(key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE){
         glfwSetWindowShouldClose(window, true);
     }
-}
-mountain::buffer::vertex create_buffers(mountain::Context const& context){
-    struct Vertex{
-        glm::vec2 pos; // location 0
-        glm::vec2 uv; // location 1
-        static auto get_description() {
-            return mountain::get_format_offsets(&Vertex::pos, &Vertex::uv);
-        }
-    };
-    /* This is a triangle that will be shown
-     *                 0       1
-     *                 |------|
-     *                 |      |
-     *                 |      |
-     *                 |      |
-     *               2 |______|3
-     */
-    std::array constexpr vertices{
-            Vertex{{-0.5f, -0.5f}, {0.0f, 0.f}}, // 0
-            Vertex{{0.5f, -0.5f}, {1.0f, 0.f}},// 1
-            Vertex{{-0.5f, 0.5f}, {0.0f, 1.f}},// 2
-            Vertex{{0.5f, 0.5f}, {1.0f, 1.f}} // 3
-    };
-    std::array<uint32_t, 6> constexpr indices{0, 1, 2, 1, 2, 3};
-    std::vector<mountain::buffer::vertex> buffers;
-
-    return mountain::buffer::vertex{context,
-                                    mountain::buffer::vertex_description(0,
-                                                                         0,
-                                                                         Vertex::get_description()),
-                                    vertices,
-                                    indices};
 }
 
 struct CommandBufferRecord{
@@ -103,7 +71,7 @@ int main(){
             height
     };
 
-    auto const buffer = create_buffers(context);
+    auto const buffer = create_quad_buffers_with_uv(context);
 
     auto const layout_image = mountain::descriptorset_layout::create_descriptor_image_sampler(0, vk::ShaderStageFlagBits::eFragment);
     auto const descriptor_set = mountain::descriptorset_layout::create_descriptorset_layout(context, {layout_image});

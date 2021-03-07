@@ -28,7 +28,7 @@ void key_callback(GLFWwindow* window, int key, int , int action, int)
         glfwSetWindowShouldClose(window, true);
     }
 }
-mountain::buffer::vertex create_buffers(mountain::Context const& context){
+mountain::buffer::vertex create_quad_buffers_with_uv(mountain::Context const& context){
 
     auto [vertices_3d, indices_3d] = mountain::model::load_obj(std::filesystem::path(ASSETS_FOLDER /                                                                             "model/viking_room.obj"));
     return mountain::buffer::vertex(context,
@@ -106,7 +106,7 @@ int main() {
             height
     };
 
-    auto const vertex_buffer = create_buffers(context);
+    auto const vertex_buffer = create_quad_buffers_with_uv(context);
 
     mountain::PushConstant<Model> const push_vertex{
 		vk::ShaderStageFlagBits::eVertex
