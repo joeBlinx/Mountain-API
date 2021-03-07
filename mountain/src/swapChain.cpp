@@ -105,7 +105,7 @@ namespace mountain {
             : _context(context) {
         create_swap_chain(context, width, height);
         create_image_views();
-        if (render_pass.has_depth()) {
+        if (render_pass.has_depth_or_stencil()) {
             create_depth_resources();
         }
         create_frame_buffer(render_pass);
@@ -150,7 +150,7 @@ namespace mountain {
             std::vector<vk::ImageView> attachments{
                     *_swap_chain_image_views[i]
             };
-            if (render_pass.has_depth()) {
+            if (render_pass.has_depth_or_stencil()) {
                 attachments.emplace_back(*_depth_image_view);
             }
 

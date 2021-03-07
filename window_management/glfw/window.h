@@ -33,6 +33,8 @@ namespace mountain {
 
         MOUNTAINAPI_EXPORT std::string_view get_title() const { return _title; }
 
+        [[nodiscard]] MOUNTAINAPI_EXPORT bool window_should_close() const;
+
         MOUNTAINAPI_EXPORT ~Window();
 
     private:

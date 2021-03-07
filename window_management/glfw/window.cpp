@@ -44,6 +44,11 @@ namespace mountain {
     GLFWwindow *Window::get_window() const {
         return _window;
     }
+
+    bool Window::window_should_close() const {
+        return glfwWindowShouldClose(_window);
+    }
+
     VkResult create_window_surface(VkInstance instance,
                                    Window const &handle,
                                    const VkAllocationCallbacks *allocator,
