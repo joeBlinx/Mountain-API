@@ -216,7 +216,7 @@ namespace mountain {
                             vk::ClearColorValue{
                                 std::array{0.5f, 0.5f, 0.5f, 1.0f}})
             };
-            if (_renderpass.has_depth()) {
+            if (_renderpass.has_depth_or_stencil()) {
                 clear_color.emplace_back(
                         vk::ClearValue{{1.f, 0}});
             }

@@ -38,7 +38,6 @@ function(compile_shaders target)
             message("Creating custom target ${target}_build_${shader_name}")
             add_custom_target(${target}_build_${shader_name} ALL
                     ${spriv_compiler} -V ${_shader_path} -o ${_output_dir}/${shader_without_extension}${shader_extension}.spv #compile shader
-
                     )
             add_dependencies(${target} ${target}_build_${shader_name})
             set_target_properties(${target}_build_${shader_name} PROPERTIES FOLDER "Samples/${target}/shaders")

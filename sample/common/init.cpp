@@ -23,12 +23,12 @@ mountain::buffer::vertex create_quad_buffers_with_uv(mountain::Context const& co
      *               2 |______|3
      */
     std::array constexpr vertices{
-            Vertex{{-0.5f, -0.5f}, {0.0f, 0.f}}, // 0
-            Vertex{{0.5f, -0.5f}, {1.0f, 0.f}},// 1
-            Vertex{{-0.5f, 0.5f}, {0.0f, 1.f}},// 2
-            Vertex{{0.5f, 0.5f}, {1.0f, 1.f}} // 3
+            Vertex{{-1.f, -1.f}, {0.0f, 0.f}}, // 0
+            Vertex{{1.f, -1.f}, {1.0f, 0.f}},// 1
+            Vertex{{-1.f, 1.f}, {0.0f, 1.f}},// 2
+            Vertex{{1.f, 1.f}, {1.0f, 1.f}} // 3
     };
-    std::array<uint32_t, 6> constexpr indices{0, 1, 2, 1, 2, 3};
+    std::array<uint32_t, 6> constexpr indices{2, 1, 0, 1, 2, 3};
     std::vector<mountain::buffer::vertex> buffers;
 
     return mountain::buffer::vertex{context,

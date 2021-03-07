@@ -43,7 +43,9 @@ namespace mountain {
         /**
          * @return true if renderpass will use depth
          */
-        MOUNTAINAPI_EXPORT bool has_depth() const { return RenderPass::DEPTH & _color_depth_stencil; }
+        [[nodiscard]]
+        MOUNTAINAPI_EXPORT
+        bool has_depth_or_stencil() const { return (RenderPass::DEPTH | RenderPass::STENCIL) & _color_depth_stencil; }
 
         /**
          * Deleted copy operation

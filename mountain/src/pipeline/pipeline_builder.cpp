@@ -101,7 +101,7 @@ namespace mountain{
         pipelineInfo.pRasterizationState = &_rasterizer;
         pipelineInfo.pMultisampleState = &_multisampling;
         auto const& render_pass = _subpass.renderpass;
-        pipelineInfo.pDepthStencilState = render_pass->has_depth()? &_depth_stencil : nullptr;
+        pipelineInfo.pDepthStencilState = render_pass->has_depth_or_stencil() ? &_depth_stencil : nullptr;
         pipelineInfo.pColorBlendState = &_color_blend_sate;
 
         pipelineInfo.layout = *_pipeline._pipeline_layout;
