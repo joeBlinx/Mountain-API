@@ -7,7 +7,7 @@
 namespace constant{
     constexpr int width = 1366;
     constexpr int height = 768;
-    static std::vector<const char*> const devicesExtension{
+        static std::vector<const char*> const devicesExtension{
             VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
 

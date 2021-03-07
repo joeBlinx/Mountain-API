@@ -9,7 +9,7 @@ foreach(sample IN ITEMS ${_samples})
     set(ASSETS_FOLDER ${CMAKE_SOURCE_DIR}/assets)
     configure_file(ressource_paths.h ${CMAKE_CURRENT_BINARY_DIR}/${sample}/ressource_paths.h @ONLY)
     add_subdirectory(${sample})
-    target_include_directories(${sample} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/${sample})
+    target_include_directories(${sample} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/${sample} ./)
     target_link_libraries(${sample} PRIVATE common::target)
     set_target_properties(${sample} PROPERTIES FOLDER "Samples/${sample}")
 
