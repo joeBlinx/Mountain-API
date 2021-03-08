@@ -3,7 +3,7 @@ find_library(
         NAME MountainAPI
         PATHS ${CMAKE_CURRENT_LIST_DIR}/bin
 )
-if(${_mountainapi_bin} NOT STREQUAL "_mountainapi_bin-NOTFOUND")
+if(NOT ${_mountainapi_bin} STREQUAL "_mountainapi_bin-NOTFOUND")
     add_library(MountainAPI SHARED IMPORTED GLOBAL)
     add_library(Mountain::API ALIAS MountainAPI)
 
