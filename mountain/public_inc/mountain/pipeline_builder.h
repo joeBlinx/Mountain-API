@@ -19,58 +19,76 @@ namespace mountain{
             MOUNTAINAPI_EXPORT PipelineBuilder &
             create_pipeline_layout(std::span<vk::DescriptorSetLayout const> const descriptor_layout,
                                    PushConstant<PushConstantType> const &...push_constant);
+            Subpass(PipelineBuilder& builder):_builder(builder){}
+        private:
             PipelineBuilder &_builder;
         };
 
         struct MultiSampling {
             MOUNTAINAPI_EXPORT Subpass define_subpass(SubPass const &subpass);
+            MultiSampling(PipelineBuilder& builder):_builder(builder){}
+        private:
             PipelineBuilder &_builder;
         };
 
         struct Vertex {
             MOUNTAINAPI_EXPORT MultiSampling create_mutlisampling();
+            Vertex(PipelineBuilder& builder):_builder(builder){}
+        private:
             PipelineBuilder &_builder;
         };
 
         struct Shaders {
             MOUNTAINAPI_EXPORT Vertex create_vertex_info(const buffer::vertex &vertex_buffer);
+            Shaders(PipelineBuilder& builder):_builder(builder){}
+        private:
             PipelineBuilder &_builder;
         };
 
         struct ColorBlendState {
             MOUNTAINAPI_EXPORT Shaders create_shaders_info(std::span<const shader> const shaders);
+            ColorBlendState(PipelineBuilder& builder):_builder(builder){}
+        private:
             PipelineBuilder &_builder;
         };
 
         struct DepthStencil {
             MOUNTAINAPI_EXPORT ColorBlendState create_color_blend_state();
+            DepthStencil(PipelineBuilder& builder):_builder(builder){}
+        private:
             PipelineBuilder &_builder;
         };
 
         struct Viewport {
             MOUNTAINAPI_EXPORT DepthStencil
             create_depth_stencil_state(vk::PipelineDepthStencilStateCreateInfo const &depth_stencil);
+            Viewport(PipelineBuilder& builder):_builder(builder){}
+        private:
             PipelineBuilder &_builder;
         };
 
         struct Rasterizer {
             MOUNTAINAPI_EXPORT Viewport create_viewport_info(vk::Extent2D const &extent);
+            Rasterizer(PipelineBuilder& builder):_builder(builder){}
+        private:
             PipelineBuilder &_builder;
         };
 
         struct Assembly {
             MOUNTAINAPI_EXPORT Rasterizer create_rasterizer(vk::PolygonMode const polygon_mode);
+            Assembly(PipelineBuilder& builder):_builder(builder){}
+      private:
             PipelineBuilder &_builder;
         };
 
-        MOUNTAINAPI_EXPORT PipelineBuilder& create_viewport_info(vk::Extent2D const& extent);
-        MOUNTAINAPI_EXPORT PipelineBuilder& create_depth_stencil_state(vk::PipelineDepthStencilStateCreateInfo const& depth_stencil);
-        MOUNTAINAPI_EXPORT PipelineBuilder& create_color_blend_state();
-        MOUNTAINAPI_EXPORT PipelineBuilder& create_shaders_info(std::span<const shader> const shaders);
-        MOUNTAINAPI_EXPORT PipelineBuilder& create_vertex_info(const buffer::vertex &vertex_buffer);
-        MOUNTAINAPI_EXPORT PipelineBuilder& create_rasterizer(vk::PolygonMode const polygon_mode);
-        MOUNTAINAPI_EXPORT PipelineBuilder& create_mutlisampling();
-        MOUNTAINAPI_EXPORT PipelineBuilder& define_subpass(SubPass const& subpass);
+        PipelineBuilder& create_viewport_info(vk::Extent2D const& extent);
+        PipelineBuilder& create_depth_stencil_state(vk::PipelineDepthStencilStateCreateInfo const& depth_stencil);
+        PipelineBuilder& create_color_blend_state();
+        PipelineBuilder& create_shaders_info(std::span<const shader> const shaders);
+        PipelineBuilder& create_vertex_info(const buffer::vertex &vertex_buffer);
+        PipelineBuilder& create_rasterizer(vk::PolygonMode const polygon_mode);
+        PipelineBuilder& create_mutlisampling();
+        PipelineBuilder& define_subpass(SubPass const& subpass);
 
         template<class ...PushConstantType>
         MOUNTAINAPI_EXPORT PipelineBuilder& create_pipeline_layout(std::span<vk::DescriptorSetLayout const> const descriptor_layout,
@@ -109,7 +127,7 @@ namespace mountain{
     PipelineBuilder &
     PipelineBuilder::Subpass::create_pipeline_layout(const std::span<const vk::DescriptorSetLayout> descriptor_layout,
                                                      const PushConstant<PushConstantType> &... push_constant) {
-        _builder.template create_pipeline_layout(descriptor_layout, push_constant...);
+        _builder.create_pipeline_layout(descriptor_layout, push_constant...);
         return _builder;
     }
 
