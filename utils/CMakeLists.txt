@@ -20,8 +20,19 @@ target_include_directories(utils PRIVATE inc/utils PUBLIC inc/)
 target_link_libraries(utils PUBLIC Vulkan::Vulkan common::target)
 
 set_target_properties(utils PROPERTIES
-		POSITION_INDEPENDENT_CODE ON)
+		POSITION_INDEPENDENT_CODE ON
+		PUBLIC_HEADER ${_headers})
 
 target_sources(utils PRIVATE ${_srcs}
 					INTERFACE ${_headers}
 				)
+target_link_libraries(utils
+		PUBLIC
+			Mountain::ExportFile
+		PRIVATE
+			Mountain::ExportDefinition)
+install(
+		TARGETS utils
+		CONFIGURATIONS Release Debug RelWithDebInfo
+		PUBLIC_HEADER DESTINATION include/utils
+)

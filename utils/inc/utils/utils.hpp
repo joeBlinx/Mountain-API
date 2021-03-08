@@ -4,6 +4,8 @@
 #include <vector>
 #include <iostream>
 #include <stdexcept>
+#include "mountain/mountainapi_export.h"
+
 namespace utils {
 #ifdef NDEBUG
 	constexpr bool debug = false;
@@ -40,7 +42,7 @@ namespace utils {
 			((std::cout << std::forward<Ts>(args) << " "), ...) << std::endl;
 		}
 	}
-	std::vector<char> readFile(std::string const & file_path);
+	MOUNTAINAPI_EXPORT std::vector<char> readFile(std::string const & file_path);
 }
 
 #endif
