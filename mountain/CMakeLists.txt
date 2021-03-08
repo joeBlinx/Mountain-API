@@ -82,6 +82,7 @@ set_sources(_public_headers
 				sampler.h
 				load_model.h
 				no_sanitize.h
+				subpass.h
 			)
 set(_public_headers ${_public_headers} ${CMAKE_CURRENT_BINARY_DIR}/mountainapi_export.h)
 
