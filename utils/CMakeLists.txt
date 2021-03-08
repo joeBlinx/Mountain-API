@@ -13,7 +13,8 @@ set_sources(_headers
 			FILES 
 				log.hpp
 				utils.hpp
-				type_trait.hpp)
+				type_trait.hpp
+				raii_helper.h)
 
 set_common_properties(utils)
 target_include_directories(utils PRIVATE inc/utils PUBLIC inc/)				
@@ -21,7 +22,7 @@ target_link_libraries(utils PUBLIC Vulkan::Vulkan common::target)
 
 set_target_properties(utils PROPERTIES
 		POSITION_INDEPENDENT_CODE ON
-		PUBLIC_HEADER ${_headers})
+		PUBLIC_HEADER "${_headers}")
 
 target_sources(utils PRIVATE ${_srcs}
 					INTERFACE ${_headers}
