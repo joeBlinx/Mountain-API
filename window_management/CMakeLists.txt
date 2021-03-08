@@ -46,6 +46,6 @@ target_link_libraries(window
                     Mountain::ExportDefinition)
 install(
         TARGETS window
-        CONFIGURATIONS Release
+        CONFIGURATIONS Release Debug RelWithDebInfo
         PUBLIC_HEADER DESTINATION include/mountain
 )

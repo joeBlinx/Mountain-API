@@ -94,7 +94,7 @@ set_target_properties(MountainAPI
 
 install(
 		TARGETS MountainAPI
-		CONFIGURATIONS Release
+		CONFIGURATIONS Release Debug RelWithDebInfo
 		RUNTIME DESTINATION bin
 		LIBRARY DESTINATION bin
 		PUBLIC_HEADER DESTINATION include/mountain
