@@ -13,22 +13,71 @@
 namespace mountain{
 
     struct PipelineBuilder{
+    private:
+        struct Subpass {
+            template<class ...PushConstantType>
+            MOUNTAINAPI_EXPORT PipelineBuilder &
+            create_pipeline_layout(std::span<vk::DescriptorSetLayout const> const descriptor_layout,
+                                   PushConstant<PushConstantType> const &...push_constant);
+            PipelineBuilder &_builder;
+        };
 
-        MOUNTAINAPI_EXPORT explicit PipelineBuilder(Context const& context);
-        MOUNTAINAPI_EXPORT PipelineBuilder& create_assembly(vk::PrimitiveTopology const  topology);
+        struct MultiSampling {
+            MOUNTAINAPI_EXPORT Subpass define_subpass(SubPass const &subpass);
+            PipelineBuilder &_builder;
+        };
+
+        struct Vertex {
+            MOUNTAINAPI_EXPORT MultiSampling create_mutlisampling();
+            PipelineBuilder &_builder;
+        };
+
+        struct Shaders {
+            MOUNTAINAPI_EXPORT Vertex create_vertex_info(const buffer::vertex &vertex_buffer);
+            PipelineBuilder &_builder;
+        };
+
+        struct ColorBlendState {
+            MOUNTAINAPI_EXPORT Shaders create_shaders_info(std::span<const shader> const shaders);
+            PipelineBuilder &_builder;
+        };
+
+        struct DepthStencil {
+            MOUNTAINAPI_EXPORT ColorBlendState create_color_blend_state();
+            PipelineBuilder &_builder;
+        };
+
+        struct Viewport {
+            MOUNTAINAPI_EXPORT DepthStencil
+            create_depth_stencil_state(vk::PipelineDepthStencilStateCreateInfo const &depth_stencil);
+            PipelineBuilder &_builder;
+        };
+
+        struct Rasterizer {
+            MOUNTAINAPI_EXPORT Viewport create_viewport_info(vk::Extent2D const &extent);
+            PipelineBuilder &_builder;
+        };
+
+        struct Assembly {
+            MOUNTAINAPI_EXPORT Rasterizer create_rasterizer(vk::PolygonMode const polygon_mode);
+            PipelineBuilder &_builder;
+        };
+
         MOUNTAINAPI_EXPORT PipelineBuilder& create_viewport_info(vk::Extent2D const& extent);
         MOUNTAINAPI_EXPORT PipelineBuilder& create_depth_stencil_state(vk::PipelineDepthStencilStateCreateInfo const& depth_stencil);
         MOUNTAINAPI_EXPORT PipelineBuilder& create_color_blend_state();
         MOUNTAINAPI_EXPORT PipelineBuilder& create_shaders_info(std::span<const shader> const shaders);
-        MOUNTAINAPI_EXPORT PipelineBuilder &create_vertex_info(const buffer::vertex &vertex_buffer);
-        MOUNTAINAPI_EXPORT PipelineBuilder &create_rasterizer(vk::PolygonMode const polygon_mode);
+        MOUNTAINAPI_EXPORT PipelineBuilder& create_vertex_info(const buffer::vertex &vertex_buffer);
+        MOUNTAINAPI_EXPORT PipelineBuilder& create_rasterizer(vk::PolygonMode const polygon_mode);
         MOUNTAINAPI_EXPORT PipelineBuilder& create_mutlisampling();
         MOUNTAINAPI_EXPORT PipelineBuilder& define_subpass(SubPass const& subpass);
 
         template<class ...PushConstantType>
         MOUNTAINAPI_EXPORT PipelineBuilder& create_pipeline_layout(std::span<vk::DescriptorSetLayout const> const descriptor_layout,
                                                 PushConstant<PushConstantType> const& ...push_constant);
-
+    public:
+        MOUNTAINAPI_EXPORT explicit PipelineBuilder(Context const& context);
+        MOUNTAINAPI_EXPORT Assembly create_assembly(vk::PrimitiveTopology const  topology);
         MOUNTAINAPI_EXPORT GraphicsPipeline build();
 
     private:
@@ -55,6 +104,14 @@ namespace mountain{
         GraphicsPipeline _pipeline{};
 
     };
+
+    template<class... PushConstantType>
+    PipelineBuilder &
+    PipelineBuilder::Subpass::create_pipeline_layout(const std::span<const vk::DescriptorSetLayout> descriptor_layout,
+                                                     const PushConstant<PushConstantType> &... push_constant) {
+        _builder.template create_pipeline_layout(descriptor_layout, push_constant...);
+        return _builder;
+    }
 
 
     template<class... PushConstantType>

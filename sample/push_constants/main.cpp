@@ -101,18 +101,19 @@ int main(){
     mountain::GraphicsPipeline const pipeline = mountain::PipelineBuilder(context)
             .create_assembly(vk::PrimitiveTopology::eTriangleList)
             .create_rasterizer(vk::PolygonMode::eFill)
-            .create_mutlisampling()
-            .create_color_blend_state()
-            .create_vertex_info(buffer)
             .create_viewport_info(swap_chain.get_swap_chain_extent())
+            .create_depth_stencil_state(depth_stencil)
+            .create_color_blend_state()
             .create_shaders_info(std::array{
                     mountain::shader{SHADER_FOLDER / "push_constantvert.spv", vk::ShaderStageFlagBits::eVertex},
                     mountain::shader{SHADER_FOLDER / "push_constantfrag.spv", vk::ShaderStageFlagBits::eFragment}
             })
-            .create_depth_stencil_state(depth_stencil)
-            .create_pipeline_layout({}, vertex_push, frag_push)
+            .create_vertex_info(buffer)
+            .create_mutlisampling()
             .define_subpass(mountain::SubPass{&render_pass, 0})
+            .create_pipeline_layout({}, vertex_push, frag_push)
             .build();
+
     CommandBufferRecord record{
         .buffer = buffer,
         .pipeline = pipeline};

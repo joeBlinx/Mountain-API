@@ -14,6 +14,7 @@
 #include "mountain/descriptorset_layout.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include <search.h>
 
 void key_callback(GLFWwindow* window, int key, int , int action, int)
 {
@@ -98,29 +99,29 @@ int main(){
         vk::ShaderStageFlagBits::eVertex
     };
     mountain::GraphicsPipeline const pipeline = mountain::PipelineBuilder{context}
-                                                .create_assembly(vk::PrimitiveTopology::eTriangleList)
+            .create_assembly(vk::PrimitiveTopology::eTriangleList)
                                                 .create_rasterizer(vk::PolygonMode::eFill)
+                                                .create_viewport_info(swap_chain.get_swap_chain_extent())
+                                                .create_depth_stencil_state(stencil_first_subpass)
                                                 .create_color_blend_state()
+                                                .create_shaders_info(shaders)
+                                                .create_vertex_info(vertex_buffer)
                                                 .create_mutlisampling()
                                                 .define_subpass(mountain::SubPass{&render_pass, 0})
                                                 .create_pipeline_layout(descriptors, model)
-                                                .create_depth_stencil_state(stencil_first_subpass)
-                                                .create_viewport_info(swap_chain.get_swap_chain_extent())
-                                                .create_vertex_info(vertex_buffer)
-                                                .create_shaders_info(shaders)
                                                 .build();
 
     mountain::GraphicsPipeline const pipeline2 = mountain::PipelineBuilder{context}
             .create_assembly(vk::PrimitiveTopology::eTriangleList)
             .create_rasterizer(vk::PolygonMode::eFill)
+            .create_viewport_info(swap_chain.get_swap_chain_extent())
+            .create_depth_stencil_state(stencil_second_subpass)
             .create_color_blend_state()
+            .create_shaders_info(shaders)
+            .create_vertex_info(vertex_buffer)
             .create_mutlisampling()
             .define_subpass(mountain::SubPass{&render_pass, 1})
             .create_pipeline_layout(descriptors, model)
-            .create_depth_stencil_state(stencil_second_subpass)
-            .create_viewport_info(swap_chain.get_swap_chain_extent())
-            .create_vertex_info(vertex_buffer)
-            .create_shaders_info(shaders)
             .build();
 
     mountain::CommandBuffer command_buffer {context, swap_chain, render_pass, 1};

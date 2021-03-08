@@ -18,12 +18,6 @@ namespace mountain{
         return _context->createShaderModuleUnique(createInfo);
     }
 
-    PipelineBuilder &PipelineBuilder::create_assembly(const vk::PrimitiveTopology topology) {
-        _assembly.topology = topology; // 3 vertices, one triangle
-        _assembly.primitiveRestartEnable = VK_FALSE;
-        return *this;
-    }
-
     PipelineBuilder &PipelineBuilder::create_viewport_info(const vk::Extent2D &extent) {
         _viewport.x = 0.0f;
         _viewport.y = 0.0f;
@@ -139,5 +133,53 @@ namespace mountain{
             ));
         });
         return *this;
+    }
+
+    PipelineBuilder::Assembly PipelineBuilder::create_assembly(const vk::PrimitiveTopology topology) {
+        _assembly.topology = topology; // 3 vertices, one triangle
+        _assembly.primitiveRestartEnable = VK_FALSE;
+        return Assembly{*this};
+    }
+
+    PipelineBuilder::Rasterizer PipelineBuilder::Assembly::create_rasterizer(const vk::PolygonMode polygon_mode) {
+        _builder.create_rasterizer(polygon_mode);
+        return {_builder};
+    }
+
+    PipelineBuilder::Viewport PipelineBuilder::Rasterizer::create_viewport_info(const vk::Extent2D &extent) {
+        _builder.create_viewport_info(extent);
+        return {_builder};
+    }
+
+    PipelineBuilder::DepthStencil PipelineBuilder::Viewport::create_depth_stencil_state(
+            const vk::PipelineDepthStencilStateCreateInfo &depth_stencil) {
+        _builder.create_depth_stencil_state(depth_stencil);
+        return {_builder};
+    }
+
+    PipelineBuilder::ColorBlendState PipelineBuilder::DepthStencil::create_color_blend_state() {
+        _builder.create_color_blend_state();
+        return {_builder};
+    }
+
+    PipelineBuilder::Shaders
+    PipelineBuilder::ColorBlendState::create_shaders_info(const std::span<const shader> shaders) {
+        _builder.create_shaders_info(shaders);
+        return {_builder};
+    }
+
+    PipelineBuilder::Vertex PipelineBuilder::Shaders::create_vertex_info(const buffer::vertex &vertex_buffer) {
+        _builder.create_vertex_info(vertex_buffer);
+        return {_builder};
+    }
+
+    PipelineBuilder::MultiSampling PipelineBuilder::Vertex::create_mutlisampling() {
+        _builder.create_mutlisampling();
+        return {_builder};
+    }
+
+    PipelineBuilder::Subpass PipelineBuilder::MultiSampling::define_subpass(const SubPass &subpass) {
+        _builder.define_subpass(subpass);
+        return {_builder};
     }
 }

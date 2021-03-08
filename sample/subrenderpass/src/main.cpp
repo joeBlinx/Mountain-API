@@ -44,18 +44,18 @@ int main() {
     }();
     mountain::PushConstant<glm::mat4> vertex_push_constant{vk::ShaderStageFlagBits::eVertex};
     mountain::GraphicsPipeline const back_pipeline = mountain::PipelineBuilder(context)
-            .create_color_blend_state()
-            .create_mutlisampling()
-            .create_rasterizer(vk::PolygonMode::eFill)
             .create_assembly(vk::PrimitiveTopology::eTriangleList)
+            .create_rasterizer(vk::PolygonMode::eFill)
             .create_viewport_info(swap_chain.get_swap_chain_extent())
-            .create_vertex_info(quad_vertex_buffer)
             .create_depth_stencil_state(depth_stencil)
-            .define_subpass(mountain::SubPass{&render_pass, 0})
+            .create_color_blend_state()
             .create_shaders_info(std::vector{
                     mountain::shader{SHADER_FOLDER / "portraitvert.spv", vk::ShaderStageFlagBits::eVertex},
                     mountain::shader{SHADER_FOLDER / "portraitfrag.spv", vk::ShaderStageFlagBits::eFragment}
             })
+            .create_vertex_info(quad_vertex_buffer)
+            .create_mutlisampling()
+            .define_subpass(mountain::SubPass{&render_pass, 0})
             .create_pipeline_layout({}, vertex_push_constant)
             .build();
 
@@ -68,18 +68,18 @@ int main() {
         return info;
     }();
     mountain::GraphicsPipeline front_pipeline = mountain::PipelineBuilder(context)
-            .create_color_blend_state()
-            .create_mutlisampling()
-            .create_rasterizer(vk::PolygonMode::eFill)
             .create_assembly(vk::PrimitiveTopology::eTriangleList)
+            .create_rasterizer(vk::PolygonMode::eFill)
             .create_viewport_info(swap_chain.get_swap_chain_extent())
-            .create_vertex_info(quad_vertex_buffer)
             .create_depth_stencil_state(depth_stencil2)
-            .define_subpass(mountain::SubPass{&render_pass, 1})
+            .create_color_blend_state()
             .create_shaders_info(std::vector{
                     mountain::shader{SHADER_FOLDER / "portraitvert.spv", vk::ShaderStageFlagBits::eVertex},
                     mountain::shader{SHADER_FOLDER / "portraitfrag.spv", vk::ShaderStageFlagBits::eFragment}
             })
+            .create_vertex_info(quad_vertex_buffer)
+            .create_mutlisampling()
+            .define_subpass(mountain::SubPass{&render_pass, 1})
             .create_pipeline_layout({}, vertex_push_constant)
             .build();
 
