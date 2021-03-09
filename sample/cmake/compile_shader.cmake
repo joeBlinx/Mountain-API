@@ -4,12 +4,12 @@
 # The output name of the shaders will be <name><role>.spv
 # Example: triangle.frag -> trianglefrag.spv
 function(compile_shaders target)
-    find_program(spriv_compiler glslangValidator)
-    if(${spriv_compiler} EQUAL glslangValidator_NOTFOUND)
-        message(WARNING "glslangValidator executable was not found, shader will not be compiled automatically.
-	Don't forget to do it if you want to launch this sample
-	")
-    else()
+        find_program(spriv_compiler glslangValidator)
+        if(${spriv_compiler} EQUAL glslangValidator_NOTFOUND)
+            message(WARNING "glslangValidator executable was not found, shader will not be compiled automatically.
+        Don't forget to do it if you want to launch this sample
+        ")
+        else()
         set(prefix ARG)
         set(options)
         set(_single_values OUTPUT_DIR WORKING_DIR)

@@ -79,6 +79,7 @@ set_sources(_public_headers
 				command_buffer.h
 				graphics_pipeline.h
 				pipeline_builder.h
+				descriptorset_layout.h
 				sampler.h
 				load_model.h
 				no_sanitize.h
