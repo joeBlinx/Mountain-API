@@ -36,6 +36,9 @@ namespace utils::raii_helper{
         vk::CommandBuffer const* operator->()const{
             return & *_command_buffer;
         }
+        vk::CommandBuffer const& operator*() const{
+            return *_command_buffer;
+        }
         ~OneTimeCommands(){
             _command_buffer->end();
             vk::SubmitInfo submit_info{};
