@@ -72,6 +72,9 @@ auto get_format_offsets(Ts T::* ... args){
                               }
                 );
             }
+        private:
+            friend class vertex;
+            vertex_description() = default;
         };
 
         template<class T>
@@ -114,13 +117,17 @@ auto get_format_offsets(Ts T::* ... args){
 
             uint32_t get_indices_offset() const { return _indices_offset; }
 #endif
+            MOUNTAINAPI_EXPORT void swap(vertex& v);
+
+            MOUNTAINAPI_EXPORT void swap(vertex&& v);
         private:
+            vertex() = default;
             template<Container container>
             void create_buffer(Context const& device, container const &vertices, vk::BufferUsageFlags buffer_usage, vk::UniqueBuffer &buffer,
                                vk::UniqueDeviceMemory &buffer_memory);
 
-            vk::UniqueDeviceMemory _buffer_memory;
-            vk::UniqueBuffer _buffer;
+            vk::UniqueDeviceMemory _buffer_memory{};
+            vk::UniqueBuffer _buffer{};
 
             uint32_t _indices_count;
             vertex_description _description;

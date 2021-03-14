@@ -48,7 +48,7 @@ target_compile_features(MountainAPI PUBLIC cxx_std_20)
 
 set_sources(_srcs
 				FOLDER src
-				FILES 
+				FILES
 					context.cpp
 					renderpass/render_pass.cpp
 					swapChain.cpp
@@ -57,6 +57,7 @@ set_sources(_srcs
 					pipeline/pipeline_builder.cpp
 					buffer/uniform.cpp
 					buffer/image2d.cpp
+					buffer/vertex.cpp
 					descriptor_setlayout_binding/descriptorset_layout.cpp
 					sampler.cpp
 					load_model.cpp

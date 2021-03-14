@@ -54,4 +54,7 @@ vertex::vertex(Context const &device, vertex_description &&description, containe
 
 }
 
+
+
+
 #endif //MOUNTAIN_API_VERTEX_H
