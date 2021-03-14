@@ -119,7 +119,7 @@ int main(){
     mountain::Present present{context, swapchain};
     while (!glfwWindowShouldClose(context.get_window().get_window())) {
         glfwPollEvents();
-        present.present({},  command_buffer);
+        present({},  command_buffer);
         std::this_thread::sleep_for(17ms);
     }
     context->waitIdle();

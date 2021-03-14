@@ -14,10 +14,16 @@ namespace mountain{
 
         MOUNTAINAPI_EXPORT Present(Context const& context, SwapChain const& swapchain);
 
+        /**
+         *
+         * @tparam CommandBuffers
+         * @param updaters: vector of the uniforme updaters
+         * WARNING updaters will be cleared in this function
+         * @param command_buffers
+         */
         template <class ...CommandBuffers>
-        void present(std::vector<buffer::uniform_updater>&& updaters, CommandBuffers const& ... command_buffers)
+        void operator()(std::vector<buffer::uniform_updater>& updaters, CommandBuffers const& ... command_buffers)
         requires (std::is_same_v<CommandBuffers, CommandBuffer> && ...);
-
 
     private:
         Context const& _context;
@@ -31,7 +37,7 @@ namespace mountain{
     };
 
     template <class ...CommandBuffers>
-    void Present::present(std::vector<buffer::uniform_updater>&& updaters, CommandBuffers const& ... command_buffers)
+    void Present::operator()(std::vector<buffer::uniform_updater>& updaters, CommandBuffers const& ... command_buffers)
     requires (std::is_same_v<CommandBuffers, CommandBuffer> && ...){
         uint32_t image_index{};
         vkAcquireNextImageKHR(_context.get_device(), _swapchain.get_swap_chain(), std::numeric_limits<uint64_t>::max(),
