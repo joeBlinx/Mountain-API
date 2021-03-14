@@ -116,6 +116,8 @@ namespace mountain {
          */
         MOUNTAINAPI_EXPORT void drawFrame(std::vector<buffer::uniform_updater> &&updaters);
 
+        MOUNTAINAPI_EXPORT vk::UniqueDescriptorPool const& get_descriptor_pool() const{return _descriptor_pool;}
+
         MOUNTAINAPI_EXPORT ~CommandBuffer();
 
     private:
