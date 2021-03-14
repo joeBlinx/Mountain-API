@@ -116,10 +116,9 @@ auto get_format_offsets(Ts T::* ... args){
 #endif
         private:
             template<Container container>
-            void create_buffer(container const &vertices, vk::BufferUsageFlags buffer_usage, vk::UniqueBuffer &buffer,
+            void create_buffer(Context const& device, container const &vertices, vk::BufferUsageFlags buffer_usage, vk::UniqueBuffer &buffer,
                                vk::UniqueDeviceMemory &buffer_memory);
 
-            Context const &_device;
             vk::UniqueDeviceMemory _buffer_memory;
             vk::UniqueBuffer _buffer;
 
