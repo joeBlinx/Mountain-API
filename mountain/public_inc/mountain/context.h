@@ -60,7 +60,9 @@ namespace mountain {
 
         vk::Device const &get_device() const { return _device; }
 
+        vk::Instance const &get_vk_instance() const { return _instance; }
 #endif
+
         /**
          *
          * @return Window object
@@ -182,8 +184,6 @@ namespace mountain {
 
         [[nodiscard]] vk::UniqueDeviceMemory
         create_device_memory(vk::MemoryRequirements const &mem_requirements, vk::MemoryPropertyFlags type_filter) const;
-
-        vk::Instance const &get_vk_instance() const { return _instance; }
 
 
         };
