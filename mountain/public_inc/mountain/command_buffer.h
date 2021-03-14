@@ -15,6 +15,7 @@
 #include "vertex.h"
 #include "graphics_pipeline.h"
 #include <cstddef>
+#include <span>
 #include "image2d.h"
 #include "uniform.h"
 #include "sampler.h"
@@ -110,10 +111,12 @@ namespace mountain {
         MOUNTAINAPI_EXPORT void update_descriptor_set(int first_descriptor_set_index, int binding, buffer::image2d const &image,
                                    image::sampler const &sampler);
         /**
+         * @deprecated : see mountain::Present
          * Draw frame with the record command buffers and update uniform values
          * @param updaters: vector of uniform_updater. uniform_updater are created by calling
          * ``get_uniform_updater`` on a mountain::buffer::uniform object
          */
+         [[deprecated]]
         MOUNTAINAPI_EXPORT void drawFrame(std::vector<buffer::uniform_updater> &&updaters);
 
         MOUNTAINAPI_EXPORT vk::UniqueDescriptorPool const& get_descriptor_pool() const{return _descriptor_pool;}
@@ -234,6 +237,8 @@ namespace mountain {
 
         }
     }
+
+
 }
 #endif //MOUNTAIN_API_INITVULKAN_H
 

@@ -38,7 +38,7 @@ namespace mountain {
 
         MOUNTAINAPI_EXPORT const vk::Extent2D &get_swap_chain_extent() const;
 
-        vk::SwapchainKHR get_swap_chain() const;
+        MOUNTAINAPI_EXPORT vk::SwapchainKHR get_swap_chain() const;
 #endif
         MOUNTAINAPI_EXPORT ~SwapChain();
 

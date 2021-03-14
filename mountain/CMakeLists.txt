@@ -60,6 +60,7 @@ set_sources(_srcs
 					descriptor_setlayout_binding/descriptorset_layout.cpp
 					sampler.cpp
 					load_model.cpp
+					present.cpp
 			)
 set_sources(_srcs_buffer
 			FOLDER src/buffer
@@ -84,6 +85,7 @@ set_sources(_public_headers
 				load_model.h
 				no_sanitize.h
 				subpass.h
+				present.h
 			)
 set(_public_headers ${_public_headers} ${CMAKE_CURRENT_BINARY_DIR}/mountainapi_export.h)
 

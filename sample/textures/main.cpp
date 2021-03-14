@@ -14,6 +14,7 @@
 #include "GLFW/glfw3.h"
 #include "glm/gtx/transform.hpp"
 #include "common/init.h"
+#include <mountain/present.h>
 void key_callback(GLFWwindow* window, int key, int , int action, int)
 {
     if(key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE){
@@ -64,7 +65,7 @@ int main(){
             {create_subpassdependency()}
     };
 
-    mountain::SwapChain const swap_chain{
+    mountain::SwapChain const swapchain{
             context,
             render_pass,
             width,
@@ -85,7 +86,7 @@ int main(){
     mountain::GraphicsPipeline const pipeline = mountain::PipelineBuilder(context)
             .create_assembly(vk::PrimitiveTopology::eTriangleList)
             .create_rasterizer(vk::PolygonMode::eFill)
-            .create_viewport_info(swap_chain.get_swap_chain_extent())
+            .create_viewport_info(swapchain.get_swap_chain_extent())
             .create_depth_stencil_state(depth_stencil)
             .create_color_blend_state()
             .create_shaders_info(std::array{
@@ -106,7 +107,7 @@ int main(){
     mountain::image::sampler const sampler(context, 1);
     mountain::CommandBuffer command_buffer(
             context,
-            swap_chain,
+            swapchain,
             render_pass, 1);
 
     command_buffer.allocate_descriptor_set({descriptor_set});
@@ -115,9 +116,10 @@ int main(){
 
     command_buffer.record(record());
     using namespace std::chrono_literals;
+    mountain::Present present{context, swapchain};
     while (!glfwWindowShouldClose(context.get_window().get_window())) {
         glfwPollEvents();
-        command_buffer.drawFrame({});
+        present.present({},  command_buffer);
         std::this_thread::sleep_for(17ms);
     }
     context->waitIdle();
