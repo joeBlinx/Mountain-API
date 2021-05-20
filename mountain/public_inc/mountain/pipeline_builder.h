@@ -16,7 +16,7 @@ namespace mountain{
     private:
         struct Subpass {
             template<class ...PushConstantType>
-            MOUNTAINAPI_EXPORT PipelineBuilder &
+            PipelineBuilder &
             create_pipeline_layout(std::span<vk::DescriptorSetLayout const> const descriptor_layout,
                                    PushConstant<PushConstantType> const &...push_constant);
             Subpass(PipelineBuilder& builder):_builder(builder){}
@@ -91,7 +91,7 @@ namespace mountain{
         PipelineBuilder& define_subpass(SubPass const& subpass);
 
         template<class ...PushConstantType>
-        MOUNTAINAPI_EXPORT PipelineBuilder& create_pipeline_layout(std::span<vk::DescriptorSetLayout const> const descriptor_layout,
+        PipelineBuilder& create_pipeline_layout(std::span<vk::DescriptorSetLayout const> const descriptor_layout,
                                                 PushConstant<PushConstantType> const& ...push_constant);
     public:
         MOUNTAINAPI_EXPORT explicit PipelineBuilder(Context const& context);

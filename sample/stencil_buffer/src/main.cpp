@@ -15,7 +15,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <search.h>
-
+#include <mountain/present.h>
 void key_callback(GLFWwindow* window, int key, int , int action, int)
 {
     if(key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE){
@@ -158,9 +158,10 @@ int main(){
     });
     glfwSetKeyCallback(context.get_window().get_window(), key_callback);
     using namespace std::chrono_literals;
+    mountain::Present present{context, swap_chain};
     while(!window.window_should_close()){
         glfwPollEvents();
-        command_buffer.drawFrame({});
+        present(command_buffer);
         std::this_thread::sleep_for(17ms);
     }
     context->waitIdle();

@@ -13,7 +13,7 @@
 #include "ressource_paths.h"
 #include "GLFW/glfw3.h"
 #include "glm/gtx/transform.hpp"
-
+#include <mountain/present.h>
 struct Model{
     glm::mat4 model {1};
 };
@@ -173,9 +173,11 @@ int main() {
     init.record(record());
     std::vector<mountain::buffer::uniform_updater> updaters;
     updaters.emplace_back(uniform_vp.get_uniform_updater(create_vp_matrix(width, height)));
+    mountain::Present present{context, swap_chain};
     while (!glfwWindowShouldClose(context.get_window().get_window())) {
         glfwPollEvents();
-        init.drawFrame(std::move(updaters));
+        
+        present(updaters, init);
     }
     vkDeviceWaitIdle(context.get_device());
 

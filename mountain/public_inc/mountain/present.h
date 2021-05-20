@@ -25,6 +25,15 @@ namespace mountain{
         void operator()(std::vector<buffer::uniform_updater>& updaters, CommandBuffers const& ... command_buffers)
         requires (std::is_same_v<CommandBuffers, CommandBuffer> && ...);
 
+        /**
+         *
+         * @tparam CommandBuffers
+         * @param command_buffers
+         */
+        template <class ...CommandBuffers>
+        void operator()(CommandBuffers const& ... command_buffers)
+        requires (std::is_same_v<CommandBuffers, CommandBuffer> && ...);
+
     private:
         Context const& _context;
         SwapChain const& _swapchain;
@@ -43,6 +52,12 @@ namespace mountain{
         vkAcquireNextImageKHR(_context.get_device(), _swapchain.get_swap_chain(), std::numeric_limits<uint64_t>::max(),
                               *_imageAvailableSemaphore, VK_NULL_HANDLE, &image_index);
         present(image_index, updaters, std::vector{command_buffers.get_command_buffer(image_index)...});
+    }
+    template <class ...CommandBuffers>
+    void Present::operator()(CommandBuffers const& ... command_buffers)
+    requires (std::is_same_v<CommandBuffers, CommandBuffer> && ...){
+       std::vector<buffer::uniform_updater> updaters;
+       this->operator()(updaters, command_buffers...);
     }
 
 

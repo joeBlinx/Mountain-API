@@ -73,7 +73,7 @@ auto get_format_offsets(Ts T::* ... args){
                 );
             }
         private:
-            friend class vertex;
+            friend struct vertex;
             vertex_description() = default;
         };
 

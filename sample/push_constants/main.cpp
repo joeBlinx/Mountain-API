@@ -12,6 +12,7 @@
 #include "GLFW/glfw3.h"
 #include "glm/gtx/transform.hpp"
 #include "common/init.h"
+#include <mountain/present.h>
 struct PushConstant{
     struct VertexPushConstant{
         glm::mat4 model{};
@@ -129,6 +130,7 @@ int main(){
     float size = 1.0f;
     float delta = 0.04f;
     using namespace std::chrono_literals;
+    mountain::Present present{context, swap_chain};
     while (!glfwWindowShouldClose(context.get_window().get_window())) {
         glfwPollEvents();
         illuminance = (illuminance + 2) % 255;
@@ -139,7 +141,7 @@ int main(){
         command_buffer.record(record(PushConstant{
             .vertex_push_constant{glm::scale(glm::vec3{size})},
             .fragment_push_constant{static_cast<float>(illuminance)/255.0f}}));
-        command_buffer.drawFrame({});
+        present(command_buffer);
         std::this_thread::sleep_for(17ms);
     }
     context->waitIdle();
